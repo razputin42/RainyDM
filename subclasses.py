@@ -250,7 +250,7 @@ class InitiativeTableWidget(MonsterTableWidget):
 
     def data_changed_handle(self, row, column):
         if column == self._DAMAGE_COLUMN:
-            damage = self._convert_to_int(row, column)
+            damage = -self._convert_to_int(row, column)
             hp = self._convert_to_int(row, self._HP_COLUMN)
             if damage is False or hp is False:
                 pass
