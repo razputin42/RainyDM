@@ -23,6 +23,11 @@ class DMTool(QWidget):
         #     print(monster.index)
         #     self.draw_view(monster)
 
+        # test if all the spells in DB can be interpreted
+        # for spell in self.spell_table_widget.list:
+        #     print(spell.index)
+        #     self.spell_viewer.draw_view(spell)
+
     def _setup_ui(self):
         """
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right

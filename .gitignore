@@ -1,5 +1,11 @@
 \.idea/
 metadata/
 __pycache__/
+build/
+dist/
 
 assets/linear_gradient\.xcf
+
+main_tool\.spec
+
+RainyDM\.zip
