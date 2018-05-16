@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QInputDialog, QListWidget, QTableWidget, QTableWidgetItem, QHeaderView, QVBoxLayout, \
-    QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton
+    QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton, QSizePolicy
 from html_format import monster_dict, spell_dict
 from string import Template
 import re
@@ -360,14 +360,20 @@ class SearchableTable(QFrame):
         self.parent = parent
         self.search_box = QLineEdit()
         self.search_box.setMaximumWidth(parent.SEARCH_BOX_WIDTH)
+        self.filter_button = QPushButton("Filters")
 
         self.table = MonsterTableWidget(parent)
 
+        horizontal_layout = QHBoxLayout()
+        horizontal_layout.addWidget(self.search_box)
+        horizontal_layout.addWidget(self.filter_button)
         list_layout = QVBoxLayout()
-        list_layout.addWidget(self.search_box)
+        list_layout.addLayout(horizontal_layout)
         list_layout.addWidget(self.table)
         self.setLayout(list_layout)
 
+        self.filter = dict(default=True)
+        self.filter_names = []
         self.search_box.textChanged.connect(self.search_handle)
 
     def load_list(self, s, resource, Class):
@@ -387,7 +393,14 @@ class SearchableTable(QFrame):
     def search_handle(self):
         s = self.search_box.text()
         p = re.compile('.*{}.*'.format(s), re.IGNORECASE)
-        result = [True if p.match(entry.name) else False for entry in self.list]
+        result = []
+        for entry in self.list:
+            cond = True if p.match(entry.name) else False
+            if cond is True:
+                for name in self.filter_names:
+                    filter_cond = self.filter[name]
+                    cond = cond and filter_cond if filter_cond is True else getattr(entry, name) == filter_cond
+            result.append(cond)
         self._toggle_table(result)
 
     def _toggle_table(self, result):

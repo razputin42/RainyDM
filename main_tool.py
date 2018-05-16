@@ -129,6 +129,8 @@ class DMTool(QWidget):
         self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
 
+        self.monster_table_widget.filter_button.clicked.connect(self.monster_filter_dialog)
+
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()
         spell_idx = int(table.item(current_row, 1).text())
@@ -146,11 +148,8 @@ class DMTool(QWidget):
     def spell_search_handle(self):
         self.spell_viewer.draw_view()
 
-    def monster_search_handle(self):
-        s = self.monster_search_box.text()
-        p = re.compile('.*{}.*'.format(s), re.IGNORECASE)
-        result = [True if p.match(monster.name) else False for monster in self.monster_table_widget.list]
-        self._toggle_monster_table(result)
+    def monster_filter_dialog(self):
+        print("test")
 
     def _fill_monster_table(self, monster_list):
         self.monster_table_widget.table_widget.clear()
@@ -296,6 +295,8 @@ class DMTool(QWidget):
         self.text_box.append(s)
 
     def load_meta(self):
+        if not os.path.exists("metadata/"):
+            os.mkdir("metadata")
         if os.path.exists("metadata/session.txt"):
             with open("metadata/session.txt", "r") as f:
                 meta_dict = eval(f.read())
