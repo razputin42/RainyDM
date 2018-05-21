@@ -246,7 +246,8 @@ class InitiativeTableWidget(MonsterTableWidget):
         elif action in action_menu_handles:
             idx = action_menu_handles.index(action)
             attack = monster.action_list[action_indexes[idx]]
-            self.parent.print_attack(monster, attack.attack)
+            if hasattr(attack, "attack"):
+                self.parent.print_attack(monster, attack.attack)
 
     def data_changed_handle(self, row, column):
         if column == self._DAMAGE_COLUMN:

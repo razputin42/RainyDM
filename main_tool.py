@@ -46,7 +46,7 @@ class DMTool(QWidget):
         spell_viewer_layout = QVBoxLayout()
         self.text_box = QTextEdit()
         self.text_box.setReadOnly(True)
-        self.text_box.setFontPointSize(12)
+        self.text_box.setFontPointSize(10)
         self.text_box.setMaximumWidth(530)
         self.text_box.setMaximumHeight(250)
         self.spell_viewer = SpellViewer()
@@ -286,13 +286,13 @@ class DMTool(QWidget):
 
     def print_attack(self, monster, attack):
         comp = attack.split("|")
-        s = ">> {} uses {} -- ".format(monster.name, comp[0])
-        if comp[1] != "":  # this means there's an attack roll and a damage roll
+        s = "{} uses {} -- ".format(monster.name, comp[0])
+        if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
             attack_roll = self.roll("1d20+"+comp[1])
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
 
         damage_roll = self.roll(comp[2])
-        s = s + "for " + str(damage_roll)
+        s = s + "for {} ({} halved)".format(str(damage_roll), int(damage_roll/2))
         self.text_box.append(s)
 
     def load_meta(self):

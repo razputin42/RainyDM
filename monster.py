@@ -1,15 +1,6 @@
 class Monster:
     class Action:
         def __init__(self, attr):
-            for _attr in attr:
-                setattr(self, _attr.tag, _attr.text)
-
-        def __str__(self):
-            return self.name + ": " + self.text
-
-
-    class Trait(Action):
-        def __init__(self, attr):
             s = ""
             for itt, _attr in enumerate(attr):
                 if _attr.tag == "text":
@@ -17,11 +8,17 @@ class Monster:
                         s = s + "<br>"
                     else:
                         s = s + _attr.text
-                        if itt != 0 and itt != len(attr)-1:
+                        if itt != 0 and itt != len(attr) - 1:
                             s = s + "<br>"
                 else:
                     setattr(self, _attr.tag, _attr.text)
             self.text = s
+
+        def __str__(self):
+            return self.name + ": " + self.text
+
+    class Trait(Action):
+        None
 
     def __init__(self, entry, idx):
         self.entry = entry
