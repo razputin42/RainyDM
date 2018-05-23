@@ -1,12 +1,12 @@
-import re
-from monster import Monster
-from spell import Spell
-from PyQt5 import QtCore, Qt
+from dependencies.monster import Monster
+from dependencies.spell import Spell
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame
 import sys, json, os
 from subclasses import MonsterViewer, ToolboxWidget, PlayerTableWidget, \
-    InitiativeTableWidget, SpellViewer, SearchableTable
+    InitiativeTableWidget, SpellViewer
+from dependencies.searchable_tables import MonsterTableWidget, SearchableTable
 from random import randint
 
 class DMTool(QWidget):
@@ -57,9 +57,10 @@ class DMTool(QWidget):
         self.spell_table_widget = SearchableTable(self)
         self.spell_table_widget.load_list("./spell", "resources/Compendiums/Spells Compendium 1.3.0.xml", Spell)
         self.spell_table_widget.fill_table()
-        self.spell_table_widget.table.contextMenuEvent = self.spell_table_widget.table.spellContextEvent
+        # self.spell_table_widget.table.contextMenuEvent = self.spell_table_widget.table.spellContextEvent
 
-        self.monster_table_widget = SearchableTable(self)
+        # self.monster_table_widget = SearchableTable(self)
+        self.monster_table_widget = MonsterTableWidget(self)
         self.monster_table_widget.load_list("./monster", "resources/Compendiums/Bestiary Compendium 2.1.0.xml", Monster)
         self.monster_table_widget.fill_table()
 

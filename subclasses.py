@@ -1,10 +1,9 @@
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QInputDialog, QListWidget, QTableWidget, QTableWidgetItem, QHeaderView, QVBoxLayout, \
-    QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton, QSizePolicy
-from html_format import monster_dict, spell_dict
+from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
+    QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton
+from dependencies.html_format import monster_dict, spell_dict
 from string import Template
-import re
-from xml.etree import ElementTree
+
 
 
 class MonsterViewer(QTextBrowser):
@@ -352,60 +351,6 @@ class ToolboxWidget:
     @staticmethod
     def remove_from_toolbox(table, row):
         table.remove_row(row)
-
-
-class SearchableTable(QFrame):
-    def __init__(self, parent):
-        QFrame.__init__(self)
-        self.parent = parent
-        self.search_box = QLineEdit()
-        self.search_box.setMaximumWidth(parent.SEARCH_BOX_WIDTH)
-        self.filter_button = QPushButton("Filters")
-
-        self.table = MonsterTableWidget(parent)
-
-        horizontal_layout = QHBoxLayout()
-        horizontal_layout.addWidget(self.search_box)
-        horizontal_layout.addWidget(self.filter_button)
-        list_layout = QVBoxLayout()
-        list_layout.addLayout(horizontal_layout)
-        list_layout.addWidget(self.table)
-        self.setLayout(list_layout)
-
-        self.filter = dict(default=True)
-        self.filter_names = []
-        self.search_box.textChanged.connect(self.search_handle)
-
-    def load_list(self, s, resource, Class):
-        xml = ElementTree.parse(resource)
-        root = xml.getroot()
-        self.list = []
-        for itt, entry in enumerate(root.findall(s)):
-            self.list.append(Class(entry, itt))
-
-    def fill_table(self):
-        self.table.clear()
-        self.table.setRowCount(len(self.list))
-        for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, 0, QTableWidgetItem(str(entry)))
-            self.table.setItem(itt, 1, QTableWidgetItem(str(entry.index)))
-
-    def search_handle(self):
-        s = self.search_box.text()
-        p = re.compile('.*{}.*'.format(s), re.IGNORECASE)
-        result = []
-        for entry in self.list:
-            cond = True if p.match(entry.name) else False
-            if cond is True:
-                for name in self.filter_names:
-                    filter_cond = self.filter[name]
-                    cond = cond and filter_cond if filter_cond is True else getattr(entry, name) == filter_cond
-            result.append(cond)
-        self._toggle_table(result)
-
-    def _toggle_table(self, result):
-        for itt, cond in enumerate(result):
-            self.table.setRowHidden(itt, not cond)
 
 
 class DiceBox:
