@@ -38,8 +38,9 @@ class Monster:
                 self._add_legendary(attr)
             elif attr.tag == "type":
                 temp_list = attr.text.split(",")
-                self.type = temp_list[0].strip()
-                self.source = temp_list[1].strip()
+                self.type = ",".join(temp_list[:-1]).strip()
+                self.source = temp_list[-1]
+
             else:
                 setattr(self, attr.tag, attr.text)
         self.initiative = self.calculate_modifier(self.dex)

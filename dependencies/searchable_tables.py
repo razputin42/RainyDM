@@ -26,25 +26,29 @@ class MyTableWidget(QTableWidget):
 class SearchableTable(QFrame):
     def __init__(self, parent):
         QFrame.__init__(self)
+        self.filter = Filter()
+
         self.parent = parent
         self.list = []
         self.search_box = QLineEdit()
         self.search_box.setMaximumWidth(parent.SEARCH_BOX_WIDTH)
         self.filter_button = QPushButton("Filters")
 
+        self.table_layout = QHBoxLayout()
         self.table = MyTableWidget(parent)
+        self.table_layout.addWidget(self.table)
+        self.table_layout.addWidget(self.filter.get_frame())
 
         horizontal_layout = QHBoxLayout()
         horizontal_layout.addWidget(self.search_box)
         horizontal_layout.addWidget(self.filter_button)
         list_layout = QVBoxLayout()
         list_layout.addLayout(horizontal_layout)
-        list_layout.addWidget(self.table)
+        list_layout.addLayout(self.table_layout)
         self.setLayout(list_layout)
 
-        self.filter = Filter()
-        self.define_filters()
         self.search_box.textChanged.connect(self.search_handle)
+        self.filter_button.clicked.connect(self.filter_handle)
 
     def define_filters(self):
         pass
@@ -73,6 +77,9 @@ class SearchableTable(QFrame):
                 result.append(entry_attr)
         return result
 
+    def filter_handle(self):
+        self.filter.toggle_hidden()
+
     def search_handle(self):
         s = self.search_box.text()
         p = re.compile('.*{}.*'.format(s), re.IGNORECASE)
@@ -87,6 +94,7 @@ class SearchableTable(QFrame):
     def _toggle_table(self, result):
         for itt, cond in enumerate(result):
             self.table.setRowHidden(itt, not cond)
+
 
 class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0

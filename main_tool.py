@@ -63,6 +63,7 @@ class DMTool(QWidget):
         self.monster_table_widget = MonsterTableWidget(self)
         self.monster_table_widget.load_list("./monster", "resources/Compendiums/Bestiary Compendium 2.1.0.xml", Monster)
         self.monster_table_widget.fill_table()
+        self.monster_table_widget.define_filters()
 
         self.tab_widget.addTab(self.monster_table_widget, "Monster")
         self.tab_widget.addTab(self.spell_table_widget, "Spell")
@@ -130,8 +131,6 @@ class DMTool(QWidget):
         self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
 
-        self.monster_table_widget.filter_button.clicked.connect(self.monster_filter_dialog)
-
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()
         spell_idx = int(table.item(current_row, 1).text())
@@ -148,9 +147,6 @@ class DMTool(QWidget):
 
     def spell_search_handle(self):
         self.spell_viewer.draw_view()
-
-    def monster_filter_dialog(self):
-        print("test")
 
     def _fill_monster_table(self, monster_list):
         self.monster_table_widget.table_widget.clear()
