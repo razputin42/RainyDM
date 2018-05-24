@@ -323,7 +323,7 @@ class DMTool(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    # app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     form = DMTool()  # We set the form to be our ExampleApp (design)
 
     form.show()  # Show the form
