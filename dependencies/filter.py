@@ -7,9 +7,10 @@ class Filter:
         self.filter_content = filter_content
         self.filter = dict()
         self.frame = QFrame()
+        self.frame.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         actual_layout = QVBoxLayout()
         widget_frame = QFrame()
-        widget_frame.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        # widget_frame.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.layout = QVBoxLayout()
         widget_frame.setLayout(self.layout)
         actual_layout.addWidget(widget_frame)

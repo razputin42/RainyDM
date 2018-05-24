@@ -209,7 +209,7 @@ class DMTool(QWidget):
         player_rows = player_table.rowCount()
         for itt in range(player_rows):
             item = player_table.item(itt, player_table._NAME_COLUMN)
-            if item is None:
+            if item is None or item.text() == "":
                 continue
             name = item.text()
             init = player_table.item(itt, player_table._INITIATIVE_COLUMN)
@@ -229,6 +229,7 @@ class DMTool(QWidget):
                 self.add_to_encounter([name, -1, init, "", "", ""])
 
     def sort_init_handle(self):
+        self.add_players_handle()
         rows = self.initiative_table_widget.rowCount()
         for row in range(rows):
             item = self.initiative_table_widget.item(row, self.initiative_table_widget._INIT_COLUMN)

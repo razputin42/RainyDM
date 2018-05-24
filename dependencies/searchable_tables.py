@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu,\
-    QInputDialog, QTableWidgetItem
+    QInputDialog, QTableWidgetItem, QSizePolicy
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
 import re
@@ -36,6 +36,7 @@ class SearchableTable(QFrame):
 
         self.table_layout = QHBoxLayout()
         self.table = MyTableWidget(parent)
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
 
