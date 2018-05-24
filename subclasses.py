@@ -216,6 +216,8 @@ class InitiativeTableWidget(MonsterTableWidget):
 
     def contextMenuEvent(self, event):
         current_row = self.currentRow()
+        if current_row == -1:  # empty table
+            return None
         monster_idx = int(self.item(current_row, 1).text())
 
         action_indexes = []

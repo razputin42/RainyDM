@@ -115,9 +115,9 @@ class MonsterTableWidget(SearchableTable):
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        current_row = self.currentRow()
-        monster_idx = int(self.item(current_row, 1).text())
-        monster = self.parent.monster_table_widget.list[monster_idx]
+        current_row = self.table.currentRow()
+        monster_idx = int(self.table.item(current_row, 1).text())
+        monster = self.list[monster_idx]
         if action == addAction:
             self.parent.add_to_encounter(monster, 1)
         if action == addXAction:
@@ -160,9 +160,9 @@ class SpellTableWidget(SearchableTable):
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        current_row = self.currentRow()
-        idx = int(self.item(current_row, 1).text())
-        spell = self.parent.spell_table_widget.list[idx]
+        current_row = self.table.currentRow()
+        idx = int(self.table.item(current_row, 1).text())
+        spell = self.list[idx]
         if action == add_toolbox:
             self.parent.add_to_toolbox_spell(spell)
 
