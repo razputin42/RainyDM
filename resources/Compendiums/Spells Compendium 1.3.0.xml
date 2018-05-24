@@ -668,7 +668,7 @@
 	<spell>
 		<name>Blur</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Self</range>
 		<components>V</components>
@@ -940,7 +940,7 @@
 	<spell>
 		<name>Color Spray</name>
 		<level>1</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Self (15-foot cone)</range>
 		<components>V, S, M (a pinch of powder or sand that is colored red, yellow, and blue)</components>
@@ -1503,7 +1503,7 @@
 	<spell>
 		<name>Creation</name>
 		<level>5</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 minute</time>
 		<range>30 feet</range>
 		<components>V, S, M (a tiny piece of matter of the same type of the item you plan to create)</components>
@@ -1751,7 +1751,7 @@
 	<spell>
 		<name>Disguise Self</name>
 		<level>1</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Self</range>
 		<components>V, S</components>
@@ -1952,7 +1952,7 @@
 	<spell>
 		<name>Dream</name>
 		<level>5</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 minute</time>
 		<range>Special</range>
 		<components>V, S, M (a handful of sand, a dab of ink, and a writing quill plucked from a sleeping bird)</components>
@@ -2315,7 +2315,7 @@
 	<spell>
 		<name>Fear</name>
 		<level>3</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Self (30-foot cone)</range>
 		<components>V, S, M (a white feather or the heart of a hen)</components>
@@ -2894,7 +2894,7 @@
 	<spell>
 		<name>Greater Invisibility</name>
 		<level>4</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Touch</range>
 		<components>V, S</components>
@@ -3099,7 +3099,7 @@
 	<spell>
 		<name>Hallucinatory Terrain</name>
 		<level>4</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>10 minutes</time>
 		<range>300 feet</range>
 		<components>V, S, M (a stone, a twig, and a bit of green plant)</components>
@@ -3303,7 +3303,7 @@
 	<spell>
 		<name>Hypnotic Pattern</name>
 		<level>3</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>120 feet</range>
 		<components>S, M (a glowing stick of incense or a crystal vial filled with phosphorescent material)</components>
@@ -3363,7 +3363,7 @@
 	<spell>
 		<name>Illusory Script</name>
 		<level>1</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<ritual>YES</ritual>
 		<time>1 minute</time>
 		<range>Touch</range>
@@ -3564,7 +3564,7 @@
 	<spell>
 		<name>Invisibility</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Touch</range>
 		<components>V, S, M (an eyelash encased in gum arabic)</components>
@@ -3895,7 +3895,7 @@
 	<spell>
 		<name>Magic Mouth</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<ritual>YES</ritual>
 		<time>1 minute</time>
 		<range>30 feet</range>
@@ -3941,7 +3941,7 @@
 	<spell>
 		<name>Major Image</name>
 		<level>3</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>120 feet</range>
 		<components>V, S, M (a bit of fleece)</components>
@@ -4151,7 +4151,7 @@
 	<spell>
 		<name>Minor Illusion</name>
 		<level>0</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>30 feet</range>
 		<components>S, M (a bit of fleece)</components>
@@ -4168,7 +4168,7 @@
 	<spell>
 		<name>Mirage Arcane</name>
 		<level>7</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>10 minutes</time>
 		<range>Sight</range>
 		<components>V, S</components>
@@ -4185,7 +4185,7 @@
 	<spell>
 		<name>Mirror Image</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Self</range>
 		<components>V, S</components>
@@ -4206,7 +4206,7 @@
 	<spell>
 		<name>Mislead</name>
 		<level>5</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Self</range>
 		<components>S</components>
@@ -4398,7 +4398,7 @@
 	<spell>
 		<name>Nystul's Magic Aura</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>Touch</range>
 		<components>V, S, M (a small square of silk)</components>
@@ -4487,7 +4487,7 @@
 	<spell>
 		<name>Phantasmal Force</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>60 feet</range>
 		<components>V, S, M (a bit of fleece)</components>
@@ -4507,7 +4507,7 @@
 	<spell>
 		<name>Phantasmal Killer</name>
 		<level>4</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>120 feet</range>
 		<components>V, S</components>
@@ -4521,7 +4521,7 @@
 	<spell>
 		<name>Phantom Steed</name>
 		<level>3</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<ritual>YES</ritual>
 		<time>1 minute</time>
 		<range>30 feet</range>
@@ -4810,7 +4810,7 @@
 	<spell>
 		<name>Programmed Illusion</name>
 		<level>6</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>120 feet</range>
 		<components>V, S, M</components>
@@ -4827,7 +4827,7 @@
 	<spell>
 		<name>Project Image</name>
 		<level>7</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>500 miles</range>
 		<components>V, S, M (a small replica of you made from materials worth at least 5 gp)</components>
@@ -5222,7 +5222,7 @@
 	<spell>
 		<name>Seeming</name>
 		<level>5</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>30 feet</range>
 		<components>V, S</components>
@@ -5378,7 +5378,7 @@
 	<spell>
 		<name>Silence</name>
 		<level>2</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<ritual>YES</ritual>
 		<time>1 action</time>
 		<range>120 feet</range>
@@ -5390,7 +5390,7 @@
 	<spell>
 		<name>Silent Image</name>
 		<level>1</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>60 feet</range>
 		<components>V, S, M (a bit of fleece)</components>
@@ -5405,7 +5405,7 @@
 	<spell>
 		<name>Simulacrum</name>
 		<level>7</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>12 hours</time>
 		<range>Touch</range>
 		<components>V, S, M (snow or ice in quantities sufficient to made a life-size copy of the duplicated creature some hair, fingernail clippings, or other piece of that creature's body placed inside the snow or ice and powdered ruby worth 1,500 gp, sprinkled over the duplicate and consumed by the spell)</components>
@@ -6488,7 +6488,7 @@
 	<spell>
 		<name>Weird</name>
 		<level>9</level>
-		<school>I</school>
+		<school>Illusion</school>
 		<time>1 action</time>
 		<range>120 feet</range>
 		<components>V, S</components>

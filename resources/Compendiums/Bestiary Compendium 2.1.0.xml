@@ -3500,7 +3500,7 @@
 	<monster>
 		<name>Bard</name>
 		<size>Medium</size>
-		<type>humanoid (any race), Volo's Guide, Volo's Guide</type>
+		<type>humanoid (any race), Volo's Guide</type>
 		<alignment>any alignment</alignment>
 		<ac>15 (chain shirt)</ac>
 		<hp>44 (8d8+8)</hp>
@@ -4620,7 +4620,7 @@
 	<monster>
 		<name>Blue Guard Drake</name>
 		<size>Medium</size>
-		<type>dragon, Volo's Guide, Volo's Guide</type>
+		<type>dragon, Volo's Guide</type>
 		<alignment>unaligned</alignment>
 		<ac>14 (natural armor)</ac>
 		<hp>52 (7d8+21)</hp>
@@ -6009,7 +6009,7 @@
 	<monster>
 		<name>Chitine</name>
 		<size>Small</size>
-		<type>monstrosity, Volo's Guide, Volo's Guide</type>
+		<type>monstrosity, Volo's Guide</type>
 		<alignment>chaotic evil</alignment>
 		<ac>14 (hide armor)</ac>
 		<hp>18 (4d6+4)</hp>
@@ -7155,7 +7155,7 @@
 	<monster>
 		<name>Darkling</name>
 		<size>Small</size>
-		<type>fey, Volo's Guide, Volo's Guide</type>
+		<type>fey, Volo's Guide</type>
 		<alignment>chaotic neutral</alignment>
 		<ac>14 (leather armor)</ac>
 		<hp>13 (3d6+3)</hp>
@@ -8383,7 +8383,7 @@
 	<monster>
 		<name>Draegloth</name>
 		<size>Large</size>
-		<type>fiend (demon), Volo's Guide, Volo's Guide</type>
+		<type>fiend (demon), Volo's Guide</type>
 		<alignment>chaotic evil</alignment>
 		<ac>15 (natural armor)</ac>
 		<hp>123 (13d10+52)</hp>
@@ -10626,7 +10626,7 @@
 	<monster>
 		<name>Evoker</name>
 		<size>Medium</size>
-		<type>humanoid (any race), Volo's Guide, Volo's Guide</type>
+		<type>humanoid (any race), Volo's Guide</type>
 		<alignment>any alignment</alignment>
 		<ac>12 (15 with mage armor)</ac>
 		<hp>66 (12d8+12)</hp>
@@ -11621,7 +11621,7 @@
 	<monster>
 		<name>Flail Snail</name>
 		<size>Large</size>
-		<type>elemental, Volo's Guide, Volo's Guide</type>
+		<type>elemental, Volo's Guide</type>
 		<alignment>unaligned</alignment>
 		<ac>16 (natural armor)</ac>
 		<hp>52 (5d10+25)</hp>
@@ -14315,7 +14315,7 @@
 	<monster>
 		<name>Gnoll Witherling</name>
 		<size>Medium</size>
-		<type>undead, Volo's Guide, Volo's Guide</type>
+		<type>undead, Volo's Guide</type>
 		<alignment>chaotic evil</alignment>
 		<ac>12 (natural armor)</ac>
 		<hp>11 (2d8+2)</hp>
