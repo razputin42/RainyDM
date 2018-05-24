@@ -289,7 +289,11 @@ class DMTool(QWidget):
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
 
         damage_roll = self.roll(comp[2])
-        s = s + "for {} ({} halved)".format(str(damage_roll), int(damage_roll/2))
+        if type(damage_roll) is list:
+            halved = [int(dr/2) for dr in damage_roll]
+        else:
+            halved = int(damage_roll/2)
+        s = s + "for {} ({} halved)".format(str(damage_roll), str(halved))
         self.text_box.append(s)
 
     def load_meta(self):
