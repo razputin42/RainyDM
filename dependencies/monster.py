@@ -37,6 +37,14 @@ class Monster:
                 temp_list = attr.text.split(",")
                 self.type = ",".join(temp_list[:-1]).strip()
                 self.source = temp_list[-1]
+                if "(" in self.type:
+                    subtype_raw = self.type[self.type.find("(") + 1:self.type.find(")")]
+                    subtype_list = subtype_raw.split(", ")
+                    self.subtype = []
+                    for subtype in subtype_list:
+                        self.subtype.append(subtype.strip())
+            elif attr.tag == "cr":
+                self.cr = eval("int({})".format(attr.text))
 
             else:
                 setattr(self, attr.tag, attr.text)

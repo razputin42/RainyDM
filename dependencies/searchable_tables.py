@@ -77,6 +77,14 @@ class SearchableTable(QFrame):
                 result.append(entry_attr)
         return result
 
+    # def min_max_range(self, attr):
+    #     result = []
+    #     for entry in self.list:
+    #         entry_attr = getattr(entry, attr)
+    #         if entry_attr not in result:
+    #             result.append(entry_attr)
+    #     return min(result), max(result)
+
     def filter_handle(self):
         self.filter.toggle_hidden()
 
@@ -95,15 +103,36 @@ class SearchableTable(QFrame):
         for itt, cond in enumerate(result):
             self.table.setRowHidden(itt, not cond)
 
+    def extract_subtypes(self, options):
+        subtype_dict = dict()
+        type_return = []
+        for s in options:
+            if "(" in s:
+                type = s[:s.find("(")].strip()
+                if type not in type_return:
+                    type_return.append(type)
+                subtype_raw = s[s.find("(") + 1:s.find(")")]
+                subtype_list = subtype_raw.split(", ")
+                for subtype in subtype_list:
+                    if type not in subtype_dict.keys():
+                        subtype_dict[type] = [subtype]
+                    elif subtype not in subtype_dict[type]:
+                        subtype_dict[type].append(subtype)
+            else:
+                if s not in type_return:
+                    type_return.append(s)
+        return type_return, subtype_dict
+
 
 class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
 
     def define_filters(self):
-        self.filter.add_dropdown("Type", self.unique_attr("type"))
+        self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
         self.filter.add_dropdown("Size", self.unique_attr("size"))
-        self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
+        self.filter.add_range("CR")
+        # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
