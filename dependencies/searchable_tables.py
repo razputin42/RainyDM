@@ -99,13 +99,11 @@ class SearchableTable(QFrame):
 class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
-    INIT_COLUMN = 2
-    HP_COLUMN = 3
-    DAMAGE_COLUMN = 4
-    DESCRIPTION_COLUMN = 5
 
     def define_filters(self):
         self.filter.add_dropdown("Type", self.unique_attr("type"))
+        self.filter.add_dropdown("Size", self.unique_attr("size"))
+        self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -129,22 +127,43 @@ class MonsterTableWidget(SearchableTable):
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
 
-    def jsonlify(self):
-        rows = self.rowCount()
-        cols = self.columnCount()
-        output_list = []
-        for i in range(rows):
-            row = []
-            for j in range(cols):
-                item = self.item(i, j)
-                if item is None:
-                    row.append("")
-                else:
-                    row.append(item.text())
-            output_list.append(tuple(row))
-        return output_list
+    # def jsonlify(self):
+    #     rows = self.rowCount()
+    #     cols = self.columnCount()
+    #     output_list = []
+    #     for i in range(rows):
+    #         row = []
+    #         for j in range(cols):
+    #             item = self.item(i, j)
+    #             if item is None:
+    #                 row.append("")
+    #             else:
+    #                 row.append(item.text())
+    #         output_list.append(tuple(row))
+    #     return output_list
 
-    def remove_row(self, row):
-        self.removeRow(row)
+    # def remove_row(self, row):
+    #     self.removeRow(row)
+
+class SpellTableWidget(SearchableTable):
+    NAME_COLUMN = 0
+    INDEX_COLUMN = 1
+
+    def define_filters(self):
+        self.filter.add_dropdown("School", self.unique_attr("school"))
+        self.filter.add_dropdown("Level", self.unique_attr("level"))
+
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+        add_toolbox = menu.addAction("Add to toolbox")
+
+        action = menu.exec_(self.mapToGlobal(event.pos()))
+        if action is None:
+            return
+        current_row = self.currentRow()
+        idx = int(self.item(current_row, 1).text())
+        spell = self.parent.spell_table_widget.list[idx]
+        if action == add_toolbox:
+            self.parent.add_to_toolbox_spell(spell)
 
 

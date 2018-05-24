@@ -17,7 +17,7 @@ class Filter:
         self.frame.setHidden(True)
 
     def add_dropdown(self, name, options):
-        options.sort
+        options.sort()
         combo_box = QComboBox()
         combo_box.addItem("Any")
         combo_box.addItems(options)
@@ -29,9 +29,11 @@ class Filter:
 
     def set_filters(self, name, combo_box):
         text = combo_box.currentText()
-        if text == "Any" and name in self.filter:
+        name = name.lower()
+        if text == "Any" and name in self.filter.keys():
             del self.filter[name]
-        self.filter[name.lower()] = combo_box.currentText()
+        else:
+            self.filter[name] = combo_box.currentText()
         self.filter_content()
 
     def get_frame(self):
