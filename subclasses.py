@@ -14,7 +14,7 @@ class MonsterViewer(QTextBrowser):
         self.setMaximumWidth(530)
         self.setMinimumWidth(530)
 
-    def loadResource(self, type: int, name: QtCore.QUrl):
+    def loadResource(self, type, name):
         return QtGui.QPixmap("assets/linear_gradient.png")
 
     def draw_view(self, monster):

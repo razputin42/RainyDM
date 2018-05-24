@@ -26,7 +26,7 @@ class MyTableWidget(QTableWidget):
 class SearchableTable(QFrame):
     def __init__(self, parent):
         QFrame.__init__(self)
-        self.filter = Filter()
+        self.filter = Filter(self.search_handle)
 
         self.parent = parent
         self.list = []
