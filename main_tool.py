@@ -1,13 +1,15 @@
 from dependencies.monster import Monster
 from dependencies.spell import Spell
+from dependencies.item import Item
+from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
+from dependencies.toolbox import ToolboxWidget
+from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame
 import sys, json, os
-from subclasses import MonsterViewer, PlayerTableWidget, \
-    InitiativeTableWidget, SpellViewer
-from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget
-from dependencies.toolbox import ToolboxWidget
+from subclasses import PlayerTableWidget, InitiativeTableWidget
+
 from random import randint
 
 class DMTool(QWidget):
@@ -33,24 +35,26 @@ class DMTool(QWidget):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
-        self.setWindowTitle("Test")
+        self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
         window_layout = QHBoxLayout()
         # Left side tab
         self.tab_widget = QTabWidget()
 
-        # Monster viewer
+        # Viewers
         self.monster_viewer = MonsterViewer()
-
-        # Spell viewer
         spell_viewer_layout = QVBoxLayout()
+        self.spell_viewer = SpellViewer()
+        self.item_viewer = ItemViewer()
+
+        # Text box
         self.text_box = QTextEdit()
         self.text_box.setReadOnly(True)
         self.text_box.setFontPointSize(10)
         self.text_box.setMaximumWidth(530)
         self.text_box.setMaximumHeight(250)
-        self.spell_viewer = SpellViewer()
         spell_viewer_layout.addWidget(self.spell_viewer)
+        # spell_viewer_layout.addWidget(self.item_viewer)
         spell_viewer_layout.addWidget(self.text_box)
 
         ## Tables
@@ -66,8 +70,21 @@ class DMTool(QWidget):
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters()
 
+        # Item table
+        self.item_table_widget = ItemTableWidget(self)
+        self.item_table_widget.load_list("./item", "resources/Compendiums/Items Compendium 1.7.0.xml", Item)
+        self.item_table_widget.fill_table()
+        self.item_table_widget.define_filters()
+        self.item_table_widget.layout().addWidget(self.item_viewer)
+        # for item in self.item_table_widget.list:
+        #     print(item.name)
+        #     print(item.type)
+        #     print(item.text)
+
+        # inserting tables into tab
         self.tab_widget.addTab(self.monster_table_widget, "Monster")
         self.tab_widget.addTab(self.spell_table_widget, "Spell")
+        self.tab_widget.addTab(self.item_table_widget, "Item")
 
         # Initiative list
         self.initiative_table_widget = InitiativeTableWidget(self)
@@ -126,6 +143,9 @@ class DMTool(QWidget):
         self.initiative_table_widget.itemClicked.connect(
             lambda: self.monster_clicked_handle(self.initiative_table_widget))
 
+        self.item_table_widget.table.itemClicked.connect(
+            lambda: self.item_clicked_handle(self.item_table_widget.table))
+
         self.add_players_button.clicked.connect(self.add_players_handle)
         self.sort_init_button.clicked.connect(self.sort_init_handle)
         self.roll_init_button.clicked.connect(self.roll_init_handle)
@@ -145,6 +165,15 @@ class DMTool(QWidget):
             return
         monster = self.monster_table_widget.list[monster_idx]
         self.monster_viewer.draw_view(monster)
+
+    def item_clicked_handle(self, table):
+        current_row = table.currentRow()
+        item_idx = int(table.item(current_row, 1).text())
+        item = self.item_table_widget.list[item_idx]
+        self.item_viewer.draw_view(item)
+        # print(dir(item))
+        # print(item.text)
+        # self.item_viewer.draw_view(item)
 
     def spell_search_handle(self):
         self.spell_viewer.draw_view()

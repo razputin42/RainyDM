@@ -1,5 +1,3 @@
-from PyQt5.QtWidgets import QMenu
-
 class Spell:
     def __init__(self, entry, idx):
         self.entry = entry

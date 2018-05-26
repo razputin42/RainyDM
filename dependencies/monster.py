@@ -18,7 +18,7 @@ class Monster:
             return self.name + ": " + self.text
 
     class Trait(Action):
-        None
+        pass
 
     def __init__(self, entry, idx):
         self.entry = entry

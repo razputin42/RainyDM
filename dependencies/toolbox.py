@@ -87,7 +87,7 @@ class LinkedSpellTable(LinkedTableWidget):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        remove_toolbox = menu.addAction("Remove from Toolbox")
+        remove_toolbox = menu.addAction("Remove from toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
