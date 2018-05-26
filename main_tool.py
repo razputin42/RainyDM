@@ -4,9 +4,10 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame
 import sys, json, os
-from subclasses import MonsterViewer, ToolboxWidget, PlayerTableWidget, \
+from subclasses import MonsterViewer, PlayerTableWidget, \
     InitiativeTableWidget, SpellViewer
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget
+from dependencies.toolbox import ToolboxWidget
 from random import randint
 
 class DMTool(QWidget):
@@ -19,9 +20,8 @@ class DMTool(QWidget):
         self.load_meta()
 
         # test if all monsters in DB can be interpreted
-        # for monster in self.monster_list:
-        #     print(monster.index)
-        #     self.draw_view(monster)
+        # for monster in self.monster_table_widget.list:
+        #     print(monster.name, monster.extract_spellbook())
 
         # test if all the spells in DB can be interpreted
         # for spell in self.spell_table_widget.list:
@@ -175,6 +175,7 @@ class DMTool(QWidget):
         else:
             self.toolbox_widget.spell_toolbox.setItem(row_position, 0, QTableWidgetItem(str(spell)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
+            self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
     def add_to_encounter(self, monster, number=1):
         table = self.initiative_table_widget
@@ -296,6 +297,13 @@ class DMTool(QWidget):
             halved = int(damage_roll/2)
         s = s + "for {} ({} halved)".format(str(damage_roll), str(halved))
         self.text_box.append(s)
+
+    def extract_and_add_spellbook(self, monster):
+        spells = monster.extract_spellbook()
+        if spells is not None:
+            for spell in spells:
+                self.add_to_toolbox_spell(self.spell_table_widget.find_entry("name", spell))
+
 
     def load_meta(self):
         if not os.path.exists("metadata/"):

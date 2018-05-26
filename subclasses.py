@@ -182,8 +182,10 @@ class MonsterTableWidget(QTableWidget):
             output_list.append(tuple(row))
         return output_list
 
-    def remove_row(self, row):
-        self.removeRow(row)
+    def remove_rows(self):
+        items = self.selectedItems()
+        for item in items:
+            self.removeRow(item.row())
 
     def spellContextEvent(self, event):
         menu = QMenu(self)
@@ -243,7 +245,7 @@ class InitiativeTableWidget(MonsterTableWidget):
             monster = self.parent.monster_table_widget.list[monster_idx]
             self.parent.add_to_toolbox(monster)
         elif action == removeAction:
-            self.remove_row(current_row)
+            self.remove_rows()
         elif action in action_menu_handles:
             idx = action_menu_handles.index(action)
             attack = monster.action_list[action_indexes[idx]]
@@ -290,7 +292,7 @@ class PlayerTableWidget(MonsterTableWidget):
         if action == addAction:
             self.parent.add_player()
         elif action == removeAction:
-            self.remove_row(current_row)
+            self.remove_rows()
 
     def format(self):
         columns = 5
@@ -304,78 +306,78 @@ class PlayerTableWidget(MonsterTableWidget):
         self.verticalHeader().hide()
 
 
-class ToolboxWidget:
-    def __init__(self, parent):
-        self.parent = parent
-        self.frame = QFrame()
-        layout = QHBoxLayout()
-        self.spell_toolbox = MonsterTableWidget(self.parent)
-        self.monster_toolbox = MonsterTableWidget(self.parent)
-        self.monster_toolbox.contextMenuEvent = self.monster_contextMenuEvent
-        self.monster_tabWidget = QTabWidget()
-        self.monster_tabWidget.addTab(self.monster_toolbox, "Monster")
-
-        self.spell_tabWidget = QTabWidget()
-        self.spell_tabWidget.addTab(self.spell_toolbox, "Spell")
-
-        self.dice_toolbox = QFrame()
-        dice_layout = QVBoxLayout()
-        for i in range(5):
-            dice_layout.addWidget(DiceBox(parent).frame)
-        self.dice_toolbox.setLayout(dice_layout)
-        self.spell_tabWidget.addTab(self.dice_toolbox, "Dice")
-
-        layout.addWidget(self.monster_tabWidget)
-        layout.addWidget(self.spell_tabWidget)
-        self.frame.setLayout(layout)
-
-    def monster_contextMenuEvent(self, event):
-        menu = QMenu(self.monster_toolbox)
-        addAction = menu.addAction("Add to initiative")
-        addXAction = menu.addAction("Add X to initiative")
-        menu.addSeparator()
-        removeFromToolbox = menu.addAction("Remove from toolbox")
-
-        action = menu.exec_(self.monster_toolbox.mapToGlobal(event.pos()))
-        if action is None:
-            return
-        current_row = self.monster_toolbox.currentRow()
-        monster_idx = int(self.monster_toolbox.item(current_row, 1).text())
-        monster = self.parent.monster_table_widget.list[monster_idx]
-        if action == addAction:
-            self.parent.add_to_encounter(monster, 1)
-        if action == addXAction:
-            X, ok = QInputDialog.getInt(self.parent, 'Add Monster', 'How many?')
-            if ok:
-                self.parent.add_to_encounter(monster, X)
-        elif action == removeFromToolbox:
-            self.remove_from_toolbox(self.monster_toolbox, current_row)
-
-    @staticmethod
-    def remove_from_toolbox(table, row):
-        table.remove_row(row)
-
-
-class DiceBox:
-    def __init__(self, parent):
-        self.parent = parent
-        self.frame = QFrame()
-        layout = QHBoxLayout()
-        self.button = QPushButton()
-        self.input = QLineEdit()
-        layout.addWidget(self.input)
-        layout.addWidget(self.button)
-        self.frame.setLayout(layout)
-
-        def perform_roll(self):
-            roll = self.input.text()
-            try:
-                result = self.parent.roll(roll)
-                s = ">> Result of ({}): {}".format(roll, result)
-                if type(result) is list:
-                    s = s + "({})".format(sum(result))
-                self.parent.text_box.append(s)
-            except:
-                pass
-        self.button.clicked.connect(lambda: perform_roll(self))
+# class ToolboxWidget:
+#     def __init__(self, parent):
+#         self.parent = parent
+#         self.frame = QFrame()
+#         layout = QHBoxLayout()
+#         self.spell_toolbox = MonsterTableWidget(self.parent)
+#         self.monster_toolbox = MonsterTableWidget(self.parent)
+#         self.monster_toolbox.contextMenuEvent = self.monster_contextMenuEvent
+#         self.monster_tabWidget = QTabWidget()
+#         self.monster_tabWidget.addTab(self.monster_toolbox, "Monster")
+#
+#         self.spell_tabWidget = QTabWidget()
+#         self.spell_tabWidget.addTab(self.spell_toolbox, "Spell")
+#
+#         self.dice_toolbox = QFrame()
+#         dice_layout = QVBoxLayout()
+#         for i in range(5):
+#             dice_layout.addWidget(DiceBox(parent).frame)
+#         self.dice_toolbox.setLayout(dice_layout)
+#         self.spell_tabWidget.addTab(self.dice_toolbox, "Dice")
+#
+#         layout.addWidget(self.monster_tabWidget)
+#         layout.addWidget(self.spell_tabWidget)
+#         self.frame.setLayout(layout)
+#
+#     def monster_contextMenuEvent(self, event):
+#         menu = QMenu(self.monster_toolbox)
+#         addAction = menu.addAction("Add to initiative")
+#         addXAction = menu.addAction("Add X to initiative")
+#         menu.addSeparator()
+#         removeFromToolbox = menu.addAction("Remove from toolbox")
+#
+#         action = menu.exec_(self.monster_toolbox.mapToGlobal(event.pos()))
+#         if action is None:
+#             return
+#         current_row = self.monster_toolbox.currentRow()
+#         monster_idx = int(self.monster_toolbox.item(current_row, 1).text())
+#         monster = self.parent.monster_table_widget.list[monster_idx]
+#         if action == addAction:
+#             self.parent.add_to_encounter(monster, 1)
+#         if action == addXAction:
+#             X, ok = QInputDialog.getInt(self.parent, 'Add Monster', 'How many?')
+#             if ok:
+#                 self.parent.add_to_encounter(monster, X)
+#         elif action == removeFromToolbox:
+#             self.remove_from_toolbox(self.monster_toolbox, current_row)
+#
+#     @staticmethod
+#     def remove_from_toolbox(table, row):
+#         table.remove_rows(row)
+#
+#
+# class DiceBox:
+#     def __init__(self, parent):
+#         self.parent = parent
+#         self.frame = QFrame()
+#         layout = QHBoxLayout()
+#         self.button = QPushButton()
+#         self.input = QLineEdit()
+#         layout.addWidget(self.input)
+#         layout.addWidget(self.button)
+#         self.frame.setLayout(layout)
+#
+#         def perform_roll(self):
+#             roll = self.input.text()
+#             try:
+#                 result = self.parent.roll(roll)
+#                 s = ">> Result of ({}): {}".format(roll, result)
+#                 if type(result) is list:
+#                     s = s + "({})".format(sum(result))
+#                 self.parent.text_box.append(s)
+#             except:
+#                 pass
+#         self.button.clicked.connect(lambda: perform_roll(self))
 
