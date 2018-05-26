@@ -124,6 +124,14 @@ class SearchableTable(QFrame):
                     type_return.append(s)
         return type_return, subtype_dict
 
+    def find_entry(self, attr, value):
+        attr = attr.lower()
+        value = value.lower()
+        for entry in self.list:
+            if hasattr(entry, attr):
+                if getattr(entry, attr).lower() == value:
+                    return entry
+
 
 class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
@@ -141,6 +149,7 @@ class MonsterTableWidget(SearchableTable):
         addXAction = menu.addAction("Add X to initiative")
         menu.addSeparator()
         addToolbox = menu.addAction("Add to toolbox")
+        add_spellbook = menu.addAction("Add monster's spells to toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -150,12 +159,14 @@ class MonsterTableWidget(SearchableTable):
         monster = self.list[monster_idx]
         if action == addAction:
             self.parent.add_to_encounter(monster, 1)
-        if action == addXAction:
+        elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok:
                 self.parent.add_to_encounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
+        elif action == add_spellbook:
+            self.parent.extract_and_add_spellbook(monster)
 
     # def jsonlify(self):
     #     rows = self.rowCount()

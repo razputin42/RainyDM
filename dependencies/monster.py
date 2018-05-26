@@ -76,6 +76,20 @@ class Monster:
         legendary = self.Action(attr)
         self.legendary_list.append(legendary)
 
+    def extract_spellbook(self):
+        return_list = []
+        for trait in self.trait_list:
+            if trait.name == "Spellcasting":
+                spells = trait.text.split("<br>")
+                for line in spells:
+                    # new_line = line.replace('\u8226', 'X')
+                    if '(at will): ' in line or ' slots):' in line or ' slot):' in line:
+                        spells = line.split(':')[1].strip().split(',')
+                        spells = [spell.strip().replace('*', '') for spell in spells]
+                        return_list = return_list + spells
+                return return_list
+        return None
+
     def __str__(self):
         return self.name
 

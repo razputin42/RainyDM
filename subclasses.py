@@ -182,8 +182,10 @@ class MonsterTableWidget(QTableWidget):
             output_list.append(tuple(row))
         return output_list
 
-    def remove_row(self, row):
-        self.removeRow(row)
+    def remove_rows(self):
+        items = self.selectedItems()
+        for item in items:
+            self.removeRow(item.row())
 
     def spellContextEvent(self, event):
         menu = QMenu(self)
@@ -243,7 +245,7 @@ class InitiativeTableWidget(MonsterTableWidget):
             monster = self.parent.monster_table_widget.list[monster_idx]
             self.parent.add_to_toolbox(monster)
         elif action == removeAction:
-            self.remove_row(current_row)
+            self.remove_rows()
         elif action in action_menu_handles:
             idx = action_menu_handles.index(action)
             attack = monster.action_list[action_indexes[idx]]
@@ -290,7 +292,7 @@ class PlayerTableWidget(MonsterTableWidget):
         if action == addAction:
             self.parent.add_player()
         elif action == removeAction:
-            self.remove_row(current_row)
+            self.remove_rows()
 
     def format(self):
         columns = 5
@@ -353,7 +355,7 @@ class PlayerTableWidget(MonsterTableWidget):
 #
 #     @staticmethod
 #     def remove_from_toolbox(table, row):
-#         table.remove_row(row)
+#         table.remove_rows(row)
 #
 #
 # class DiceBox:
