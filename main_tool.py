@@ -4,9 +4,10 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame
 import sys, json, os
-from subclasses import MonsterViewer, ToolboxWidget, PlayerTableWidget, \
+from subclasses import MonsterViewer, PlayerTableWidget, \
     InitiativeTableWidget, SpellViewer
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget
+from dependencies.toolbox import ToolboxWidget
 from random import randint
 
 class DMTool(QWidget):
