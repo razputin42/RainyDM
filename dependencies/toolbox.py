@@ -36,6 +36,11 @@ class LinkedTableWidget(QTableWidget):
             output_list.append(tuple(row))
         return output_list
 
+    def remove_rows(self):
+        items = self.selectedItems()
+        for item in items:
+            self.removeRow(item.row())
+
 
 class LinkedMonsterTable(LinkedTableWidget):
     def contextMenuEvent(self, event):
@@ -62,9 +67,22 @@ class LinkedMonsterTable(LinkedTableWidget):
 
 
 class LinkedSpellTable(LinkedTableWidget):
+    _SPELL_LEVEL_COLUMN = 2
+
+    def format(self):
+        columns = 3
+        self.setColumnCount(columns)
+        header = self.horizontalHeader()
+        header.hide()
+        header.setSectionResizeMode(self._NAME_COLUMN, QHeaderView.Stretch)
+        header.setSectionResizeMode(self._SPELL_LEVEL_COLUMN, QHeaderView.ResizeToContents)
+        self.setShowGrid(False)
+        self.verticalHeader().hide()
+        self.setColumnHidden(1, True)
+
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        addToolbox = menu.addAction("Remove from Toolbox")
+        remove_toolbox = menu.addAction("Remove from Toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -72,8 +90,8 @@ class LinkedSpellTable(LinkedTableWidget):
         current_row = self.currentRow()
         entry_idx = int(self.item(current_row, 1).text())
         entry = self.linked_table.list[entry_idx]
-        if action == addToolbox:
-            self.removeRow(current_row)
+        if action == remove_toolbox:
+            self.remove_rows()
 
 
 class ToolboxWidget:
@@ -100,31 +118,9 @@ class ToolboxWidget:
         layout.addWidget(self.spell_tabWidget)
         self.frame.setLayout(layout)
 
-    # def monster_contextMenuEvent(self, event):
-    #     menu = QMenu(self.monster_toolbox)
-    #     addAction = menu.addAction("Add to initiative")
-    #     addXAction = menu.addAction("Add X to initiative")
-    #     menu.addSeparator()
-    #     removeFromToolbox = menu.addAction("Remove from toolbox")
-    #
-    #     action = menu.exec_(self.monster_toolbox.mapToGlobal(event.pos()))
-    #     if action is None:
-    #         return
-    #     current_row = self.monster_toolbox.currentRow()
-    #     monster_idx = int(self.monster_toolbox.item(current_row, 1).text())
-    #     monster = self.parent.monster_table_widget.list[monster_idx]
-    #     if action == addAction:
-    #         self.parent.add_to_encounter(monster, 1)
-    #     if action == addXAction:
-    #         X, ok = QInputDialog.getInt(self.parent, 'Add Monster', 'How many?')
-    #         if ok:
-    #             self.parent.add_to_encounter(monster, X)
-    #     elif action == removeFromToolbox:
-    #         self.remove_from_toolbox(self.monster_toolbox, current_row)
-
-    @staticmethod
-    def remove_from_toolbox(table, row):
-        table.remove_row(row)
+    # @staticmethod
+    # def remove_from_toolbox(table, row):
+    #     table.remove_row(row)
 
 
 class DiceBox:
