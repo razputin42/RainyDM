@@ -218,6 +218,9 @@ class InitiativeTableWidget(MonsterTableWidget):
 
     def contextMenuEvent(self, event):
         current_row = self.currentRow()
+        addToolbox = None
+        add_spellbook = None
+
         if current_row == -1:  # empty table
             return None
         monster_idx = int(self.item(current_row, 1).text())
@@ -234,13 +237,16 @@ class InitiativeTableWidget(MonsterTableWidget):
 
         menu.addSeparator()
         removeAction = menu.addAction("Remove from initiative")
-        addToolbox = menu.addAction("Add to toolbox")
+
+        if monster_idx is not -1:
+            addToolbox = menu.addAction("Add to toolbox")
+            add_spellbook = menu.addAction("Add monster's spells to toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
         elif action == addToolbox:
-            if monster_idx == 0:  # monster is a player
+            if monster_idx == -1:  # monster is a player
                 return
             monster = self.parent.monster_table_widget.list[monster_idx]
             self.parent.add_to_toolbox(monster)
@@ -251,6 +257,9 @@ class InitiativeTableWidget(MonsterTableWidget):
             attack = monster.action_list[action_indexes[idx]]
             if hasattr(attack, "attack"):
                 self.parent.print_attack(monster, attack.attack)
+        elif action is add_spellbook:
+            if monster_idx is not -1:
+                self.parent.extract_and_add_spellbook(monster)
 
     def data_changed_handle(self, row, column):
         if column == self._DAMAGE_COLUMN:

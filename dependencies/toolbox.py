@@ -48,7 +48,10 @@ class LinkedMonsterTable(LinkedTableWidget):
         add_action = menu.addAction("Add to initiative")
         add_x_action = menu.addAction("Add X to initiative")
         menu.addSeparator()
+        add_spellbook = menu.addAction("Add monster's spells to toolbox")
+        menu.addSeparator()
         remove = menu.addAction("Remove from Toolbox")
+
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -63,7 +66,9 @@ class LinkedMonsterTable(LinkedTableWidget):
             if ok:
                 self.parent.add_to_encounter(entry, X)
         elif action == remove:
-            self.removeRow(current_row)
+            self.remove_rows()
+        elif action == add_spellbook:
+            self.parent.extract_and_add_spellbook(entry)
 
 
 class LinkedSpellTable(LinkedTableWidget):
