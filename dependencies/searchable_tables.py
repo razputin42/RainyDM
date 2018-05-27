@@ -136,19 +136,17 @@ class MonsterTableWidget(SearchableTable):
 
     def format(self):
         columns = self.COLUMNS
-        # ResizeToContents
         h = self.table.horizontalHeader()
         t = self.table
         t.setColumnCount(columns)
-        # t.setHorizontalHeaderLabels(['Name', 'Type', 'CR'])
-        # h.show()
         resize = QHeaderView.ResizeToContents
         stretch = QHeaderView.Stretch
         for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
             h.setSectionResizeMode(column, policy)
         t.setShowGrid(False)
         t.verticalHeader().hide()
-        t.setColumnHidden(1, True)
+        t.setColumnHidden(self.INDEX_COLUMN, True)
+        t.setColumnHidden(self.TYPE_COLUMN, True)
 
     def fill_table(self):
         self.table.clear()
