@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
     QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton
-from dependencies.html_format import monster_dict, spell_dict, item_dict
+from dependencies.html_format import monster_dict, spell_dict, item_dict, general_desc
 from string import Template
 
 
@@ -46,7 +46,7 @@ class MonsterViewer(Viewer):
             cha=monster.cha,
             cha_mod=monster.calculate_modifier(monster.cha, sign=True)
         )
-        descriptive = ["save", "skill", "senses", "languages", "cr"]
+        descriptive = ["save", "skill", "senses", "languages"]
         name_dict = dict(
             save="Saving Throws",
             skill="Skills",
@@ -60,6 +60,13 @@ class MonsterViewer(Viewer):
                 html = html + template.safe_substitute(
                     name=name_dict[desc],
                     desc=getattr(monster, desc))
+
+        if hasattr(monster, "cr"):
+            template = Template(monster_dict['cr'])
+            html = html + template.safe_substitute(
+                cr=monster.cr,
+                xp=monster.xp
+            )
 
         html = html + monster_dict['gradient']
         # add traits
@@ -131,15 +138,24 @@ class SpellViewer(Viewer):
 
 class ItemViewer(Viewer):
     def aux_format(self):
-        self.setMaximumWidth(53000)
+        self.setMaximumWidth(53000)  # i.e. as large as it wants
 
     def draw_view(self, item):
         html = item_dict['header']
-        for section in ['name', 'text']:
-            if hasattr(item, section):
-                template = Template(item_dict[section])
-                html = html + template.safe_substitute(desc=getattr(item, section))
-                if section == "name":
-                    html = html + item_dict['gradient']
+        template = Template(item_dict["name"])
+        html = html + template.safe_substitute(desc=item.name)
+        html = html + item_dict['gradient']
+
+        for desc in ["ac", "weight", "value"]:  # also add dmg1 and dmgType, with a dicionary instead of capitalize...
+            if hasattr(item, desc):
+                template = Template(general_desc)
+                html = html + template.safe_substitute(
+                    name=desc.capitalize(),
+                    desc=getattr(item, desc)
+                )
+
+        template = Template(item_dict["text"])
+        html = html + template.safe_substitute(desc=item.text)
+
         html = html + item_dict['foot']
         self.setHtml(html)

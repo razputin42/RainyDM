@@ -1,3 +1,7 @@
+general_desc = """
+<div><span class="bold">$name</span><span>: $desc</span></div>  
+"""
+
 item_dict = dict(
     header="""
     <!DOCTYPE html>
@@ -243,6 +247,9 @@ th, td {
 """,
     desc="""
 <div><span class="bold">$name</span><span> $desc</span></div>  
+""",
+    cr="""
+<div><span class="bold">Challenge Rating</span><span> $cr</span><span class="description"> ($xp XP)</span></div>  
 """,
     gradient="""
 <div class="gradient"><img scr="assets/linear_gradient.png;" /></div>
