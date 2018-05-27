@@ -132,5 +132,6 @@ class Filter:
                 p = re.compile('{}'.format(arg), re.IGNORECASE)
                 cond = cond and (p.match(attr))
             elif type(arg) is list:  # numerical range
+                attr = eval("float({})".format(attr))
                 cond = cond and (arg[0] <= attr <= arg[1])
         return cond

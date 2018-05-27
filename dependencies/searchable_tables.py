@@ -137,6 +137,29 @@ class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
 
+    def format(self):
+        columns = self.COLUMNS
+        h = self.table.horizontalHeader()
+        t = self.table
+        t.setColumnCount(columns)
+        resize = QHeaderView.ResizeToContents
+        stretch = QHeaderView.Stretch
+        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
+            h.setSectionResizeMode(column, policy)
+        t.setShowGrid(False)
+        t.verticalHeader().hide()
+        t.setColumnHidden(self.INDEX_COLUMN, True)
+        t.setColumnHidden(self.TYPE_COLUMN, True)
+
+    def fill_table(self):
+        self.table.clear()
+        self.table.setRowCount(len(self.list))
+        for itt, entry in enumerate(self.list):
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+            self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
+            self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
+
     def define_filters(self):
         self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
         self.filter.add_dropdown("Size", self.unique_attr("size"))
