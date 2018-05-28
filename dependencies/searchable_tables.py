@@ -202,11 +202,11 @@ class MonsterTableWidget(SearchableTable):
         monster_idx = int(self.table.item(current_row, 1).text())
         monster = self.list[monster_idx]
         if action == addAction:
-            self.parent.add_to_encounter(monster, 1)
+            self.parent.encounter_table.add_to_encounter(monster, 1)
         elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok:
-                self.parent.add_to_encounter(monster, X)
+                self.parent.encounter_table.add_to_encounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
         elif action == add_spellbook:

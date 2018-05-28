@@ -36,7 +36,7 @@ class DMTool(QWidget):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
-        self.setWindowTitle("RainyDM")
+        self.setWindowTitle("RainyDM - Alpha")
         self.setGeometry(100, 100, 1280, 720)
         window_layout = QHBoxLayout()
         # Left side tab
@@ -109,6 +109,8 @@ class DMTool(QWidget):
         button_layout.addWidget(self.clear_toolbox_button)
         top_button_layout.addStretch(0)
 
+        # "{{:<{}}}".format(length) - format or aligning tabs
+
         # toolbox
         self.toolbox_widget = ToolboxWidget(self)
         toolbox_layout = QVBoxLayout()
@@ -157,6 +159,8 @@ class DMTool(QWidget):
         # self.add_players_button.clicked.connect(self.add_players_handle)
         self.sort_init_button.clicked.connect(self.sort_init_handle)
         self.roll_init_button.clicked.connect(self.roll_init_handle)
+        self.save_encounter_button.clicked.connect(self.encounter_table.save)
+        self.load_encounter_button.clicked.connect(lambda: self.encounter_table.load(self.monster_table_widget))
         self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
 
@@ -214,20 +218,20 @@ class DMTool(QWidget):
             self.toolbox_widget.spell_toolbox.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
-    def add_to_encounter(self, monster, number=1):
-        table = self.encounter_table
-        for itt in range(number):
-            row_position = table.rowCount()
-            table.insertRow(row_position)
-
-            if type(monster) == list:
-                for itt, value in enumerate(monster):
-                    table.setItem(row_position, itt, QTableWidgetItem(str(value)))
-            else:
-                table.setItem(row_position, table.NAME_COLUMN, QTableWidgetItem(str(monster)))
-                table.setItem(row_position, table.INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
-                table.setItem(row_position, table.HP_COLUMN, QTableWidgetItem(str(monster.hp_no_dice)))
-            table.calculate_encounter_xp()
+    # def add_to_encounter(self, monster, number=1):
+    #     table = self.encounter_table
+    #     for itt in range(number):
+    #         row_position = table.rowCount()
+    #         table.insertRow(row_position)
+    # 
+    #         if type(monster) == list:
+    #             for itt, value in enumerate(monster):
+    #                 table.setItem(row_position, itt, QTableWidgetItem(str(value)))
+    #         else:
+    #             table.setItem(row_position, table.NAME_COLUMN, QTableWidgetItem(str(monster)))
+    #             table.setItem(row_position, table.INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
+    #             table.setItem(row_position, table.HP_COLUMN, QTableWidgetItem(str(monster.hp_no_dice)))
+    #         table.calculate_encounter_xp()
 
     def add_player(self, player=None):
         table = self.player_table_widget
@@ -265,7 +269,7 @@ class DMTool(QWidget):
                     init = ""
                 else:
                     init = init.text()
-                self.add_to_encounter([name, -1, init, "", "", ""])
+                self.encounter_table.add_to_encounter([name, -1, init, "", "", ""])
 
     def sort_init_handle(self):
         self.add_players_handle()
@@ -357,7 +361,7 @@ class DMTool(QWidget):
                 for monster_tuple in meta_dict['toolbox_meta']:
                     self.add_to_toolbox(monster_tuple)
                 for monster_tuple in meta_dict['initiative_meta']:
-                    self.add_to_encounter(monster_tuple)
+                    self.encounter_table.add_to_encounter(monster_tuple)
                 for player_tuple in meta_dict['player_meta']:
                     self.add_player(player_tuple)
 

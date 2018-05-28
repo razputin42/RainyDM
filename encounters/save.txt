@@ -1,0 +1,10 @@
+Specter | 17 | 22 |               
+Zombie  | 16 | 12 |               
+Specter | 12 | 22 |               
+Zombie  | 11 | 22 |               
+Zombie  | 10 | 22 |               
+Zombie  | 7  | 22 | This is a test
+Zombie  | 6  | 22 |               
+Zombie  | 4  | 22 |               
+Zombie  | 2  | 22 |               
+Zombie  | 1  | 22 |               
