@@ -103,6 +103,7 @@ class ToolboxWidget:
     def __init__(self, parent):
         self.parent = parent
         self.frame = QFrame()
+        self.frame.setMaximumHeight(300)
         layout = QHBoxLayout()
         self.spell_toolbox = LinkedSpellTable(self.parent.spell_table_widget, self.parent)
         self.monster_toolbox = LinkedMonsterTable(self.parent.monster_table_widget, self.parent)

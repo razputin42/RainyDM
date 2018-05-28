@@ -4,6 +4,7 @@ from dependencies.item import Item
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
+from dependencies.input_tables import PlayerTable, EncounterTable
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame
@@ -87,20 +88,26 @@ class DMTool(QWidget):
         self.tab_widget.addTab(self.item_table_widget, "Item")
 
         # Initiative list
-        self.initiative_table_widget = InitiativeTableWidget(self)
+        self.encounter_table = EncounterTable(self)
 
-        # encounter buttons
+        # encounter buttons - maybe move these to the subclass?
         button_layout = QHBoxLayout()
+        top_button_layout = QHBoxLayout()
         self.sort_init_button = QPushButton("Sort Initiative")
         self.roll_init_button = QPushButton("Roll Initiative")
-        self.add_players_button = QPushButton("Add Players")
+        # self.add_players_button = QPushButton("Add Players")
         self.clear_encounter_button = QPushButton("Clear Encounter")
         self.clear_toolbox_button = QPushButton("Clear Toolbox")
+        self.save_encounter_button = QPushButton("Save Encounter")
+        self.load_encounter_button = QPushButton("Load Encounter")
         button_layout.addWidget(self.sort_init_button)
         button_layout.addWidget(self.roll_init_button)
-        button_layout.addWidget(self.add_players_button)
+        top_button_layout.addWidget(self.save_encounter_button)
+        top_button_layout.addWidget(self.load_encounter_button)
+        # button_layout.addWidget(self.add_players_button)
         button_layout.addWidget(self.clear_encounter_button)
         button_layout.addWidget(self.clear_toolbox_button)
+        top_button_layout.addStretch(0)
 
         # toolbox
         self.toolbox_widget = ToolboxWidget(self)
@@ -109,14 +116,15 @@ class DMTool(QWidget):
 
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
-        encounter_layout.addWidget(self.initiative_table_widget)
+        encounter_layout.addLayout(top_button_layout)
+        encounter_layout.addWidget(self.encounter_table.frame)
         encounter_layout.addLayout(button_layout)
         encounter_layout.addLayout(toolbox_layout)
         encounter_frame.setLayout(encounter_layout)
         self.tab_widget.addTab(encounter_frame, "Encounter")
 
         # player tab
-        self.player_table_widget = PlayerTableWidget(self)
+        self.player_table_widget = PlayerTable(self)
         self.tab_widget.addTab(self.player_table_widget, "Players")
 
         window_layout.addWidget(self.tab_widget)
@@ -140,13 +148,13 @@ class DMTool(QWidget):
         self.toolbox_widget.monster_toolbox.itemClicked.connect(
             lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
 
-        self.initiative_table_widget.itemClicked.connect(
-            lambda: self.monster_clicked_handle(self.initiative_table_widget))
+        self.encounter_table.itemClicked.connect(
+            lambda: self.monster_clicked_handle(self.encounter_table))
 
         self.item_table_widget.table.itemClicked.connect(
             lambda: self.item_clicked_handle(self.item_table_widget.table))
 
-        self.add_players_button.clicked.connect(self.add_players_handle)
+        # self.add_players_button.clicked.connect(self.add_players_handle)
         self.sort_init_button.clicked.connect(self.sort_init_handle)
         self.roll_init_button.clicked.connect(self.roll_init_handle)
         self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
@@ -207,7 +215,7 @@ class DMTool(QWidget):
             self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
     def add_to_encounter(self, monster, number=1):
-        table = self.initiative_table_widget
+        table = self.encounter_table
         for itt in range(number):
             row_position = table.rowCount()
             table.insertRow(row_position)
@@ -216,9 +224,10 @@ class DMTool(QWidget):
                 for itt, value in enumerate(monster):
                     table.setItem(row_position, itt, QTableWidgetItem(str(value)))
             else:
-                table.setItem(row_position, table._NAME_COLUMN, QTableWidgetItem(str(monster)))
-                table.setItem(row_position, table._INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
-                table.setItem(row_position, table._HP_COLUMN, QTableWidgetItem(str(monster.hp_no_dice)))
+                table.setItem(row_position, table.NAME_COLUMN, QTableWidgetItem(str(monster)))
+                table.setItem(row_position, table.INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
+                table.setItem(row_position, table.HP_COLUMN, QTableWidgetItem(str(monster.hp_no_dice)))
+            table.calculate_encounter_xp()
 
     def add_player(self, player=None):
         table = self.player_table_widget
@@ -229,29 +238,29 @@ class DMTool(QWidget):
                 table.setItem(row_position, itt, QTableWidgetItem(str(value)))
 
     def add_players_handle(self):
-        encounter_table = self.initiative_table_widget
+        encounter_table = self.encounter_table
         encounter_rows = encounter_table.rowCount()
         encounter_names = []
         for itt in range(encounter_rows):
-            encounter_names.append(encounter_table.item(itt, encounter_table._NAME_COLUMN).text())
+            encounter_names.append(encounter_table.item(itt, encounter_table.NAME_COLUMN).text())
 
         player_table = self.player_table_widget
         player_rows = player_table.rowCount()
         for itt in range(player_rows):
-            item = player_table.item(itt, player_table._NAME_COLUMN)
+            item = player_table.item(itt, player_table.NAME_COLUMN)
             if item is None or item.text() == "":
                 continue
             name = item.text()
-            init = player_table.item(itt, player_table._INITIATIVE_COLUMN)
-            if init is None:
-                init = ""
+            init = player_table.item(itt, player_table.INITIATIVE_COLUMN)
+            if init is None or init.text() == "":
+                continue
             if name in encounter_names:
                 idx = encounter_names.index(name)
-                self.initiative_table_widget.setItem(idx, self.initiative_table_widget._INIT_COLUMN,
-                                                     QTableWidgetItem(init.text()))
+                self.encounter_table.setItem(idx, self.encounter_table.INIT_COLUMN,
+                                             QTableWidgetItem(init.text()))
                 continue
             else:
-                init = player_table.item(itt, player_table._INITIATIVE_COLUMN)
+                init = player_table.item(itt, player_table.INITIATIVE_COLUMN)
                 if init is None:
                     init = ""
                 else:
@@ -260,33 +269,33 @@ class DMTool(QWidget):
 
     def sort_init_handle(self):
         self.add_players_handle()
-        rows = self.initiative_table_widget.rowCount()
+        rows = self.encounter_table.rowCount()
         for row in range(rows):
-            item = self.initiative_table_widget.item(row, self.initiative_table_widget._INIT_COLUMN)
+            item = self.encounter_table.item(row, self.encounter_table.INIT_COLUMN)
             try:
                 number = int(item.text())
             except:
                 number = 0
             new_item = QTableWidgetItem()
             new_item.setData(QtCore.Qt.DisplayRole, number)
-            self.initiative_table_widget.setItem(row, self.initiative_table_widget._INIT_COLUMN, new_item)
-        self.initiative_table_widget.sortByColumn(self.initiative_table_widget._INIT_COLUMN, 1)
+            self.encounter_table.setItem(row, self.encounter_table.INIT_COLUMN, new_item)
+        self.encounter_table.sortByColumn(self.encounter_table.INIT_COLUMN, 1)
 
     def roll_init_handle(self):
-        encounter_table = self.initiative_table_widget
+        encounter_table = self.encounter_table
         encounter_rows = encounter_table.rowCount()
         for itt in range(encounter_rows):
-            idx = int(encounter_table.item(itt, encounter_table._INDEX_COLUMN).text())
+            idx = int(encounter_table.item(itt, encounter_table.INDEX_COLUMN).text())
             if idx is -1:  # entry is a player
                 continue
             monster = self.monster_table_widget.list[idx]
             roll = self.roll("1d20")
-            encounter_table.setItem(itt, encounter_table._INIT_COLUMN, QTableWidgetItem(str(roll + monster.initiative)))
+            encounter_table.setItem(itt, encounter_table.INIT_COLUMN, QTableWidgetItem(str(roll + monster.initiative)))
 
     def clear_encounter_handle(self):
-        self.initiative_table_widget.clear()
-        self.initiative_table_widget.setRowCount(0)
-        self.initiative_table_widget.format()
+        self.encounter_table.clear()
+        self.encounter_table.setRowCount(0)
+        self.encounter_table.format()
 
     def clear_toolbox_handle(self):
         self.toolbox_widget.monster_toolbox.clear()
@@ -298,6 +307,8 @@ class DMTool(QWidget):
     def roll(dice):
         output = []
         split = dice.split("+")
+        if len(split) is 1 and "d" not in split[0]:  # in the case of X damage, without a roll
+            return int(split[0])
         for itt, each in enumerate(split):
             if "d" in each:
                 amount, size = each.split("d")
@@ -307,7 +318,10 @@ class DMTool(QWidget):
                     rolled = rolled + roll
                 output.append(rolled)
             else:
-                output[itt-1] = output[itt-1] + int(each)
+                if itt is 0:
+                    output[0] = int(each)
+                else:
+                    output[itt-1] = output[itt-1] + int(each)
         if len(output) == 1:
             return output[0]
         return output
@@ -321,9 +335,9 @@ class DMTool(QWidget):
 
         damage_roll = self.roll(comp[2])
         if type(damage_roll) is list:
-            halved = [int(dr/2) for dr in damage_roll]
+            halved = [max(1, int(dr/2)) for dr in damage_roll]
         else:
-            halved = int(damage_roll/2)
+            halved = max(1, int(damage_roll/2))
         s = s + "for {} ({} halved)".format(str(damage_roll), str(halved))
         self.text_box.append(s)
 
@@ -349,7 +363,7 @@ class DMTool(QWidget):
 
     def closeEvent(self, event):
         toolbox_meta = self.toolbox_widget.monster_toolbox.jsonlify()
-        initiative_meta = self.initiative_table_widget.jsonlify()
+        initiative_meta = self.encounter_table.jsonlify()
         player_meta = self.player_table_widget.jsonlify()
 
         with open("metadata/session.txt", "w") as f:
