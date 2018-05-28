@@ -1,4 +1,6 @@
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QMenu, QVBoxLayout, QFrame, QLabel
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QMenu, QVBoxLayout, QFrame, QLabel, QTableWidgetItem, \
+    QInputDialog, QFileDialog
+import os
 
 
 class InputTableWidget(QTableWidget):
@@ -136,7 +138,7 @@ class EncounterTable(InputTableWidget):
         players = 0
         player_modifier = 0
         monster_modifier = 1
-        multipliers = [0.5, 1, 1.5, 2, 2.5, 3, 4]
+        multipliers = [0.5, 1, 1.5, 2, 2.5, 3, 4, 5]
         rows = self.rowCount()
         for row in range(rows):
             item = self.item(row, self.INDEX_COLUMN)
@@ -168,6 +170,79 @@ class EncounterTable(InputTableWidget):
         self.xp_label.setText(self.xp_string + str(total_xp * modifier))
         return total_xp * modifier
 
+    def save(self):
+        if not os.path.exists("encounters"):
+            os.mkdir("encounters")
+        rows = self.rowCount()
+        names = []
+        inits = []
+        lives = []
+        descs = []
+        for row in range(rows):
+            item = self.item(row, self.INDEX_COLUMN)
+            if item is None:
+                continue
+            idx = int(item.text())
+            if idx is self.PLAYER_INDEX:  # entry is a player
+                continue
+            names.append(self.item(row, self.NAME_COLUMN).text())
+            inits.append(self.item(row, self.INIT_COLUMN).text())
+            lives.append(self.item(row, self.HP_COLUMN).text())
+            descs.append(self.item(row, self.DESCRIPTION_COLUMN).text())
+
+        if len(names) is 0:
+            return
+        f = "{{:<{}}} | {{:<{}}} | {{:<{}}} | {{:<{}}}\n".format(
+            len(max(names, key=len)),
+            len(max(inits, key=len)),
+            len(max(lives, key=len)),
+            len(max(descs, key=len))
+        )
+        encounter_name, ok = QInputDialog.getText(self, "Save", "Encounter Name:")
+        if not ok or encounter_name.strip() == "":
+            return
+        elif encounter_name[-4:] != ".txt":
+            encounter_name = encounter_name + ".txt"
+
+        with open("encounters/" + encounter_name, 'w') as file:
+            for name, init, hp, desc in zip(names, inits, lives, descs):
+                file.write(f.format(name, init, hp, desc))
+
+    def load(self, monster_table):
+        filename, _ = QFileDialog.getOpenFileName(self, "Select encounter", "encounters", "Text files (*.txt)")
+        if filename and os.path.exists(filename):
+            with open(filename, 'r') as f:
+                for line in f.readlines():
+                    split = line.split('|')
+                    name = split[0].strip()
+                    init = int(split[1].strip())
+                    hp = split[2].strip()
+                    desc = split[3].strip()
+                    monster = monster_table.find_entry("name", name)
+                    if monster:
+                        self.add_to_encounter(monster, init=init, hp=hp, desc=desc)
+
+    def add_to_encounter(self, monster, number=1, init=None, hp=None, desc=None):
+        for itt in range(number):
+            row_position = self.rowCount()
+            self.insertRow(row_position)
+
+            if type(monster) == list:
+                for itt, value in enumerate(monster):
+                    self.setItem(row_position, itt, QTableWidgetItem(str(value)))
+            else:
+                self.setItem(row_position, self.NAME_COLUMN, QTableWidgetItem(str(monster)))
+                self.setItem(row_position, self.INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
+                if hp is not None:
+                    self.setItem(row_position, self.HP_COLUMN, QTableWidgetItem(str(hp)))
+                else:
+                    self.setItem(row_position, self.HP_COLUMN, QTableWidgetItem(str(monster.hp_no_dice)))
+                if init is not None:
+                    self.setItem(row_position, self.INIT_COLUMN, QTableWidgetItem(str(init)))
+                if desc is not None:
+                    self.setItem(row_position, self.DESCRIPTION_COLUMN, QTableWidgetItem(str(desc)))
+
+            self.calculate_encounter_xp()
 
 class PlayerTable(InputTableWidget):
     PLAYER_COLUMN = 1
