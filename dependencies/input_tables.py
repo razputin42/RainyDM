@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QMenu
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QMenu, QVBoxLayout, QFrame, QLabel
 
 
 class InputTableWidget(QTableWidget):
@@ -42,10 +42,17 @@ class EncounterTable(InputTableWidget):
     DAMAGE_COLUMN = 4
     DESCRIPTION_COLUMN = 5
     PLAYER_INDEX = -1
+    xp_string = "Total XP: "
 
     def __init__(self, parent):
         super().__init__(parent)
         self.cellChanged.connect(self.data_changed_handle)
+        self.layout = QVBoxLayout()
+        self.frame = QFrame()
+        self.xp_label = QLabel(self.xp_string)
+        self.layout.addWidget(self)
+        self.layout.addWidget(self.xp_label)
+        self.frame.setLayout(self.layout)
 
     def format(self):
         columns = 6
@@ -157,7 +164,8 @@ class EncounterTable(InputTableWidget):
         else:
             monster_modifier = 6
         modifier = multipliers[monster_modifier + player_modifier]
-        print("dependencies.input_tables.calculate_encounter_xp:", total_xp * modifier)
+        # print("dependencies.input_tables.calculate_encounter_xp:", total_xp * modifier)
+        self.xp_label.setText(self.xp_string + str(total_xp * modifier))
         return total_xp * modifier
 
 
