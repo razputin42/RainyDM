@@ -1,0 +1,46 @@
+Acolyte | 20 | 9   | 
+Acolyte | 20 | 9   | 
+Acolyte | 20 | 9   | 
+Acolyte | 19 | 9   | 
+Acolyte | 18 | 9   | 
+Acolyte | 18 | 9   | 
+Acolyte | 18 | 9   | 
+Acolyte | 17 | 9   | 
+Acolyte | 15 | 9   | 
+Acolyte | 15 | 9   | 
+Acolyte | 13 | 9   | 
+Acolyte | 13 | 9   | 
+Acolyte | 12 | 9   | 
+Acolyte | 11 | 9   | 
+Acolyte | 9  | 9   | 
+Acolyte | 9  | 9   | 
+Acolyte | 7  | 9   | 
+Acolyte | 7  | 9   | 
+Acolyte | 5  | 9   | 
+Acolyte | 4  | 9   | 
+Acolyte | 2  | 9   | 
+Acolyte | 1  | 9   | 
+Acolyte | 1  | 9   | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 
+Aboleth |    | 135 | 

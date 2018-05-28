@@ -186,9 +186,17 @@ class EncounterTable(InputTableWidget):
             if idx is self.PLAYER_INDEX:  # entry is a player
                 continue
             names.append(self.item(row, self.NAME_COLUMN).text())
-            inits.append(self.item(row, self.INIT_COLUMN).text())
+            init = self.item(row, self.INIT_COLUMN)
+            if init is not None:
+                inits.append(init.text())
+            else:
+                inits.append("")
             lives.append(self.item(row, self.HP_COLUMN).text())
-            descs.append(self.item(row, self.DESCRIPTION_COLUMN).text())
+            desc = self.item(row, self.DESCRIPTION_COLUMN)
+            if desc is not None:
+                descs.append(desc.text())
+            else:
+                descs.append("")
 
         if len(names) is 0:
             return
@@ -215,7 +223,7 @@ class EncounterTable(InputTableWidget):
                 for line in f.readlines():
                     split = line.split('|')
                     name = split[0].strip()
-                    init = int(split[1].strip())
+                    init = split[1].strip()
                     hp = split[2].strip()
                     desc = split[3].strip()
                     monster = monster_table.find_entry("name", name)
