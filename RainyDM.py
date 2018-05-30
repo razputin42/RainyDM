@@ -60,19 +60,19 @@ class DMTool(QWidget):
         ## Tables
         # Spell Table
         self.spell_table_widget = SpellTableWidget(self)
-        self.spell_table_widget.load_list("./spell", "resources/Compendiums/Spells Compendium 1.3.0.xml", Spell)
+        self.spell_table_widget.load_all("./spell", "resources/Spells/", Spell)
         self.spell_table_widget.fill_table()
         self.spell_table_widget.define_filters()
 
         # Monster table
         self.monster_table_widget = MonsterTableWidget(self)
-        self.monster_table_widget.load_list("./monster", "resources/Compendiums/Bestiary Compendium 2.1.0.xml", Monster)
+        self.monster_table_widget.load_all("./monster", "resources/Bestiary/", Monster)
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters()
 
         # Item table
         self.item_table_widget = ItemTableWidget(self)
-        self.item_table_widget.load_list("./item", "resources/Compendiums/Items Compendium 1.7.0.xml", Item)
+        self.item_table_widget.load_all("./item", "resources/Items/", Item)
         self.item_table_widget.fill_table()
         self.item_table_widget.define_filters()
         self.item_table_widget.layout().addWidget(self.item_viewer)

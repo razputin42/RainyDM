@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushBu
     QInputDialog, QTableWidgetItem, QSizePolicy, QTabWidget
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
-import re
+import re, os
 
 
 class MyTableWidget(QTableWidget):
@@ -58,6 +58,11 @@ class SearchableTable(QFrame):
 
     def define_filters(self):
         pass
+
+    def load_all(self, s, dir, Class):
+        for resource in os.listdir(dir):
+            self.load_list(s, dir + resource, Class)
+        self.list.sort(key=lambda x: x.name)
 
     def load_list(self, s, resource, Class):
         xml = ElementTree.parse(resource)

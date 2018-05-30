@@ -1,3 +1,5 @@
+import time
+
 xp_dict = {
     "00": 0,
     "0": 10,
@@ -36,6 +38,16 @@ xp_dict = {
     "30": 155000
 }
 
+size_dict = dict(
+    T="Tiny",
+    S="Small",
+    M="Medium",
+    L="Large",
+    H="Huge",
+    G="Gargantuan",
+    A="Swarm"
+)
+
 class Monster:
     class Action:
         def __init__(self, attr):
@@ -71,6 +83,12 @@ class Monster:
                 self._add_action(attr)
             elif attr.tag == "legendary":
                 self._add_legendary(attr)
+            elif attr.tag == "size":
+                size = attr.text.upper()
+                if size in size_dict.keys():
+                    self.size = size_dict[size]
+                else:
+                    self.size = size
             elif attr.tag == "type":
                 temp_list = attr.text.split(",")
                 self.type = ",".join(temp_list[:-1]).strip()
@@ -85,8 +103,12 @@ class Monster:
                 setattr(self, attr.tag, attr.text)
         self.xp = xp_dict[self.cr]
         self.initiative = self.calculate_modifier(self.dex)
-        i = min(self.hp.find(i) for i in [" ", "("])
+        i = self.hp.find("(")
         if i is not -1:
+            if self.hp[0:i] == "":
+                print(self.hp)
+                print(i)
+                time.sleep(1)
             self.hp_no_dice = int(self.hp[0:i])
         else:
             self.hp_no_dice = ""
@@ -113,6 +135,7 @@ class Monster:
         self.legendary_list.append(legendary)
 
     def extract_spellbook(self):
+        ### Turns out they have a spells attribute. LaL
         return_list = []
         for trait in self.trait_list:
             if trait.name == "Spellcasting":
