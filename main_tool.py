@@ -7,9 +7,8 @@ from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, EncounterTable
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy
 import sys, json, os
-from subclasses import PlayerTableWidget, InitiativeTableWidget
 
 from random import randint
 
@@ -126,8 +125,18 @@ class DMTool(QWidget):
         self.tab_widget.addTab(encounter_frame, "Encounter")
 
         # player tab
+        player_table_frame = QFrame()
+        player_table_layout = QVBoxLayout()
+        button_layout = QHBoxLayout()
+        self.add_player_button = QPushButton("Add Player")
+        self.add_player_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.player_table_widget = PlayerTable(self)
-        self.tab_widget.addTab(self.player_table_widget, "Players")
+        button_layout.addWidget(self.add_player_button)
+        button_layout.addStretch(0)
+        player_table_layout.addWidget(self.player_table_widget)
+        player_table_layout.addLayout(button_layout)
+        player_table_frame.setLayout(player_table_layout)
+        self.tab_widget.addTab(player_table_frame, "Players")
 
         window_layout.addWidget(self.tab_widget)
         window_layout.addWidget(self.monster_viewer)
@@ -163,6 +172,8 @@ class DMTool(QWidget):
         self.load_encounter_button.clicked.connect(lambda: self.encounter_table.load(self.monster_table_widget))
         self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
+
+        self.add_player_button.clicked.connect(self.add_player)
 
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()
@@ -237,6 +248,7 @@ class DMTool(QWidget):
         table = self.player_table_widget
         row_position = table.rowCount()
         table.insertRow(row_position)
+        table.setItem(row_position, 0, QTableWidgetItem(""))  # necessary so that the row isn't picked up in garbage collection
         if type(player) == list:
             for itt, value in enumerate(player):
                 table.setItem(row_position, itt, QTableWidgetItem(str(value)))

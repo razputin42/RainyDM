@@ -35,7 +35,10 @@ class InputTableWidget(QTableWidget):
 
     def remove_rows(self):
         items = self.selectedItems()
+        print(self.selectionModel().selectedRows())
+        print(items)
         for item in items:
+            print(item)
             self.removeRow(item.row())
 
 class EncounterTable(InputTableWidget):
