@@ -224,25 +224,10 @@ class DMTool(QWidget):
         if type(spell) == list:
             for itt, value in enumerate(spell):
                 self.toolbox_widget.spell_toolbox.setItem(row_position, itt, QTableWidgetItem(str(value)))
-        else:
+        elif spell is not None:
             self.toolbox_widget.spell_toolbox.setItem(row_position, 0, QTableWidgetItem(str(spell)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
-
-    # def add_to_encounter(self, monster, number=1):
-    #     table = self.encounter_table
-    #     for itt in range(number):
-    #         row_position = table.rowCount()
-    #         table.insertRow(row_position)
-    # 
-    #         if type(monster) == list:
-    #             for itt, value in enumerate(monster):
-    #                 table.setItem(row_position, itt, QTableWidgetItem(str(value)))
-    #         else:
-    #             table.setItem(row_position, table.NAME_COLUMN, QTableWidgetItem(str(monster)))
-    #             table.setItem(row_position, table.INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
-    #             table.setItem(row_position, table.HP_COLUMN, QTableWidgetItem(str(monster.hp_no_dice)))
-    #         table.calculate_encounter_xp()
 
     def add_player(self, player=None):
         table = self.player_table_widget
