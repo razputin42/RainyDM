@@ -10,8 +10,8 @@ assets/linear_gradient\.xcf
 
 main_tool\.spec
 
-RainyDM\.zip
+*.zip
 
-RainyDM\.spec
+*.spec
 
 RainyDM_standalone_beta\.zip
