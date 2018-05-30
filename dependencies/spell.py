@@ -1,3 +1,14 @@
+school_dict = dict(
+    A="Abjuration",
+    C="Conjuration",
+    N="Necromancy",
+    EV="Evocation",
+    T="Transmutation",
+    D="Divinition",
+    I="Illusion",
+    EN="Enchantment"
+)
+
 class Spell:
     def __init__(self, entry, idx):
         self.entry = entry
@@ -9,6 +20,8 @@ class Spell:
                     s = s + "<br>"
                 else:
                     s = s + attr.text
+            elif attr.tag == "school":
+                self.school = school_dict[attr.text]
             else:
                 setattr(self, attr.tag, attr.text)
         self.text = s
