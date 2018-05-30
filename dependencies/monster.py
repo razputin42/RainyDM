@@ -135,19 +135,13 @@ class Monster:
         self.legendary_list.append(legendary)
 
     def extract_spellbook(self):
-        ### Turns out they have a spells attribute. LaL
         return_list = []
-        for trait in self.trait_list:
-            if trait.name == "Spellcasting":
-                spells = trait.text.split("<br>")
-                for line in spells:
-                    # new_line = line.replace('\u8226', 'X')
-                    if '(at will): ' in line or ' slots):' in line or ' slot):' in line:
-                        spells = line.split(':')[1].strip().split(',')
-                        spells = [spell.strip().replace('*', '') for spell in spells]
-                        return_list = return_list + spells
-                return return_list
-        return None
+        if hasattr(self, "spells"):
+            for s in self.spells.split(","):
+                return_list.append(s.strip())
+            return return_list
+        else:
+            return None
 
     def __str__(self):
         return self.name

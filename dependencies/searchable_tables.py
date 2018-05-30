@@ -63,6 +63,8 @@ class SearchableTable(QFrame):
         for resource in os.listdir(dir):
             self.load_list(s, dir + resource, Class)
         self.list.sort(key=lambda x: x.name)
+        for itt, entry in enumerate(self.list):
+            entry.index = itt
 
     def load_list(self, s, resource, Class):
         xml = ElementTree.parse(resource)
