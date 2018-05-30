@@ -60,11 +60,11 @@ class LinkedMonsterTable(LinkedTableWidget):
         entry_idx = int(self.item(current_row, 1).text())
         entry = self.linked_table.list[entry_idx]
         if action == add_action:
-            self.parent.add_to_encounter(entry, 1)
+            self.parent.encounter_table.add_to_encounter(entry, 1)
         if action == add_x_action:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok:
-                self.parent.add_to_encounter(entry, X)
+                self.parent.encounter_table.add_to_encounter(entry, X)
         elif action == remove:
             self.remove_rows()
         elif action == add_spellbook:
@@ -87,7 +87,7 @@ class LinkedSpellTable(LinkedTableWidget):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        remove_toolbox = menu.addAction("Remove from Toolbox")
+        remove_toolbox = menu.addAction("Remove from toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -103,6 +103,7 @@ class ToolboxWidget:
     def __init__(self, parent):
         self.parent = parent
         self.frame = QFrame()
+        self.frame.setMaximumHeight(300)
         layout = QHBoxLayout()
         self.spell_toolbox = LinkedSpellTable(self.parent.spell_table_widget, self.parent)
         self.monster_toolbox = LinkedMonsterTable(self.parent.monster_table_widget, self.parent)

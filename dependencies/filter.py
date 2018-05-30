@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QFrame, QComboBox, QVBoxLayout, QHBoxLayout, QSizePolicy, QLabel, QLineEdit
+from PyQt5 import QtCore
 import re
 
 
@@ -57,7 +58,7 @@ class Filter:
             self.filter[name] = [minimum, maximum]
         self.filter_content()
 
-    def add_dropdown(self, name, options, suboptions=None):
+    def add_dropdown(self, name, options, suboptions=None, default=None):
         options.sort()
         combo_box = QComboBox()
         combo_box.addItem("Any")
@@ -76,6 +77,11 @@ class Filter:
             sub_combo_box.currentIndexChanged.connect(lambda: self.set_sub_filters(name, combo_box,
                                                                                    sub_combo_box))
         combo_box.currentIndexChanged.connect(lambda: self.set_filters(name, combo_box, sub_combo_box, suboptions))
+
+        if default is not None:
+            index = combo_box.findText(default, QtCore.Qt.MatchFixedString)
+            if index >= 0:
+                combo_box.setCurrentIndex(index)
 
     def set_sub_filters(self, name, combo_box, sub_combo_box):
         name = name.lower()
@@ -132,5 +138,6 @@ class Filter:
                 p = re.compile('{}'.format(arg), re.IGNORECASE)
                 cond = cond and (p.match(attr))
             elif type(arg) is list:  # numerical range
+                attr = eval("float({})".format(attr))
                 cond = cond and (arg[0] <= attr <= arg[1])
         return cond

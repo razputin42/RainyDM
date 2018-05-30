@@ -3,9 +3,15 @@ metadata/
 __pycache__/
 build/
 dist/
+Standalone_releases/
+encounters/
 
 assets/linear_gradient\.xcf
 
 main_tool\.spec
 
-RainyDM\.zip
+*.zip
+
+*.spec
+
+RainyDM_standalone_beta\.zip

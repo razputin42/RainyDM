@@ -1,1 +1,1 @@
-python main_tool.py
+python RainyDM.py

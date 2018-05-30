@@ -1,12 +1,13 @@
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu,\
-    QInputDialog, QTableWidgetItem, QSizePolicy
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
+    QInputDialog, QTableWidgetItem, QSizePolicy, QTabWidget
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
-import re
+import re, os
 
 
 class MyTableWidget(QTableWidget):
     NAME_COLUMN = 0
+    COLUMNS = 2
 
     def __init__(self, parent):
         QTableWidget.__init__(self)
@@ -14,7 +15,7 @@ class MyTableWidget(QTableWidget):
         self.format()
 
     def format(self):
-        columns = 2
+        columns = self.COLUMNS
         self.setColumnCount(columns)
         self.horizontalHeader().hide()
         self.horizontalHeader().setSectionResizeMode(self.NAME_COLUMN, QHeaderView.Stretch)
@@ -50,12 +51,18 @@ class SearchableTable(QFrame):
 
         self.search_box.textChanged.connect(self.search_handle)
         self.filter_button.clicked.connect(self.filter_handle)
+        self.format()
+
+    def format(self):
+        pass
 
     def define_filters(self):
         pass
 
-    def format(self):
-        pass
+    def load_all(self, s, dir, Class):
+        for resource in os.listdir(dir):
+            self.load_list(s, dir + resource, Class)
+        self.list.sort(key=lambda x: x.name)
 
     def load_list(self, s, resource, Class):
         xml = ElementTree.parse(resource)
@@ -77,14 +84,6 @@ class SearchableTable(QFrame):
             if entry_attr not in result:
                 result.append(entry_attr)
         return result
-
-    # def min_max_range(self, attr):
-    #     result = []
-    #     for entry in self.list:
-    #         entry_attr = getattr(entry, attr)
-    #         if entry_attr not in result:
-    #             result.append(entry_attr)
-    #     return min(result), max(result)
 
     def filter_handle(self):
         self.filter.toggle_hidden()
@@ -136,10 +135,60 @@ class SearchableTable(QFrame):
 class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
+    TYPE_COLUMN = 2
+    CR_COLUMN = 3
+    COLUMNS = 4
+
+    def format(self):
+        columns = self.COLUMNS
+        h = self.table.horizontalHeader()
+        t = self.table
+        t.setColumnCount(columns)
+        resize = QHeaderView.ResizeToContents
+        stretch = QHeaderView.Stretch
+        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
+            h.setSectionResizeMode(column, policy)
+        t.setShowGrid(False)
+        t.verticalHeader().hide()
+        t.setColumnHidden(self.INDEX_COLUMN, True)
+        t.setColumnHidden(self.TYPE_COLUMN, True)
+
+    def fill_table(self):
+        self.table.clear()
+        self.table.setRowCount(len(self.list))
+        for itt, entry in enumerate(self.list):
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+            self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
+            self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
+
+    def format(self):
+        columns = self.COLUMNS
+        h = self.table.horizontalHeader()
+        t = self.table
+        t.setColumnCount(columns)
+        resize = QHeaderView.ResizeToContents
+        stretch = QHeaderView.Stretch
+        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
+            h.setSectionResizeMode(column, policy)
+        t.setShowGrid(False)
+        t.verticalHeader().hide()
+        t.setColumnHidden(self.INDEX_COLUMN, True)
+        t.setColumnHidden(self.TYPE_COLUMN, True)
+
+    def fill_table(self):
+        self.table.clear()
+        self.table.setRowCount(len(self.list))
+        for itt, entry in enumerate(self.list):
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+            self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
+            self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
 
     def define_filters(self):
         self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
         self.filter.add_dropdown("Size", self.unique_attr("size"))
+        self.filter.add_dropdown("Source", self.unique_attr("source"))
         self.filter.add_range("CR")
         # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
 
@@ -158,33 +207,16 @@ class MonsterTableWidget(SearchableTable):
         monster_idx = int(self.table.item(current_row, 1).text())
         monster = self.list[monster_idx]
         if action == addAction:
-            self.parent.add_to_encounter(monster, 1)
+            self.parent.encounter_table.add_to_encounter(monster, 1)
         elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok:
-                self.parent.add_to_encounter(monster, X)
+                self.parent.encounter_table.add_to_encounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
         elif action == add_spellbook:
             self.parent.extract_and_add_spellbook(monster)
 
-    # def jsonlify(self):
-    #     rows = self.rowCount()
-    #     cols = self.columnCount()
-    #     output_list = []
-    #     for i in range(rows):
-    #         row = []
-    #         for j in range(cols):
-    #             item = self.item(i, j)
-    #             if item is None:
-    #                 row.append("")
-    #             else:
-    #                 row.append(item.text())
-    #         output_list.append(tuple(row))
-    #     return output_list
-
-    # def remove_row(self, row):
-    #     self.removeRow(row)
 
 class SpellTableWidget(SearchableTable):
     NAME_COLUMN = 0
@@ -208,3 +240,10 @@ class SpellTableWidget(SearchableTable):
             self.parent.add_to_toolbox_spell(spell)
 
 
+class ItemTableWidget(SearchableTable):
+    NAME_COLUMN = 0
+    INDEX_COLUMN = 1
+
+    def define_filters(self):
+        self.filter.add_dropdown("Type", self.unique_attr("type"))
+        self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="1")
