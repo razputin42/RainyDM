@@ -212,7 +212,7 @@ class MonsterTableWidget(SearchableTable):
             self.parent.encounter_table.add_to_encounter(monster, 1)
         elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
-            if ok:
+            if ok and X < 2000:
                 self.parent.encounter_table.add_to_encounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
