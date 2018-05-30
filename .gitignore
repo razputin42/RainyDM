@@ -3,6 +3,8 @@ metadata/
 __pycache__/
 build/
 dist/
+Standalone_releases/
+encounters/
 
 assets/linear_gradient\.xcf
 
