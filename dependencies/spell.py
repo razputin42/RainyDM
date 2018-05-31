@@ -19,7 +19,7 @@ class Spell:
                 if attr.text is None:
                     s = s + "<br>"
                 else:
-                    s = s + attr.text
+                    s = s + attr.text + "<br>"
             elif attr.tag == "school":
                 self.school = school_dict[attr.text]
             else:
