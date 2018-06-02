@@ -163,6 +163,17 @@ th, td {
 """
 )
 
+monster_dict35 = dict(
+    head="""
+    <html>
+    <body>
+    """,
+    foot="""
+    </html>
+    </body>
+    """
+)
+
 monster_dict = dict(
     first="""
 <!DOCTYPE html>

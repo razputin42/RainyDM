@@ -1,4 +1,4 @@
-from dependencies.monster import Monster
+from dependencies.monster import Monster, Monster35
 from dependencies.spell import Spell
 from dependencies.item import Item
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
@@ -6,13 +6,13 @@ from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, EncounterTable
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
 import sys, json, os
 
 from random import randint
 
-class DMTool(QWidget):
+class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
     def __init__(self):
@@ -37,6 +37,7 @@ class DMTool(QWidget):
         """
         self.setWindowTitle("RainyDM - Alpha")
         self.setGeometry(100, 100, 1280, 720)
+        window_frame = QFrame()
         window_layout = QHBoxLayout()
         # Left side tab
         self.tab_widget = QTabWidget()
@@ -57,22 +58,23 @@ class DMTool(QWidget):
         # spell_viewer_layout.addWidget(self.item_viewer)
         spell_viewer_layout.addWidget(self.text_box)
 
+        self.version = "5"
         ## Tables
         # Spell Table
         self.spell_table_widget = SpellTableWidget(self)
-        self.spell_table_widget.load_all("./spell", "resources/Spells/", Spell)
+        self.spell_table_widget.load_all("./spell", "resources/5/Spells/", Spell)
         self.spell_table_widget.fill_table()
         self.spell_table_widget.define_filters()
 
         # Monster table
         self.monster_table_widget = MonsterTableWidget(self)
-        self.monster_table_widget.load_all("./monster", "resources/Bestiary/", Monster)
+        self.monster_table_widget.load_all("./monster", "resources/5/Bestiary/", Monster)
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters()
 
         # Item table
         self.item_table_widget = ItemTableWidget(self)
-        self.item_table_widget.load_all("./item", "resources/Items/", Item)
+        self.item_table_widget.load_all("./item", "resources/5/Items/", Item)
         self.item_table_widget.fill_table()
         self.item_table_widget.define_filters()
         self.item_table_widget.layout().addWidget(self.item_viewer)
@@ -142,27 +144,40 @@ class DMTool(QWidget):
         window_layout.addWidget(self.monster_viewer)
         window_layout.addLayout(spell_viewer_layout)
 
+        ### Menubar
+        menu = self.menuBar()
+        version = menu.addMenu("Version")
+        button_3_5 = QAction("3.5 Edition", self)
+        button_3_5.setStatusTip("3.5 Edition")
+        version.addAction(button_3_5)
+        button_5 = QAction("5th Edition", self)
+        button_5.setStatusTip("5th Edition")
+        version.addAction(button_5)
+        button_5.triggered.connect(lambda: self.change_version("5"))
+        button_3_5.triggered.connect(lambda: self.change_version("3.5"))
+
         self.bind_signals()
 
-        self.setLayout(window_layout)
+        window_frame.setLayout(window_layout)
+        self.setCentralWidget(window_frame)
 
     def bind_signals(self):
-        self.spell_table_widget.table.itemClicked.connect(
+        self.spell_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.spell_clicked_handle(self.spell_table_widget.table))
 
-        self.toolbox_widget.spell_toolbox.itemClicked.connect(
+        self.toolbox_widget.spell_toolbox.selectionModel().selectionChanged.connect(
             lambda: self.spell_clicked_handle(self.toolbox_widget.spell_toolbox))
 
-        self.monster_table_widget.table.itemClicked.connect(
+        self.monster_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.monster_table_widget.table))
 
-        self.toolbox_widget.monster_toolbox.itemClicked.connect(
+        self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
 
-        self.encounter_table.itemClicked.connect(
+        self.encounter_table.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.encounter_table))
 
-        self.item_table_widget.table.itemClicked.connect(
+        self.item_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.item_clicked_handle(self.item_table_widget.table))
 
         # self.add_players_button.clicked.connect(self.add_players_handle)
@@ -174,6 +189,14 @@ class DMTool(QWidget):
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
+
+    def change_version(self, version):
+        if self.version == version:
+            return
+        self.monster_table_widget.table.clear()
+        self.monster_table_widget.load_all("./monster", "resources/3.5/Bestiary/", Monster35)
+        self.monster_table_widget.fill_table()
+        pass
 
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()

@@ -31,6 +31,7 @@ class SearchableTable(QFrame):
 
         self.parent = parent
         self.list = []
+        self.list_dict = dict()
         self.search_box = QLineEdit()
         self.search_box.setMaximumWidth(parent.SEARCH_BOX_WIDTH)
         self.filter_button = QPushButton("Filters")
@@ -60,6 +61,7 @@ class SearchableTable(QFrame):
         pass
 
     def load_all(self, s, dir, Class):
+        self.list = []
         for resource in os.listdir(dir):
             self.load_list(s, dir + resource, Class)
         self.list.sort(key=lambda x: x.name)
@@ -71,6 +73,7 @@ class SearchableTable(QFrame):
         root = xml.getroot()
         for itt, entry in enumerate(root.findall(s)):
             self.list.append(Class(entry, itt))
+        self.list_dict[str(Class)] = self.list
 
     def fill_table(self):
         self.table.clear()
@@ -162,7 +165,8 @@ class MonsterTableWidget(SearchableTable):
             self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
             self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
             self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
-            self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
+            if hasattr(entry, "cr"):
+                self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
 
     def format(self):
         columns = self.COLUMNS
@@ -177,15 +181,6 @@ class MonsterTableWidget(SearchableTable):
         t.verticalHeader().hide()
         t.setColumnHidden(self.INDEX_COLUMN, True)
         t.setColumnHidden(self.TYPE_COLUMN, True)
-
-    def fill_table(self):
-        self.table.clear()
-        self.table.setRowCount(len(self.list))
-        for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
-            self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
-            self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
-            self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
 
     def define_filters(self):
         self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))

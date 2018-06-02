@@ -1,4 +1,5 @@
 import time
+import xml.etree.ElementTree as ElementTree
 
 xp_dict = {
     "00": 0,
@@ -47,6 +48,7 @@ size_dict = dict(
     G="Gargantuan",
     A="Swarm"
 )
+
 
 class Monster:
     class Action:
@@ -146,3 +148,12 @@ class Monster:
     def __str__(self):
         return self.name
 
+class Monster35(Monster):
+    def __init__(self, entry, idx):
+        self.entry = entry
+        self.index = idx
+        for attr in entry:
+            if attr.tag == "full_text":
+                self.full_text = attr.text
+            else:
+                setattr(self, attr.tag, attr.text)
