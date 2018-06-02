@@ -1,6 +1,6 @@
 from dependencies.monster import Monster, Monster35
-from dependencies.spell import Spell
-from dependencies.item import Item
+from dependencies.spell import Spell, Spell35
+from dependencies.item import Item, Item35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
@@ -35,7 +35,7 @@ class DMTool(QMainWindow):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
-        self.setWindowTitle("RainyDM - Alpha")
+        self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
         window_frame = QFrame()
         window_layout = QHBoxLayout()
@@ -196,6 +196,16 @@ class DMTool(QMainWindow):
         self.monster_table_widget.table.clear()
         self.monster_table_widget.load_all("./monster", "resources/3.5/Bestiary/", Monster35)
         self.monster_table_widget.fill_table()
+
+        self.spell_table_widget.table.clear()
+        self.spell_table_widget.load_all("./spell", "resources/3.5/Spells/", Spell35)
+        self.spell_table_widget.fill_table()
+        # self.spell_table_widget.define_filters()
+
+        self.item_table_widget.load_all("./item", "resources/3.5/Items/", Item35)
+        self.item_table_widget.fill_table()
+        # self.item_table_widget.define_filters()
+        self.version = version
         pass
 
     def spell_clicked_handle(self, table):

@@ -17,6 +17,11 @@ type_dict = {
     "$": "Valuables"
 }
 
+magic_dict = {
+    "0": "No",
+    "1": "Yes"
+}
+
 
 class Item:
     def __init__(self, entry, idx):
@@ -26,9 +31,9 @@ class Item:
         for attr in entry:
             if attr.tag == "magic":
                 if attr.text is not None:
-                    self.magic = attr.text
+                    self.magic = magic_dict[attr.text]
                 else:
-                    self.magic = "0"
+                    self.magic = magic_dict["0"]
             elif attr.tag == "text":
                 if attr.text is None:
                     s = s + "<br>"
@@ -42,3 +47,14 @@ class Item:
 
     def __str__(self):
         return self.name
+
+
+class Item35(Item):
+    def __init__(self, entry, idx):
+        self.entry = entry
+        self.index = idx
+        for attr in entry:
+            if False:
+                pass
+            else:
+                setattr(self, attr.tag, attr.text)

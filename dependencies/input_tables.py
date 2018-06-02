@@ -62,7 +62,7 @@ class EncounterTable(InputTableWidget):
     def format(self):
         columns = 6
         self.setColumnCount(columns)
-        self.setHorizontalHeaderLabels(["Name", "_index", "Initiative", "HP", "Damage Input", "Description"])
+        self.setHorizontalHeaderLabels(["Name", "_index", "Initiative", "HP", "Damage Taken", "Description"])
         self.horizontalHeader().setSectionResizeMode(self.DESCRIPTION_COLUMN, QHeaderView.Stretch)
         self.setShowGrid(True)
         self.setColumnWidth(self.NAME_COLUMN, 150)

@@ -2,6 +2,15 @@ general_desc = """
 <div><span class="bold">$name</span><span>: $desc</span></div>  
 """
 
+general_head = """
+<html>
+<body>
+"""
+general_foot = """
+</html>
+</body>
+"""
+
 item_dict = dict(
     header="""
     <!DOCTYPE html>
@@ -163,16 +172,6 @@ th, td {
 """
 )
 
-monster_dict35 = dict(
-    head="""
-    <html>
-    <body>
-    """,
-    foot="""
-    </html>
-    </body>
-    """
-)
 
 monster_dict = dict(
     first="""

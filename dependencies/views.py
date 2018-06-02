@@ -1,9 +1,11 @@
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
     QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton
-from dependencies.html_format import monster_dict, monster_dict35, spell_dict, item_dict, general_desc
+from dependencies.html_format import monster_dict, spell_dict, item_dict, general_desc, general_head, general_foot
 from string import Template
-from .monster import Monster35, Monster
+from .monster import Monster35
+from .spell import Spell35
+from .item import Item35
 
 
 class Viewer(QTextBrowser):
@@ -26,7 +28,7 @@ class MonsterViewer(Viewer):
     def draw_view(self, monster):
         # this is going to get confusing fast... This is everything before saving throws
         if isinstance(monster, Monster35):
-            html = monster_dict35['head'] + monster.full_text + monster_dict35['foot']
+            html = general_head + monster.full_text + general_foot
         else:
             template = Template(monster_dict['first'])
             html = template.safe_substitute(
@@ -119,17 +121,20 @@ class MonsterViewer(Viewer):
 
 class SpellViewer(Viewer):
     def draw_view(self, spell):
-        template = Template(spell_dict['entire'])
-        html = template.safe_substitute(
-            name=spell.name,
-            level=self.ordinal(spell.level),
-            school=spell.school,
-            time=spell.time,
-            range=spell.range,
-            components=spell.components,
-            duration=spell.duration,
-            text=spell.text
-        )
+        if isinstance(spell, Spell35):
+            html = general_head + spell.full_text + general_foot
+        else:
+            template = Template(spell_dict['entire'])
+            html = template.safe_substitute(
+                name=spell.name,
+                level=self.ordinal(spell.level),
+                school=spell.school,
+                time=spell.time,
+                range=spell.range,
+                components=spell.components,
+                duration=spell.duration,
+                text=spell.text
+            )
         self.setHtml(html)
 
     @staticmethod
@@ -145,21 +150,27 @@ class ItemViewer(Viewer):
         self.setMaximumWidth(53000)  # i.e. as large as it wants
 
     def draw_view(self, item):
-        html = item_dict['header']
-        template = Template(item_dict["name"])
-        html = html + template.safe_substitute(desc=item.name)
-        html = html + item_dict['gradient']
+        if isinstance(item, Item35):
+            if hasattr(item, "full_text"):
+                html = general_head + item.full_text + general_foot
+            else:
+                return  # NEED FORMATING DICT
+        else:
+            html = item_dict['header']
+            template = Template(item_dict["name"])
+            html = html + template.safe_substitute(desc=item.name)
+            html = html + item_dict['gradient']
 
-        for desc in ["ac", "weight", "value"]:  # also add dmg1 and dmgType, with a dicionary instead of capitalize...
-            if hasattr(item, desc):
-                template = Template(general_desc)
-                html = html + template.safe_substitute(
-                    name=desc.capitalize(),
-                    desc=getattr(item, desc)
-                )
+            for desc in ["ac", "weight", "value"]:  # also add dmg1 and dmgType, with a dicionary instead of capitalize...
+                if hasattr(item, desc):
+                    template = Template(general_desc)
+                    html = html + template.safe_substitute(
+                        name=desc.capitalize(),
+                        desc=getattr(item, desc)
+                    )
 
-        template = Template(item_dict["text"])
-        html = html + template.safe_substitute(desc=item.text)
+            template = Template(item_dict["text"])
+            html = html + template.safe_substitute(desc=item.text)
 
-        html = html + item_dict['foot']
+            html = html + item_dict['foot']
         self.setHtml(html)

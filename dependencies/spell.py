@@ -29,3 +29,14 @@ class Spell:
     def __str__(self):
         return self.name
 
+
+class Spell35(Spell):
+    def __init__(self, entry, idx):
+        self.entry = entry
+        self.index = idx
+        for attr in entry:
+            if False:
+                pass
+            else:
+                setattr(self, attr.tag, attr.text)
+

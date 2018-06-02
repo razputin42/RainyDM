@@ -105,15 +105,19 @@ class Monster:
                 setattr(self, attr.tag, attr.text)
         self.xp = xp_dict[self.cr]
         self.initiative = self.calculate_modifier(self.dex)
-        i = self.hp.find("(")
+        self.hp_no_dice, self.HD = self.extract_hp(self.hp)
+
+    @staticmethod
+    def extract_hp(hp):
+        i = hp.find("(")
         if i is not -1:
-            if self.hp[0:i] == "":
-                print(self.hp)
-                print(i)
-                time.sleep(1)
-            self.hp_no_dice = int(self.hp[0:i])
+            j = hp.find(")")
+            hp_no_dice = hp[0:i]
+            HD = hp[i+1:j]
         else:
-            self.hp_no_dice = ""
+            hp_no_dice = ""
+            HD = ""
+        return hp_no_dice, HD
 
     @staticmethod
     def calculate_modifier(score, sign=False):
@@ -153,7 +157,8 @@ class Monster35(Monster):
         self.entry = entry
         self.index = idx
         for attr in entry:
-            if attr.tag == "full_text":
-                self.full_text = attr.text
+            if attr.tag == "hit_dice":
+                HD, hp_no_dice = self.extract_hp(attr.text)
+                hp_no_dice = hp_no_dice.replace(' hp', '')
             else:
                 setattr(self, attr.tag, attr.text)
