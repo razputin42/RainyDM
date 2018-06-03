@@ -35,10 +35,7 @@ class InputTableWidget(QTableWidget):
 
     def remove_rows(self):
         items = self.selectedItems()
-        print(self.selectionModel().selectedRows())
-        print(items)
         for item in items:
-            print(item)
             self.removeRow(item.row())
 
 class EncounterTable(InputTableWidget):
@@ -83,10 +80,11 @@ class EncounterTable(InputTableWidget):
         menu = QMenu(self)
         if monster_idx is not -1:
             monster = self.parent.monster_table_widget.list[monster_idx]
-            for itt, action in enumerate(monster.action_list):
-                if hasattr(action, "attack"):
-                    action_indexes.append(itt)
-                    action_menu_handles.append(menu.addAction(action.name))
+            if hasattr(monster, "action_list"):
+                for itt, action in enumerate(monster.action_list):
+                    if hasattr(action, "attack"):
+                        action_indexes.append(itt)
+                        action_menu_handles.append(menu.addAction(action.name))
 
         menu.addSeparator()
         removeAction = menu.addAction("Remove from initiative")
@@ -136,6 +134,8 @@ class EncounterTable(InputTableWidget):
             return False
 
     def calculate_encounter_xp(self):
+        if self.parent.version == "3.5":
+            return '-'
         total_xp = 0
         monsters = 0
         players = 0

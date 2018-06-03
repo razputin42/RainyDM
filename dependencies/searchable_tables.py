@@ -182,12 +182,15 @@ class MonsterTableWidget(SearchableTable):
         t.setColumnHidden(self.INDEX_COLUMN, True)
         t.setColumnHidden(self.TYPE_COLUMN, True)
 
-    def define_filters(self):
-        self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
-        self.filter.add_dropdown("Size", self.unique_attr("size"))
-        self.filter.add_dropdown("Source", self.unique_attr("source"))
-        self.filter.add_range("CR")
-        # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
+    def define_filters(self, version):
+        if version == "5":
+            self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
+            self.filter.add_dropdown("Size", self.unique_attr("size"))
+            self.filter.add_dropdown("Source", self.unique_attr("source"))
+            self.filter.add_range("CR")
+            # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
+        elif version == "3.5":
+            pass
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -219,9 +222,13 @@ class SpellTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
 
-    def define_filters(self):
-        self.filter.add_dropdown("School", self.unique_attr("school"))
-        self.filter.add_dropdown("Level", self.unique_attr("level"))
+    def define_filters(self, version):
+        if version == "5":
+            self.filter.add_dropdown("School", self.unique_attr("school"))
+            self.filter.add_dropdown("Level", self.unique_attr("level"))
+        elif version == "3.5":
+            pass
+
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -241,6 +248,9 @@ class ItemTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
 
-    def define_filters(self):
-        self.filter.add_dropdown("Type", self.unique_attr("type"))
-        self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="1")
+    def define_filters(self, version):
+        if version == "5":
+            self.filter.add_dropdown("Type", self.unique_attr("type"))
+            self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Yes")
+        elif version == "3.5":
+            pass

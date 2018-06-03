@@ -160,5 +160,15 @@ class Monster35(Monster):
             if attr.tag == "hit_dice":
                 HD, hp_no_dice = self.extract_hp(attr.text)
                 hp_no_dice = hp_no_dice.replace(' hp', '')
+                self.HD = HD
+                self.hp_no_dice = hp_no_dice
+            elif attr.tag == "challenge_rating":
+                self.cr = attr.text
+            # elif attr.tag == "abilities":
+                # for ability in attr.text.split(", "):
+                #     temp = ability.split(" ")
+                #     setattr(self, temp[0].lower(), int(temp[1]))
+            elif attr.tag == "initiative":
+                self.initiative = int(attr.text.split(" ")[0])
             else:
                 setattr(self, attr.tag, attr.text)
