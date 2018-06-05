@@ -85,9 +85,10 @@ class SearchableTable(QFrame):
     def unique_attr(self, attr):
         result = []
         for entry in self.list:
-            entry_attr = getattr(entry, attr)
-            if entry_attr not in result:
-                result.append(entry_attr)
+            if hasattr(entry, attr):
+                entry_attr = getattr(entry, attr)
+                if entry_attr not in result:
+                    result.append(entry_attr)
         return result
 
     def filter_handle(self):
@@ -190,22 +191,29 @@ class MonsterTableWidget(SearchableTable):
             self.filter.add_range("CR")
             # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
         elif version == "3.5":
-            pass
+            self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
+            self.filter.add_dropdown("Size", self.unique_attr("size"))
+            # self.filter.add_dropdown("Source", self.unique_attr("source"))
+            self.filter.add_range("CR")
+        self.search_handle()
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
+
+        current_row = self.table.currentRow()
+        monster_idx = int(self.table.item(current_row, 1).text())
+        monster = self.list[monster_idx]
+
         addAction = menu.addAction("Add to initiative")
         addXAction = menu.addAction("Add X to initiative")
         menu.addSeparator()
         addToolbox = menu.addAction("Add to toolbox")
-        add_spellbook = menu.addAction("Add monster's spells to toolbox")
+        if hasattr(monster, "spells"):
+            add_spellbook = menu.addAction("Add monster's spells to toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        current_row = self.table.currentRow()
-        monster_idx = int(self.table.item(current_row, 1).text())
-        monster = self.list[monster_idx]
         if action == addAction:
             self.parent.encounter_table.add_to_encounter(monster, 1)
         elif action == addXAction:
@@ -214,7 +222,7 @@ class MonsterTableWidget(SearchableTable):
                 self.parent.encounter_table.add_to_encounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
-        elif action == add_spellbook:
+        elif hasattr(monster, "spells") and action == add_spellbook:
             self.parent.extract_and_add_spellbook(monster)
 
 
@@ -227,8 +235,9 @@ class SpellTableWidget(SearchableTable):
             self.filter.add_dropdown("School", self.unique_attr("school"))
             self.filter.add_dropdown("Level", self.unique_attr("level"))
         elif version == "3.5":
-            pass
-
+            self.filter.add_dropdown("School", self.unique_attr("school"))
+            # self.filter.add_dropdown("Level", self.unique_attr("level"))
+            # self.filter.add_dropdown("Range", self.unique_attr("range"))
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -253,4 +262,4 @@ class ItemTableWidget(SearchableTable):
             self.filter.add_dropdown("Type", self.unique_attr("type"))
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Yes")
         elif version == "3.5":
-            pass
+            self.filter.add_dropdown("Category", self.unique_attr("category"))

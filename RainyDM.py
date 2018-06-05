@@ -183,13 +183,18 @@ class DMTool(QMainWindow):
         if self.version == version:
             return
         self.version = version
-        self.toolbox_widget.monster_toolbox.remove_rows()
-        self.toolbox_widget.spell_toolbox.remove_rows()
-        self.encounter_table.remove_rows()
+        self.clear_toolbox_handle()
+        self.clear_encounter_handle()
+        # self.toolbox_widget.monster_toolbox.remove_rows()
+        # self.toolbox_widget.spell_toolbox.remove_rows()
+        # self.encounter_table.remove_rows()
 
         self.monster_table_widget.table.clear()
         self.spell_table_widget.table.clear()
         self.item_table_widget.table.clear()
+
+        self.monster_table_widget.filter.clear_filters()
+
         self.load_resources()
         # self.monster_table_widget.load_all("./monster", "resources/3.5/Bestiary/", Monster35)
         # self.monster_table_widget.fill_table()
@@ -400,15 +405,12 @@ class DMTool(QMainWindow):
     def load_meta(self):
         if not os.path.exists("metadata/"):
             os.mkdir("metadata")
+        self.version = "5"
         if os.path.exists("metadata/meta.txt"):
             with open("metadata/meta.txt", "r") as f:
                 meta_dict = eval(f.read())
                 if 'version' in meta_dict.keys():
                     self.version = meta_dict['version']
-                else:
-                    self.version = "5"
-        else:
-            self.version = "5"
 
     def load_session(self):
         if not os.path.exists("metadata/"):

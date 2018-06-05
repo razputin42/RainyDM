@@ -44,7 +44,7 @@ class EncounterTable(InputTableWidget):
     DAMAGE_COLUMN = 4
     DESCRIPTION_COLUMN = 5
     PLAYER_INDEX = -1
-    xp_string = "Total XP: "
+    xp_string = "Adjusted XP: "
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -86,12 +86,13 @@ class EncounterTable(InputTableWidget):
                         action_indexes.append(itt)
                         action_menu_handles.append(menu.addAction(action.name))
 
-        menu.addSeparator()
+            menu.addSeparator()
         removeAction = menu.addAction("Remove from initiative")
 
         if monster_idx is not -1:
             addToolbox = menu.addAction("Add to toolbox")
-            add_spellbook = menu.addAction("Add monster's spells to toolbox")
+            if hasattr(monster, "spells"):
+                add_spellbook = menu.addAction("Add monster's spells to toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -109,7 +110,7 @@ class EncounterTable(InputTableWidget):
             attack = monster.action_list[action_indexes[idx]]
             if hasattr(attack, "attack"):
                 self.parent.print_attack(monster, attack.attack)
-        elif action is add_spellbook:
+        elif hasattr(monster, "spells") and action is add_spellbook:
             if monster_idx is not -1:
                 self.parent.extract_and_add_spellbook(monster)
 
@@ -222,6 +223,7 @@ class EncounterTable(InputTableWidget):
     def load(self, monster_table):
         filename, _ = QFileDialog.getOpenFileName(self, "Select encounter", "encounters", "Text files (*.txt)")
         if filename and os.path.exists(filename):
+            self.parent.clear_encounter_handle()
             with open(filename, 'r') as f:
                 for line in f.readlines():
                     split = line.split('|')

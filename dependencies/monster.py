@@ -1,5 +1,4 @@
-import time
-import xml.etree.ElementTree as ElementTree
+import re
 
 xp_dict = {
     "00": 0,
@@ -163,7 +162,7 @@ class Monster35(Monster):
                 self.HD = HD
                 self.hp_no_dice = hp_no_dice
             elif attr.tag == "challenge_rating":
-                self.cr = attr.text
+                self.cr = re.sub("[^,;0-9/]+", "", attr.text)
             # elif attr.tag == "abilities":
                 # for ability in attr.text.split(", "):
                 #     temp = ability.split(" ")

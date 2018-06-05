@@ -154,7 +154,7 @@ class ItemViewer(Viewer):
             if hasattr(item, "full_text"):
                 html = general_head + item.full_text + general_foot
             else:
-                return  # NEED FORMATING DICT
+                html = general_head + item_dict['body35'] + general_foot
         else:
             html = item_dict['header']
             template = Template(item_dict["name"])

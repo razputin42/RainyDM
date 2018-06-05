@@ -50,11 +50,13 @@ class Item:
 
 
 class Item35(Item):
+    of_list = ['Scroll', 'Wand']
+
     def __init__(self, entry, idx):
         self.entry = entry
         self.index = idx
         for attr in entry:
-            if False:
-                pass
+            if attr.tag == 'category' and attr.text in self.of_list:
+                self.name = attr.text + ' of ' + self.name
             else:
                 setattr(self, attr.tag, attr.text)

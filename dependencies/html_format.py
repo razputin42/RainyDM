@@ -90,9 +90,12 @@ item_dict = dict(
     </div>
     </body>
     </html>
+    """,
+
+    body35="""
+    No description available
     """
 )
-
 
 spell_dict = dict(
     entire="""
