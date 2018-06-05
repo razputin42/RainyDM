@@ -407,6 +407,8 @@ class DMTool(QMainWindow):
                     self.version = meta_dict['version']
                 else:
                     self.version = "5"
+        else:
+            self.version = "5"
 
     def load_session(self):
         if not os.path.exists("metadata/"):
