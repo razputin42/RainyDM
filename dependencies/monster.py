@@ -1,4 +1,4 @@
-import time
+import re
 
 xp_dict = {
     "00": 0,
@@ -47,6 +47,7 @@ size_dict = dict(
     G="Gargantuan",
     A="Swarm"
 )
+
 
 class Monster:
     class Action:
@@ -103,15 +104,19 @@ class Monster:
                 setattr(self, attr.tag, attr.text)
         self.xp = xp_dict[self.cr]
         self.initiative = self.calculate_modifier(self.dex)
-        i = self.hp.find("(")
+        self.hp_no_dice, self.HD = self.extract_hp(self.hp)
+
+    @staticmethod
+    def extract_hp(hp):
+        i = hp.find("(")
         if i is not -1:
-            if self.hp[0:i] == "":
-                print(self.hp)
-                print(i)
-                time.sleep(1)
-            self.hp_no_dice = int(self.hp[0:i])
+            j = hp.find(")")
+            hp_no_dice = hp[0:i]
+            HD = hp[i+1:j]
         else:
-            self.hp_no_dice = ""
+            hp_no_dice = ""
+            HD = ""
+        return hp_no_dice, HD
 
     @staticmethod
     def calculate_modifier(score, sign=False):
@@ -146,3 +151,23 @@ class Monster:
     def __str__(self):
         return self.name
 
+class Monster35(Monster):
+    def __init__(self, entry, idx):
+        self.entry = entry
+        self.index = idx
+        for attr in entry:
+            if attr.tag == "hit_dice":
+                HD, hp_no_dice = self.extract_hp(attr.text)
+                hp_no_dice = hp_no_dice.replace(' hp', '')
+                self.HD = HD
+                self.hp_no_dice = hp_no_dice
+            elif attr.tag == "challenge_rating":
+                self.cr = re.sub("[^,;0-9/]+", "", attr.text)
+            # elif attr.tag == "abilities":
+                # for ability in attr.text.split(", "):
+                #     temp = ability.split(" ")
+                #     setattr(self, temp[0].lower(), int(temp[1]))
+            elif attr.tag == "initiative":
+                self.initiative = int(attr.text.split(" ")[0])
+            else:
+                setattr(self, attr.tag, attr.text)

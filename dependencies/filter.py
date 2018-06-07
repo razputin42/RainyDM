@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import QFrame, QComboBox, QVBoxLayout, QHBoxLayout, QSizePo
 from PyQt5 import QtCore
 import re
 
+class FilterWidget:  ## this will be used to rework how the filtering is handled
+    def __init__(self):
+        pass
 
 class Filter:
     def __init__(self, filter_content):
@@ -87,7 +90,6 @@ class Filter:
         name = name.lower()
         main = combo_box.currentText()
         sub = sub_combo_box.currentText()
-        print("\""+sub+"\"")
         if sub == "Any":
             self.filter[name] = main + ".*"
         else:
@@ -131,8 +133,8 @@ class Filter:
         cond = True
         for key, arg in self.filter.items():
             if not hasattr(entry, key):
-                print("Wrong filter key passed to entry in SearchableTable")
-                continue
+                # print("Wrong filter key passed to entry in SearchableTable")
+                return False
             attr = getattr(entry, key)
             if type(arg) is str:
                 p = re.compile('{}'.format(arg), re.IGNORECASE)
@@ -141,3 +143,9 @@ class Filter:
                 attr = eval("float({})".format(attr))
                 cond = cond and (arg[0] <= attr <= arg[1])
         return cond
+
+    def clear_filters(self):
+        for i in reversed(range(self.layout.count())):
+            self.layout.removeItem(self.layout.itemAt(i))
+        self.filter = dict()
+
