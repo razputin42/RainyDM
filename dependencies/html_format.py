@@ -2,6 +2,15 @@ general_desc = """
 <div><span class="bold">$name</span><span>: $desc</span></div>  
 """
 
+general_head = """
+<html>
+<body>
+"""
+general_foot = """
+</html>
+</body>
+"""
+
 item_dict = dict(
     header="""
     <!DOCTYPE html>
@@ -81,9 +90,12 @@ item_dict = dict(
     </div>
     </body>
     </html>
+    """,
+
+    body35="""
+    No description available
     """
 )
-
 
 spell_dict = dict(
     entire="""
@@ -162,6 +174,7 @@ th, td {
 </html>
 """
 )
+
 
 monster_dict = dict(
     first="""

@@ -1,25 +1,26 @@
-from dependencies.monster import Monster
-from dependencies.spell import Spell
-from dependencies.item import Item
+from dependencies.monster import Monster, Monster35
+from dependencies.spell import Spell, Spell35
+from dependencies.item import Item, Item35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, EncounterTable
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
 import sys, json, os
 
 from random import randint
 
-class DMTool(QWidget):
+class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
     def __init__(self):
         super().__init__()
         # self.rh = RequestHandler(addr='http://dnd5eapi.co/api/')
-        self._setup_ui()
         self.load_meta()
+        self._setup_ui()
+        self.load_session()
 
         # test if all monsters in DB can be interpreted
         # for monster in self.monster_table_widget.list:
@@ -35,8 +36,9 @@ class DMTool(QWidget):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
-        self.setWindowTitle("RainyDM - Alpha")
+        self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
+        window_frame = QFrame()
         window_layout = QHBoxLayout()
         # Left side tab
         self.tab_widget = QTabWidget()
@@ -60,26 +62,15 @@ class DMTool(QWidget):
         ## Tables
         # Spell Table
         self.spell_table_widget = SpellTableWidget(self)
-        self.spell_table_widget.load_all("./spell", "resources/Spells/", Spell)
-        self.spell_table_widget.fill_table()
-        self.spell_table_widget.define_filters()
 
         # Monster table
         self.monster_table_widget = MonsterTableWidget(self)
-        self.monster_table_widget.load_all("./monster", "resources/Bestiary/", Monster)
-        self.monster_table_widget.fill_table()
-        self.monster_table_widget.define_filters()
 
         # Item table
         self.item_table_widget = ItemTableWidget(self)
-        self.item_table_widget.load_all("./item", "resources/Items/", Item)
-        self.item_table_widget.fill_table()
-        self.item_table_widget.define_filters()
         self.item_table_widget.layout().addWidget(self.item_viewer)
-        # for item in self.item_table_widget.list:
-        #     print(item.name)
-        #     print(item.type)
-        #     print(item.text)
+
+        self.load_resources()
 
         # inserting tables into tab
         self.tab_widget.addTab(self.monster_table_widget, "Monster")
@@ -142,27 +133,40 @@ class DMTool(QWidget):
         window_layout.addWidget(self.monster_viewer)
         window_layout.addLayout(spell_viewer_layout)
 
+        ### Menubar
+        menu = self.menuBar()
+        version = menu.addMenu("Version")
+        button_3_5 = QAction("3.5 Edition", self)
+        button_3_5.setStatusTip("3.5 Edition")
+        version.addAction(button_3_5)
+        button_5 = QAction("5th Edition", self)
+        button_5.setStatusTip("5th Edition")
+        version.addAction(button_5)
+        button_5.triggered.connect(lambda: self.change_version("5"))
+        button_3_5.triggered.connect(lambda: self.change_version("3.5"))
+
         self.bind_signals()
 
-        self.setLayout(window_layout)
+        window_frame.setLayout(window_layout)
+        self.setCentralWidget(window_frame)
 
     def bind_signals(self):
-        self.spell_table_widget.table.itemClicked.connect(
+        self.spell_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.spell_clicked_handle(self.spell_table_widget.table))
 
-        self.toolbox_widget.spell_toolbox.itemClicked.connect(
+        self.toolbox_widget.spell_toolbox.selectionModel().selectionChanged.connect(
             lambda: self.spell_clicked_handle(self.toolbox_widget.spell_toolbox))
 
-        self.monster_table_widget.table.itemClicked.connect(
+        self.monster_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.monster_table_widget.table))
 
-        self.toolbox_widget.monster_toolbox.itemClicked.connect(
+        self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
 
-        self.encounter_table.itemClicked.connect(
+        self.encounter_table.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.encounter_table))
 
-        self.item_table_widget.table.itemClicked.connect(
+        self.item_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.item_clicked_handle(self.item_table_widget.table))
 
         # self.add_players_button.clicked.connect(self.add_players_handle)
@@ -175,14 +179,46 @@ class DMTool(QWidget):
 
         self.add_player_button.clicked.connect(self.add_player)
 
+    def change_version(self, version):
+        if self.version == version:
+            return
+        self.version = version
+        self.clear_toolbox_handle()
+        self.clear_encounter_handle()
+        # self.toolbox_widget.monster_toolbox.remove_rows()
+        # self.toolbox_widget.spell_toolbox.remove_rows()
+        # self.encounter_table.remove_rows()
+
+        self.monster_table_widget.table.clear()
+        self.spell_table_widget.table.clear()
+        self.item_table_widget.table.clear()
+
+        self.monster_table_widget.filter.clear_filters()
+
+        self.load_resources()
+        # self.monster_table_widget.load_all("./monster", "resources/3.5/Bestiary/", Monster35)
+        # self.monster_table_widget.fill_table()
+
+        # self.spell_table_widget.load_all("./spell", "resources/3.5/Spells/", Spell35)
+        # self.spell_table_widget.fill_table()
+        # self.spell_table_widget.define_filters()
+
+        # self.item_table_widget.load_all("./item", "resources/3.5/Items/", Item35)
+        # self.item_table_widget.fill_table()
+        # self.item_table_widget.define_filters()
+
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()
+        if current_row is -1:
+            return
         spell_idx = int(table.item(current_row, 1).text())
         spell = self.spell_table_widget.list[spell_idx]
         self.spell_viewer.draw_view(spell)
 
     def monster_clicked_handle(self, table):
         current_row = table.currentRow()
+        if current_row is -1:
+            return
         monster_idx = int(table.item(current_row, 1).text())
         if monster_idx == -1:  # monster is a player character
             return
@@ -191,15 +227,14 @@ class DMTool(QWidget):
 
     def item_clicked_handle(self, table):
         current_row = table.currentRow()
+        if current_row is -1:
+            return
         item_idx = int(table.item(current_row, 1).text())
         item = self.item_table_widget.list[item_idx]
         self.item_viewer.draw_view(item)
-        # print(dir(item))
-        # print(item.text)
-        # self.item_viewer.draw_view(item)
 
-    def spell_search_handle(self):
-        self.spell_viewer.draw_view()
+    # def spell_search_handle(self):
+    #     self.spell_viewer.draw_view()
 
     def _fill_monster_table(self, monster_list):
         self.monster_table_widget.table_widget.clear()
@@ -228,6 +263,25 @@ class DMTool(QWidget):
             self.toolbox_widget.spell_toolbox.setItem(row_position, 0, QTableWidgetItem(str(spell)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
+
+    def load_resources(self):
+        if self.version == "5":
+            item_cls = Item
+            monster_cls = Monster
+            spell_cls = Spell
+        elif self.version == "3.5":
+            item_cls = Item35
+            monster_cls = Monster35
+            spell_cls = Spell35
+        self.item_table_widget.load_all("./item", "resources/{}/Items/".format(self.version), item_cls)
+        self.item_table_widget.fill_table()
+        self.item_table_widget.define_filters(self.version)
+        self.monster_table_widget.load_all("./monster", "resources/{}/Bestiary/".format(self.version), monster_cls)
+        self.monster_table_widget.fill_table()
+        self.monster_table_widget.define_filters(self.version)
+        self.spell_table_widget.load_all("./spell", "resources/{}/Spells/".format(self.version), spell_cls)
+        self.spell_table_widget.fill_table()
+        self.spell_table_widget.define_filters(self.version)
 
     def add_player(self, player=None):
         table = self.player_table_widget
@@ -348,8 +402,17 @@ class DMTool(QWidget):
             for spell in spells:
                 self.add_to_toolbox_spell(self.spell_table_widget.find_entry("name", spell))
 
-
     def load_meta(self):
+        if not os.path.exists("metadata/"):
+            os.mkdir("metadata")
+        self.version = "5"
+        if os.path.exists("metadata/meta.txt"):
+            with open("metadata/meta.txt", "r") as f:
+                meta_dict = eval(f.read())
+                if 'version' in meta_dict.keys():
+                    self.version = meta_dict['version']
+
+    def load_session(self):
         if not os.path.exists("metadata/"):
             os.mkdir("metadata")
         if os.path.exists("metadata/session.txt"):
@@ -373,6 +436,12 @@ class DMTool(QWidget):
                 initiative_meta=initiative_meta,
                 player_meta=player_meta
             ), f)
+
+        with open("metadata/meta.txt", "w") as f:
+            json.dump(dict(
+                version=self.version
+            ), f)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
