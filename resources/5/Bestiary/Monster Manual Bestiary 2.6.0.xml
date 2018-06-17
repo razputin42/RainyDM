@@ -19815,6 +19815,7 @@
 		<wis>6</wis>
 		<cha>5</cha>
 		<save>Wis +0</save>
+		<immune>poison</immune>
 		<conditionImmune>poisoned</conditionImmune>
 		<senses>darkvision 60 ft.</senses>
 		<passive>8</passive>

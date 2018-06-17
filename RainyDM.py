@@ -383,7 +383,10 @@ class DMTool(QMainWindow):
 
     def print_attack(self, monster, attack):
         comp = attack.split("|")
-        s = "{} uses {} -- ".format(monster.name, comp[0])
+        if monster is not None:
+            s = "{} uses {} -- ".format(monster.name, comp[0])
+        else:
+            s = "Roll -- "
         if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
             attack_roll = self.roll("1d20+"+comp[1])
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
