@@ -52,9 +52,12 @@ class MonsterViewer(Viewer):
                 cha=monster.cha,
                 cha_mod=monster.calculate_modifier(monster.cha, sign=True)
             )
-            descriptive = ["save", "skill", "senses", "languages"]
+            descriptive = ["save", "resist", "immune", "conditionImmune", "skill", "senses", "languages"]
             name_dict = dict(
                 save="Saving Throws",
+                resist="Damage Resistance",
+                immune="Damage Immunities",
+                conditionImmune="Condition Immunities",
                 skill="Skills",
                 senses="Senses",
                 languages="Languages",
