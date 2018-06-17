@@ -117,6 +117,9 @@ class ToolboxWidget:
         dice_layout = QVBoxLayout()
         for i in range(5):
             dice_layout.addWidget(DiceBox(parent).frame)
+        dice_help_button = QPushButton("Help")
+        dice_help_button.clicked.connect(self.dice_instructions)
+        dice_layout.addWidget(dice_help_button)
         self.dice_toolbox.setLayout(dice_layout)
         self.spell_tabWidget.addTab(self.dice_toolbox, "Dice")
 
@@ -124,6 +127,9 @@ class ToolboxWidget:
         layout.addWidget(self.spell_tabWidget)
         self.frame.setLayout(layout)
 
+    def dice_instructions(self):
+        self.parent.text_box.append("\nEither input diceroll in format xdy+z, AttackBonus|DamageRoll, or"
+                                    " AttackBonus, DamageRoll\nExample: 1d20+6\n5|2d6+3\n5, 2d6+3\n")
     # @staticmethod
     # def remove_from_toolbox(table, row):
     #     table.remove_row(row)
@@ -143,11 +149,17 @@ class DiceBox:
         def perform_roll(self):
             roll = self.input.text()
             try:
-                result = self.parent.roll(roll)
-                s = ">> Result of ({}): {}".format(roll, result)
-                if type(result) is list:
-                    s = s + "({})".format(sum(result))
-                self.parent.text_box.append(s)
+                roll.replace(" ", "")
+                if "," in roll:
+                    roll = roll.replace(",", "|")
+                if "|" in roll:
+                    self.parent.print_attack(None, "|" + roll)
+                else:
+                    result = self.parent.roll(roll)
+                    s = ">> Result of ({}): {}".format(roll, result)
+                    if type(result) is list:
+                        s = s + "({})".format(sum(result))
+                    self.parent.text_box.append(s)
             except:
-                pass
+                self.parent.text_box.append("Invalid dice format\nPress help for info")
         self.button.clicked.connect(lambda: perform_roll(self))
