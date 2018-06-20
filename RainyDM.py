@@ -9,6 +9,8 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
 import sys, json, os
+import html2text
+import pyperclip
 
 from random import randint
 
@@ -129,9 +131,24 @@ class DMTool(QMainWindow):
         player_table_frame.setLayout(player_table_layout)
         self.tab_widget.addTab(player_table_frame, "Players")
 
+        # monster_view_frame = QFrame()
+        monster_view_layout = QVBoxLayout()
+        # monster_view_frame.setLayout(monster_view_layout)
+        self.monster_viewer_bar = QFrame()
+        layout = QHBoxLayout()
+        monster_plaintext_button = QPushButton("Copy plaintext to clipboard")
+        monster_plaintext_button.clicked.connect(self.copy_plaintext_monster_to_clipboard)
+        layout.addWidget(monster_plaintext_button)
+        self.monster_viewer_bar.setLayout(layout)
+
+        monster_view_layout.addWidget(self.monster_viewer)
+        monster_view_layout.addWidget(self.monster_viewer_bar)
+
         window_layout.addWidget(self.tab_widget)
-        window_layout.addWidget(self.monster_viewer)
+        window_layout.addLayout(monster_view_layout)
         window_layout.addLayout(spell_viewer_layout)
+
+        self.monster_viewer_bar.setHidden(True)
 
         ### Menubar
         menu = self.menuBar()
@@ -144,6 +161,12 @@ class DMTool(QMainWindow):
         version.addAction(button_5)
         button_5.triggered.connect(lambda: self.change_version("5"))
         button_3_5.triggered.connect(lambda: self.change_version("3.5"))
+
+        experimental = menu.addMenu("Experimental")
+        button_plain_text = QAction("Plain text monsters", self)
+        button_plain_text.setStatusTip("Plain text monsters")
+        button_plain_text.triggered.connect(self.toggle_monster_bar)
+        experimental.addAction(button_plain_text)
 
         self.bind_signals()
 
@@ -178,6 +201,16 @@ class DMTool(QMainWindow):
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
+
+    def toggle_monster_bar(self):
+        if self.monster_viewer_bar.isHidden():
+            self.monster_viewer_bar.setHidden(False)
+        else:
+            self.monster_viewer_bar.setHidden(True)
+
+    def copy_plaintext_monster_to_clipboard(self):
+        # print(self.monster_viewer.toPlainText())
+        pyperclip.copy(html2text.html2text(self.monster_viewer.html))
 
     def change_version(self, version):
         if self.version == version:
