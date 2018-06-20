@@ -8,6 +8,7 @@ from .spell import Spell35
 from .item import Item35
 
 
+
 class Viewer(QTextBrowser):
     def __init__(self):
         QTextBrowser.__init__(self)
@@ -118,7 +119,7 @@ class MonsterViewer(Viewer):
             # rest of the monster
             template = Template(monster_dict['rest'])
             html = html + template.safe_substitute()
-
+        self.html = html
         self.setHtml(html)
 
 
