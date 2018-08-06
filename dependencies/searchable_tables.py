@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
-    QInputDialog, QTableWidgetItem, QSizePolicy, QTabWidget
+    QInputDialog, QTableWidgetItem, QSizePolicy
+from PyQt5.QtCore import Qt
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
 import re, os
@@ -7,6 +8,7 @@ import re, os
 
 class MyTableWidget(QTableWidget):
     NAME_COLUMN = 0
+    INDEX_COLUMN = 1
     COLUMNS = 2
 
     def __init__(self, parent):
@@ -15,17 +17,24 @@ class MyTableWidget(QTableWidget):
         self.format()
 
     def format(self):
-        columns = self.COLUMNS
-        self.setColumnCount(columns)
-        self.horizontalHeader().hide()
+        self.setColumnCount(self.COLUMNS)
+        # self.horizontalHeader().hide()
         self.horizontalHeader().setSectionResizeMode(self.NAME_COLUMN, QHeaderView.Stretch)
         self.setShowGrid(False)
         self.verticalHeader().hide()
-        self.setColumnHidden(1, True)
+        # self.setColumnHidden(1, True)
 
 
 class SearchableTable(QFrame):
+    NAME_COLUMN = 0
+    INDEX_COLUMN = 1
+    HEADERS = ['Name', 'REFERENCE']
+
     def __init__(self, parent):
+        self.old_n = None
+        self.order = None
+        self.COLUMNS = len(self.HEADERS)
+
         QFrame.__init__(self)
         self.filter = Filter(self.search_handle)
 
@@ -38,6 +47,7 @@ class SearchableTable(QFrame):
 
         self.table_layout = QHBoxLayout()
         self.table = MyTableWidget(parent)
+        self.table.horizontalHeader().sectionClicked.connect(self.sort_columns)
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
@@ -54,8 +64,16 @@ class SearchableTable(QFrame):
         self.filter_button.clicked.connect(self.filter_handle)
         self.format()
 
-    def format(self):
-        pass
+    def sort_columns(self, n):
+        if self.old_n is n:
+            if self.order is Qt.AscendingOrder:
+                self.order = Qt.DescendingOrder
+            else:
+                self.order = Qt.AscendingOrder
+        else:
+            self.order = Qt.AscendingOrder
+        self.table.sortByColumn(n, self.order)
+        self.old_n = n
 
     def define_filters(self):
         pass
@@ -79,8 +97,9 @@ class SearchableTable(QFrame):
         self.table.clear()
         self.table.setRowCount(len(self.list))
         for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, 0, QTableWidgetItem(str(entry)))
-            self.table.setItem(itt, 1, QTableWidgetItem(str(entry.index)))
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
+            self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+        self.table.setHorizontalHeaderLabels(self.HEADERS)
 
     def unique_attr(self, attr):
         result = []
@@ -107,14 +126,15 @@ class SearchableTable(QFrame):
 
     def _toggle_table(self, result):
         for itt, cond in enumerate(result):
-            self.table.setRowHidden(itt, not cond)
+            idx = int(self.table.item(itt, self.table.INDEX_COLUMN).text())
+            self.table.setRowHidden(itt, not result[idx])
 
     def extract_subtypes(self, options):
         subtype_dict = dict()
         type_return = []
         for s in options:
-            if "(" in s:
-                type = s[:s.find("(")].strip()
+            if "(" in s:  # indicates that there is a subtype
+                type = s[:s.find("(")].strip()  # find the original type
                 if type not in type_return:
                     type_return.append(type)
                 subtype_raw = s[s.find("(") + 1:s.find(")")]
@@ -127,6 +147,13 @@ class SearchableTable(QFrame):
             else:
                 if s not in type_return:
                     type_return.append(s)
+
+        for key, value in subtype_dict.items():
+            value = [option.capitalize() for option in value]
+            value = list(set(value))
+            value.sort()
+            subtype_dict[key] = value
+
         return type_return, subtype_dict
 
     def find_entry(self, attr, value):
@@ -142,46 +169,46 @@ class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
     TYPE_COLUMN = 2
-    CR_COLUMN = 3
-    COLUMNS = 4
+    CR_DISPLAY_COLUMN = 3
+    CR_COLUMN = 4
+    HEADERS = ['Name', 'REFERENCE', 'Type', 'CR', 'FLOAT CR']
+
+    def sort_columns(self, n):
+        if n is self.CR_DISPLAY_COLUMN:
+            n = self.CR_COLUMN
+        super().sort_columns(n)
 
     def format(self):
-        columns = self.COLUMNS
         h = self.table.horizontalHeader()
         t = self.table
-        t.setColumnCount(columns)
+        t.setColumnCount(self.COLUMNS)
+        t.setRowCount(1)
         resize = QHeaderView.ResizeToContents
         stretch = QHeaderView.Stretch
-        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
+        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_DISPLAY_COLUMN], [stretch, resize, resize]):
             h.setSectionResizeMode(column, policy)
         t.setShowGrid(False)
-        t.verticalHeader().hide()
         t.setColumnHidden(self.INDEX_COLUMN, True)
         t.setColumnHidden(self.TYPE_COLUMN, True)
+        t.setColumnHidden(self.CR_COLUMN, True)
 
     def fill_table(self):
         self.table.clear()
         self.table.setRowCount(len(self.list))
         for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
             self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
             self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
             if hasattr(entry, "cr"):
-                self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
-
-    def format(self):
-        columns = self.COLUMNS
-        h = self.table.horizontalHeader()
-        t = self.table
-        t.setColumnCount(columns)
-        resize = QHeaderView.ResizeToContents
-        stretch = QHeaderView.Stretch
-        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
-            h.setSectionResizeMode(column, policy)
-        t.setShowGrid(False)
-        t.verticalHeader().hide()
-        t.setColumnHidden(self.INDEX_COLUMN, True)
-        t.setColumnHidden(self.TYPE_COLUMN, True)
+                if entry.cr == "00":
+                    shown_cr = "-"
+                else:
+                    shown_cr = str(entry.cr)
+                self.table.setItem(itt, self.CR_DISPLAY_COLUMN, QTableWidgetItem(shown_cr))
+                cr_item = QTableWidgetItem()
+                cr_item.setData(Qt.DisplayRole, eval("float({})".format(entry.cr)))
+                self.table.setItem(itt, self.CR_COLUMN, cr_item)
+        self.table.setHorizontalHeaderLabels(self.HEADERS)
 
     def define_filters(self, version):
         if version == "5":
@@ -229,6 +256,24 @@ class MonsterTableWidget(SearchableTable):
 class SpellTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
+    LEVEL_COLUMN = 2
+    HEADERS = ['Name', 'REFERENCE', 'Spell Level']
+
+    def fill_table(self):
+        self.table.clear()
+        self.table.setRowCount(len(self.list))
+        for itt, entry in enumerate(self.list):
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
+            self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+            self.table.setItem(itt, self.LEVEL_COLUMN, QTableWidgetItem(str(entry.level)))
+        self.table.setHorizontalHeaderLabels(self.HEADERS)
+
+    def format(self):
+        t = self.table
+        h = self.table.horizontalHeader()
+        t.setColumnCount(self.COLUMNS)
+        t.setColumnHidden(self.INDEX_COLUMN, True)
+        t.setColumnHidden(self.LEVEL_COLUMN, False)
 
     def define_filters(self, version):
         if version == "5":
@@ -257,9 +302,15 @@ class ItemTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
 
+    def format(self):
+        t = self.table
+        h = self.table.horizontalHeader()
+        h.hide()
+        t.setColumnHidden(self.INDEX_COLUMN, True)
+
     def define_filters(self, version):
         if version == "5":
             self.filter.add_dropdown("Type", self.unique_attr("type"))
-            self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Yes")
+            self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
         elif version == "3.5":
             self.filter.add_dropdown("Category", self.unique_attr("category"))

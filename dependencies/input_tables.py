@@ -244,7 +244,7 @@ class EncounterTable(InputTableWidget):
                 for itt, value in enumerate(monster):
                     self.setItem(row_position, itt, QTableWidgetItem(str(value)))
             else:
-                self.setItem(row_position, self.NAME_COLUMN, QTableWidgetItem(str(monster)))
+                self.setItem(row_position, self.NAME_COLUMN, QTableWidgetItem(str(monster.name)))
                 self.setItem(row_position, self.INDEX_COLUMN, QTableWidgetItem(str(monster.index)))
                 if hp is not None:
                     self.setItem(row_position, self.HP_COLUMN, QTableWidgetItem(str(hp)))

@@ -62,6 +62,8 @@ class Filter:
         self.filter_content()
 
     def add_dropdown(self, name, options, suboptions=None, default=None):
+        options = [option.capitalize() for option in options]
+        options = list(set(options))
         options.sort()
         combo_box = QComboBox()
         combo_box.addItem("Any")
@@ -133,7 +135,7 @@ class Filter:
         cond = True
         for key, arg in self.filter.items():
             if not hasattr(entry, key):
-                # print("Wrong filter key passed to entry in SearchableTable")
+                print("Wrong filter key passed to entry in SearchableTable")
                 return False
             attr = getattr(entry, key)
             if type(arg) is str:
