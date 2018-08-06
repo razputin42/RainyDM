@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
-    QInputDialog, QTableWidgetItem, QSizePolicy, QTabWidget
+    QInputDialog, QTableWidgetItem, QSizePolicy
+from PyQt5.QtGui import QStandardItemModel
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
 import re, os
@@ -13,11 +14,18 @@ class MyTableWidget(QTableWidget):
         QTableWidget.__init__(self)
         self.parent = parent
         self.format()
+        self.horizontalHeader().sectionClicked.connect(self.sort_columns)
+
+    def sort_columns(self, n):
+        print(n)
+
+    def set_model(self, model):
+        self.setModel(model)
 
     def format(self):
         columns = self.COLUMNS
         self.setColumnCount(columns)
-        self.horizontalHeader().hide()
+        # self.horizontalHeader().hide()
         self.horizontalHeader().setSectionResizeMode(self.NAME_COLUMN, QHeaderView.Stretch)
         self.setShowGrid(False)
         self.verticalHeader().hide()
@@ -143,21 +151,22 @@ class MonsterTableWidget(SearchableTable):
     INDEX_COLUMN = 1
     TYPE_COLUMN = 2
     CR_COLUMN = 3
-    COLUMNS = 4
+    HEADERS = ['Name', 'REFERENCE', 'Type', 'CR']
+    COLUMNS = len(HEADERS)
 
     def format(self):
         columns = self.COLUMNS
         h = self.table.horizontalHeader()
         t = self.table
         t.setColumnCount(columns)
-        resize = QHeaderView.ResizeToContents
-        stretch = QHeaderView.Stretch
-        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
-            h.setSectionResizeMode(column, policy)
-        t.setShowGrid(False)
-        t.verticalHeader().hide()
-        t.setColumnHidden(self.INDEX_COLUMN, True)
-        t.setColumnHidden(self.TYPE_COLUMN, True)
+        t.setHorizontalHeaderLabels(['a', 'b', 'c', 'd'])
+        # resize = QHeaderView.ResizeToContents
+        # stretch = QHeaderView.Stretch
+        # for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
+        #     h.setSectionResizeMode(column, policy)
+        # t.setShowGrid(False)
+        # t.setColumnHidden(self.INDEX_COLUMN, False)
+        # t.setColumnHidden(self.TYPE_COLUMN, False)
 
     def fill_table(self):
         self.table.clear()
@@ -168,20 +177,6 @@ class MonsterTableWidget(SearchableTable):
             self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
             if hasattr(entry, "cr"):
                 self.table.setItem(itt, self.CR_COLUMN, QTableWidgetItem(str(entry.cr)))
-
-    def format(self):
-        columns = self.COLUMNS
-        h = self.table.horizontalHeader()
-        t = self.table
-        t.setColumnCount(columns)
-        resize = QHeaderView.ResizeToContents
-        stretch = QHeaderView.Stretch
-        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_COLUMN], [stretch, resize, resize]):
-            h.setSectionResizeMode(column, policy)
-        t.setShowGrid(False)
-        t.verticalHeader().hide()
-        t.setColumnHidden(self.INDEX_COLUMN, True)
-        t.setColumnHidden(self.TYPE_COLUMN, True)
 
     def define_filters(self, version):
         if version == "5":
