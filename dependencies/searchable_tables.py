@@ -8,6 +8,7 @@ import re, os
 
 class MyTableWidget(QTableWidget):
     NAME_COLUMN = 0
+    INDEX_COLUMN = 1
     COLUMNS = 2
 
     def __init__(self, parent):
@@ -27,7 +28,7 @@ class MyTableWidget(QTableWidget):
 class SearchableTable(QFrame):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
-    HEADERS = ['Name', 'Index']
+    HEADERS = ['Name', 'REFERENCE']
 
     def __init__(self, parent):
         self.old_n = None
@@ -96,8 +97,9 @@ class SearchableTable(QFrame):
         self.table.clear()
         self.table.setRowCount(len(self.list))
         for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
             self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+        self.table.setHorizontalHeaderLabels(self.HEADERS)
 
     def unique_attr(self, attr):
         result = []
@@ -124,7 +126,8 @@ class SearchableTable(QFrame):
 
     def _toggle_table(self, result):
         for itt, cond in enumerate(result):
-            self.table.setRowHidden(itt, not cond)
+            idx = int(self.table.item(itt, self.table.INDEX_COLUMN).text())
+            self.table.setRowHidden(itt, not result[idx])
 
     def extract_subtypes(self, options):
         subtype_dict = dict()
@@ -193,7 +196,7 @@ class MonsterTableWidget(SearchableTable):
         self.table.clear()
         self.table.setRowCount(len(self.list))
         for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
             self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
             self.table.setItem(itt, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
             if hasattr(entry, "cr"):
@@ -260,7 +263,7 @@ class SpellTableWidget(SearchableTable):
         self.table.clear()
         self.table.setRowCount(len(self.list))
         for itt, entry in enumerate(self.list):
-            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry)))
+            self.table.setItem(itt, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
             self.table.setItem(itt, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
             self.table.setItem(itt, self.LEVEL_COLUMN, QTableWidgetItem(str(entry.level)))
         self.table.setHorizontalHeaderLabels(self.HEADERS)
@@ -308,6 +311,6 @@ class ItemTableWidget(SearchableTable):
     def define_filters(self, version):
         if version == "5":
             self.filter.add_dropdown("Type", self.unique_attr("type"))
-            self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Yes")
+            self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
         elif version == "3.5":
             self.filter.add_dropdown("Category", self.unique_attr("category"))

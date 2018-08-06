@@ -96,9 +96,6 @@ class Monster:
                 temp_list = attr.text.split(",")
                 self.type = ",".join(temp_list[:-1]).strip()
                 if 'swarm' in self.type.lower():
-                    print(self.name)
-                    print(self.type)
-                    print()
                     self.type = 'Swarm'
                 self.source = temp_list[-1]
                 if "(" in self.type:
@@ -148,15 +145,15 @@ class Monster:
 
     def extract_spellbook(self):
         return_list = []
-        if hasattr(self, "spells"):
+        if hasattr(self, "spells") and self.spells is not None:
             for s in self.spells.split(","):
-                return_list.append(s.strip())
+                return_list.append(s.strip().replace('*', ''))
             return return_list
         else:
             return None
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 class Monster35(Monster):
     def __init__(self, entry, idx):

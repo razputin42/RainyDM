@@ -31,8 +31,9 @@ class DMTool(QMainWindow):
         # self.db_editor.show()
 
         # for monster in self.monster_table_widget.list:
-        #     if monster.size == "LARGE":
-        #         print(monster.name, monster.source)
+            # monster.extract_spellbook()
+            # if monster.size == "LARGE":
+            #     print(monster.name, monster.source)
 
         # for spell in self.spell_table_widget.list:
         #     print(spell.index)
@@ -46,13 +47,17 @@ class DMTool(QMainWindow):
         self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
         window_frame = QFrame()
-        window_layout = QHBoxLayout()
+        self.window_layout = QHBoxLayout()
         # Left side tab
         self.tab_widget = QTabWidget()
 
         # Viewers
         self.monster_viewer = MonsterViewer()
         spell_viewer_layout = QVBoxLayout()
+        self.spell_frame = QFrame()
+        self.spell_frame.setLayout(spell_viewer_layout)
+        self.spell_frame.setContentsMargins(0, 0, 0, 0)
+        self.spell_frame.setFrameStyle(0)
         self.spell_viewer = SpellViewer()
         self.item_viewer = ItemViewer()
 
@@ -63,10 +68,10 @@ class DMTool(QMainWindow):
         # self.text_box.setMaximumWidth(530)
         # self.text_box.setMaximumHeight(250)
         spell_viewer_layout.addWidget(self.spell_viewer)
-        # spell_viewer_layout.addWidget(self.item_viewer)
         spell_viewer_layout.addWidget(self.text_box)
         spell_viewer_layout.setStretch(1, 1)
         spell_viewer_layout.setStretch(0, 2)
+
 
         ## Tables
         # Spell Table
@@ -140,6 +145,8 @@ class DMTool(QMainWindow):
 
         # monster_view_frame = QFrame()
         monster_view_layout = QVBoxLayout()
+        self.monster_view_frame = QFrame()
+        self.monster_view_frame.setLayout(monster_view_layout)
         # monster_view_frame.setLayout(monster_view_layout)
         self.monster_viewer_bar = QFrame()
         layout = QHBoxLayout()
@@ -150,13 +157,14 @@ class DMTool(QMainWindow):
 
         monster_view_layout.addWidget(self.monster_viewer)
         monster_view_layout.addWidget(self.monster_viewer_bar)
+        monster_view_layout.setStretch(0, 2)
 
-        window_layout.addWidget(self.tab_widget)
-        window_layout.addLayout(monster_view_layout)
-        window_layout.addLayout(spell_viewer_layout)
-        window_layout.setStretch(0, 6)
-        window_layout.setStretch(1, 5)
-        window_layout.setStretch(2, 5)
+        self.window_layout.addWidget(self.tab_widget)
+        self.window_layout.addWidget(self.monster_view_frame)
+        self.window_layout.addWidget(self.spell_frame)
+        self.window_layout.setStretch(0, 6)
+        self.window_layout.setStretch(1, 5)
+        self.window_layout.setStretch(2, 5)
 
         self.monster_viewer_bar.setHidden(True)
 
@@ -189,7 +197,7 @@ class DMTool(QMainWindow):
 
         self.bind_signals()
 
-        window_frame.setLayout(window_layout)
+        window_frame.setLayout(self.window_layout)
         self.setCentralWidget(window_frame)
 
     def bind_signals(self):
@@ -232,9 +240,16 @@ class DMTool(QMainWindow):
             cond = True
         else:
             cond = False
-        self.spell_viewer.setHidden(not cond)
+        self.spell_frame.setHidden(not cond)
         self.tab_widget.setTabEnabled(SPELL_TAB, cond)
         self.toolbox_widget.spell_tabWidget.setTabEnabled(self.toolbox_widget.SPELL_TAB, cond)
+        self.text_box.setLayout = None
+        if not cond:
+            self.monster_view_frame.layout().addWidget(self.text_box)
+            self.window_layout.setStretch(0, 4)
+        else:
+            self.spell_frame.layout().addWidget(self.text_box)
+            self.window_layout.setStretch(0, 6)
         self.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
 
     def copy_plaintext_monster_to_clipboard(self):
@@ -270,7 +285,10 @@ class DMTool(QMainWindow):
         current_row = table.currentRow()
         if current_row is -1:
             return
-        spell_idx = int(table.item(current_row, 1).text())
+        itext = table.item(current_row, 1)
+        if itext is None or itext.text() == '':
+            return
+        spell_idx = int(itext.text())
         spell = self.spell_table_widget.list[spell_idx]
         self.spell_viewer.draw_view(spell)
 
@@ -299,7 +317,7 @@ class DMTool(QMainWindow):
         self.monster_table_widget.table_widget.clear()
         self.monster_table_widget.table_widget.setRowCount(len(monster_list))
         for itt, monster in enumerate(monster_list):
-            self.monster_table_widget.table_widget.setItem(itt, 0, QTableWidgetItem(str(monster)))
+            self.monster_table_widget.table_widget.setItem(itt, 0, QTableWidgetItem(str(monster.name)))
             self.monster_table_widget.table_widget.setItem(itt, 1, QTableWidgetItem(str(monster.index)))
 
     def add_to_toolbox(self, monster):
@@ -309,7 +327,7 @@ class DMTool(QMainWindow):
             for itt, value in enumerate(monster):
                 self.toolbox_widget.monster_toolbox.setItem(row_position, itt, QTableWidgetItem(str(value)))
         else:
-            self.toolbox_widget.monster_toolbox.setItem(row_position, 0, QTableWidgetItem(str(monster)))
+            self.toolbox_widget.monster_toolbox.setItem(row_position, 0, QTableWidgetItem(str(monster.name)))
             self.toolbox_widget.monster_toolbox.setItem(row_position, 1, QTableWidgetItem(str(monster.index)))
 
     def add_to_toolbox_spell(self, spell):
@@ -319,7 +337,7 @@ class DMTool(QMainWindow):
             for itt, value in enumerate(spell):
                 self.toolbox_widget.spell_toolbox.setItem(row_position, itt, QTableWidgetItem(str(value)))
         elif spell is not None:
-            self.toolbox_widget.spell_toolbox.setItem(row_position, 0, QTableWidgetItem(str(spell)))
+            self.toolbox_widget.spell_toolbox.setItem(row_position, 0, QTableWidgetItem(str(spell.name)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
@@ -462,7 +480,11 @@ class DMTool(QMainWindow):
         spells = monster.extract_spellbook()
         if spells is not None:
             for spell in spells:
-                self.add_to_toolbox_spell(self.spell_table_widget.find_entry("name", spell))
+                spell_entry = self.spell_table_widget.find_entry("name", spell)
+                if spell_entry is not None:
+                    self.add_to_toolbox_spell(spell_entry)
+                else:
+                    print("Failed to locate spell for", monster.name, "with spellname {}".format(spell))
 
     def load_meta(self):
         if not os.path.exists("metadata/"):

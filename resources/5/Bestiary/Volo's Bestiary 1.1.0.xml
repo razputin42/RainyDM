@@ -22,7 +22,7 @@
 			<name>Spellcasting</name>
 			<text>The abjurer is a 13th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 16, +8 to hit with spell attacks). The abjurer has the following wizard spells prepared:</text>
 			<text></text>
-			<text>Cantrips (at will): blade ward. dancing lights, mending, message, ray of frost</text>
+			<text>Cantrips (at will): blade ward, dancing lights, mending, message, ray of frost</text>
 			<text></text>
 			<text>1st level {4 slots): alarm*, mage armor, magic missile, shield*</text>
 			<text></text>
@@ -36,7 +36,7 @@
 			<text></text>
 			<text>6th level (1 slot): flesh to stone, globe of invulnerability*</text>
 			<text></text>
-			<text>7th level (1 slot): symbol* teleport</text>
+			<text>7th level (1 slot): symbol*, teleport</text>
 			<text></text>
 			<text>*Abjuration spell of 1st level or higher</text>
 		</trait>
@@ -50,7 +50,7 @@
 			<attack>Quarterstaff|3|1d6-l</attack>
 			<attack>Two Handed|3|1d8-1</attack>
 		</action>
-		<spells>blade ward. dancing lights, mending, message, ray of frost, alarm, mage armor, magic missile, shield, arcane lock, invisibility, counterspell, dispel magic, fireball, banishment, stoneskin, cone of cold, wall of force, flesh to stone, globe of invulnerability, symbol teleport</spells>
+		<spells>blade ward, dancing lights, mending, message, ray of frost, alarm, mage armor, magic missile, shield, arcane lock, invisibility, counterspell, dispel magic, fireball, banishment, stoneskin, cone of cold, wall of force, flesh to stone, globe of invulnerability, symbol, teleport</spells>
 		<slots>4,3,3,3,2,1,1,0,0</slots>
 	</monster>
 	<monster>
