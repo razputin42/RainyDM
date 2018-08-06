@@ -14,8 +14,8 @@ class Viewer(QTextBrowser):
         QTextBrowser.__init__(self)
         self.horizontalScrollBar().setHidden(True)
         self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
-        self.setMaximumWidth(530)
-        self.setMinimumWidth(530)
+        # self.setMaximumWidth(530)
+        # self.setMinimumWidth(530)
         self.aux_format()
 
     def aux_format(self):

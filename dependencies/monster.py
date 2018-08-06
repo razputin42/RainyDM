@@ -45,11 +45,13 @@ size_dict = dict(
     L="Large",
     H="Huge",
     G="Gargantuan",
-    A="Swarm"
+    A="Medium"
 )
 
 
 class Monster:
+    database_fields = ['name', 'size', 'type', 'alignment', 'ac', 'hp', 'speed', ['str', 'dex', 'con', 'int', 'wis', 'cha']]
+
     class Action:
         def __init__(self, attr):
             s = ""
@@ -89,10 +91,12 @@ class Monster:
                 if size in size_dict.keys():
                     self.size = size_dict[size]
                 else:
-                    self.size = size
+                    self.size = attr.text
             elif attr.tag == "type":
                 temp_list = attr.text.split(",")
                 self.type = ",".join(temp_list[:-1]).strip()
+                if 'swarm' in self.type.lower():
+                    self.type = 'Swarm'
                 self.source = temp_list[-1]
                 if "(" in self.type:
                     subtype_raw = self.type[self.type.find("(") + 1:self.type.find(")")]
@@ -141,15 +145,15 @@ class Monster:
 
     def extract_spellbook(self):
         return_list = []
-        if hasattr(self, "spells"):
+        if hasattr(self, "spells") and self.spells is not None:
             for s in self.spells.split(","):
-                return_list.append(s.strip())
+                return_list.append(s.strip().replace('*', ''))
             return return_list
         else:
             return None
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 class Monster35(Monster):
     def __init__(self, entry, idx):
