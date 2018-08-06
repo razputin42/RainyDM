@@ -45,7 +45,7 @@ size_dict = dict(
     L="Large",
     H="Huge",
     G="Gargantuan",
-    A="Swarm"
+    A="Medium"
 )
 
 
@@ -91,10 +91,15 @@ class Monster:
                 if size in size_dict.keys():
                     self.size = size_dict[size]
                 else:
-                    self.size = size
+                    self.size = attr.text
             elif attr.tag == "type":
                 temp_list = attr.text.split(",")
                 self.type = ",".join(temp_list[:-1]).strip()
+                if 'swarm' in self.type.lower():
+                    print(self.name)
+                    print(self.type)
+                    print()
+                    self.type = 'Swarm'
                 self.source = temp_list[-1]
                 if "(" in self.type:
                     subtype_raw = self.type[self.type.find("(") + 1:self.type.find(")")]

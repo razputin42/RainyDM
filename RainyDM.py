@@ -27,14 +27,13 @@ class DMTool(QMainWindow):
         self.load_meta()
         self._setup_ui()
         self.load_session()
-        self.db_editor = DBEditor(self, self.monster_table_widget.list[0])
-        self.db_editor.show()
+        # self.db_editor = DBEditor(self, self.monster_table_widget.list[0])
+        # self.db_editor.show()
 
-        # test if all monsters in DB can be interpreted
         # for monster in self.monster_table_widget.list:
-        #     print(monster.name, monster.extract_spellbook())
+        #     if monster.size == "LARGE":
+        #         print(monster.name, monster.source)
 
-        # test if all the spells in DB can be interpreted
         # for spell in self.spell_table_widget.list:
         #     print(spell.index)
         #     self.spell_viewer.draw_view(spell)
@@ -237,7 +236,6 @@ class DMTool(QMainWindow):
         self.tab_widget.setTabEnabled(SPELL_TAB, cond)
         self.toolbox_widget.spell_tabWidget.setTabEnabled(self.toolbox_widget.SPELL_TAB, cond)
         self.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
-
 
     def copy_plaintext_monster_to_clipboard(self):
         # print(self.monster_viewer.toPlainText())
