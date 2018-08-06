@@ -50,6 +50,8 @@ size_dict = dict(
 
 
 class Monster:
+    database_fields = ['name', 'size', 'type', 'alignment', 'ac', 'hp', 'speed', ['str', 'dex', 'con', 'int', 'wis', 'cha']]
+
     class Action:
         def __init__(self, attr):
             s = ""

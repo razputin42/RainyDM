@@ -100,6 +100,9 @@ class LinkedSpellTable(LinkedTableWidget):
 
 
 class ToolboxWidget:
+    SPELL_TAB = 0
+    DICE_TAB = 1
+
     def __init__(self, parent):
         self.parent = parent
         self.frame = QFrame()

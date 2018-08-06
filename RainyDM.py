@@ -5,6 +5,7 @@ from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget,
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, EncounterTable
+from dependencies.db_editor import DBEditor
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
@@ -14,15 +15,20 @@ import pyperclip
 
 from random import randint
 
+MONSTER_TAB = 0
+SPELL_TAB = 1
+
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
     def __init__(self):
         super().__init__()
-        # self.rh = RequestHandler(addr='http://dnd5eapi.co/api/')
+
         self.load_meta()
         self._setup_ui()
         self.load_session()
+        self.db_editor = DBEditor(self, self.monster_table_widget.list[0])
+        self.db_editor.show()
 
         # test if all monsters in DB can be interpreted
         # for monster in self.monster_table_widget.list:
@@ -55,11 +61,13 @@ class DMTool(QMainWindow):
         self.text_box = QTextEdit()
         self.text_box.setReadOnly(True)
         self.text_box.setFontPointSize(10)
-        self.text_box.setMaximumWidth(530)
-        self.text_box.setMaximumHeight(250)
+        # self.text_box.setMaximumWidth(530)
+        # self.text_box.setMaximumHeight(250)
         spell_viewer_layout.addWidget(self.spell_viewer)
         # spell_viewer_layout.addWidget(self.item_viewer)
         spell_viewer_layout.addWidget(self.text_box)
+        spell_viewer_layout.setStretch(1, 1)
+        spell_viewer_layout.setStretch(0, 2)
 
         ## Tables
         # Spell Table
@@ -147,6 +155,9 @@ class DMTool(QMainWindow):
         window_layout.addWidget(self.tab_widget)
         window_layout.addLayout(monster_view_layout)
         window_layout.addLayout(spell_viewer_layout)
+        window_layout.setStretch(0, 6)
+        window_layout.setStretch(1, 5)
+        window_layout.setStretch(2, 5)
 
         self.monster_viewer_bar.setHidden(True)
 
@@ -163,10 +174,19 @@ class DMTool(QMainWindow):
         button_3_5.triggered.connect(lambda: self.change_version("3.5"))
 
         experimental = menu.addMenu("Experimental")
-        button_plain_text = QAction("Plain text monsters", self)
+        button_plain_text = QAction("Plain text monsters", self, checkable=True)
         button_plain_text.setStatusTip("Plain text monsters")
         button_plain_text.triggered.connect(self.toggle_monster_bar)
+
         experimental.addAction(button_plain_text)
+
+        tools = menu.addMenu("Tools")
+        self.button_hide_spells = QAction("Spells", tools, checkable=True)
+        self.button_hide_spells.setChecked(True)
+        self.button_hide_spells.setStatusTip("Spells")
+        self.button_hide_spells.triggered.connect(self.toggle_spells)
+
+        tools.addAction(self.button_hide_spells)
 
         self.bind_signals()
 
@@ -208,6 +228,17 @@ class DMTool(QMainWindow):
         else:
             self.monster_viewer_bar.setHidden(True)
 
+    def toggle_spells(self):
+        if self.button_hide_spells.isChecked():
+            cond = True
+        else:
+            cond = False
+        self.spell_viewer.setHidden(not cond)
+        self.tab_widget.setTabEnabled(SPELL_TAB, cond)
+        self.toolbox_widget.spell_tabWidget.setTabEnabled(self.toolbox_widget.SPELL_TAB, cond)
+        self.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
+
+
     def copy_plaintext_monster_to_clipboard(self):
         # print(self.monster_viewer.toPlainText())
         pyperclip.copy(html2text.html2text(self.monster_viewer.html))
@@ -218,9 +249,6 @@ class DMTool(QMainWindow):
         self.version = version
         self.clear_toolbox_handle()
         self.clear_encounter_handle()
-        # self.toolbox_widget.monster_toolbox.remove_rows()
-        # self.toolbox_widget.spell_toolbox.remove_rows()
-        # self.encounter_table.remove_rows()
 
         self.monster_table_widget.table.clear()
         self.spell_table_widget.table.clear()
@@ -443,10 +471,13 @@ class DMTool(QMainWindow):
             os.mkdir("metadata")
         self.version = "5"
         if os.path.exists("metadata/meta.txt"):
-            with open("metadata/meta.txt", "r") as f:
-                meta_dict = eval(f.read())
-                if 'version' in meta_dict.keys():
-                    self.version = meta_dict['version']
+            try:
+                with open("metadata/meta.txt", "r") as f:
+                    meta_dict = eval(f.read())
+                    if 'version' in meta_dict.keys():
+                        self.version = meta_dict['version']
+            except:
+                None
 
     def load_session(self):
         if not os.path.exists("metadata/"):
