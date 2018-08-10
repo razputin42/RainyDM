@@ -6,12 +6,14 @@ from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, EncounterTable
 from dependencies.db_editor import DBEditor
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QLabel
 import sys, json, os
 import html2text
 import pyperclip
+import time
 
 from random import randint
 
@@ -27,6 +29,7 @@ class DMTool(QMainWindow):
         self.load_meta()
         self._setup_ui()
         self.load_session()
+        self._display_ui()
         # self.db_editor = DBEditor(self, self.monster_table_widget.list[0])
         # self.db_editor.show()
 
@@ -44,9 +47,10 @@ class DMTool(QMainWindow):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
+        self.setWindowIcon(QIcon(os.path.join('assets', 'tear.png')))
         self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
-        window_frame = QFrame()
+        self.window_frame = QFrame()
         self.window_layout = QHBoxLayout()
         # Left side tab
         self.tab_widget = QTabWidget()
@@ -197,8 +201,7 @@ class DMTool(QMainWindow):
 
         self.bind_signals()
 
-        window_frame.setLayout(self.window_layout)
-        self.setCentralWidget(window_frame)
+        self.window_frame.setLayout(self.window_layout)
 
     def bind_signals(self):
         self.spell_table_widget.table.selectionModel().selectionChanged.connect(
@@ -228,6 +231,9 @@ class DMTool(QMainWindow):
         self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
+
+    def _display_ui(self):
+        self.setCentralWidget(self.window_frame)
 
     def toggle_monster_bar(self):
         if self.monster_viewer_bar.isHidden():
@@ -532,6 +538,7 @@ class DMTool(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setStyle('Fusion')
     # app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     form = DMTool()  # We set the form to be our ExampleApp (design)
 
