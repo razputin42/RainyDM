@@ -146,8 +146,6 @@ class DBEditor(QWidget):
                     self.new_entries[_field] = text
             elif type(field) is str:
                 edit = self.line_edit_dict[field]
-                print(edit.__class__ is QTextEdit, edit.__class__, edit.__class__.__name__)
-                time.sleep(0.2)
                 if edit.__class__ is QTextEdit:
                     text = edit.toPlainText()
                 else:
