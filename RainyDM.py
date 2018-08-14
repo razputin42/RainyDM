@@ -192,16 +192,16 @@ class DMTool(QMainWindow):
         button_plain_text = QAction("Plain text monsters", self, checkable=True)
         button_plain_text.setStatusTip("Plain text monsters")
         button_plain_text.triggered.connect(self.toggle_monster_bar)
-        # self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
-        # self.edit_entries_action.setStatusTip("Enable edit data entries")
-        ## development
-        # self.edit_entries_action.setChecked(True)
-        # self.enable_edit_data_entries()
+        self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
+        self.edit_entries_action.setStatusTip("Enable edit data entries")
+        # development
+        self.edit_entries_action.setChecked(False)
+        self.enable_edit_data_entries()
         ##
-        # self.edit_entries_action.triggered.connect(self.enable_edit_data_entries)
+        self.edit_entries_action.triggered.connect(self.enable_edit_data_entries)
 
         experimental.addAction(button_plain_text)
-        # experimental.addAction(self.edit_entries_action)
+        experimental.addAction(self.edit_entries_action)
 
         tools = menu.addMenu("Tools")
         self.button_hide_spells = QAction("Spells", tools, checkable=True)
@@ -214,6 +214,11 @@ class DMTool(QMainWindow):
         self.bind_signals()
 
         self.window_frame.setLayout(self.window_layout)
+
+    def enable_edit_data_entries(self):
+        cond = self.edit_entries_action.isChecked()
+        self.monster_table_widget.EDITABLE = cond
+        self.spell_table_widget.EDITABLE = cond
 
     def bind_signals(self):
         self.spell_table_widget.table.selectionModel().selectionChanged.connect(

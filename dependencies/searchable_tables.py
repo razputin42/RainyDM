@@ -348,12 +348,14 @@ class MonsterTableWidget(SearchableTable):
         addToolbox = menu.addAction("Add to toolbox")
         if hasattr(monster, "spells"):
             add_spellbook = menu.addAction("Add monster's spells to toolbox")
-        menu.addSeparator()
-        if self.EDITABLE and hasattr(monster, 'custom'):
-            edit_entry = menu.addAction("Edit entry")
-        else:
-            edit_entry = None
-        edit_copy_entry = menu.addAction('Edit copy of entry')
+
+        edit_entry = None
+        edit_copy_entry = None
+        if self.EDITABLE:
+            menu.addSeparator()
+            if hasattr(monster, 'custom'):
+                edit_entry = menu.addAction("Edit entry")
+            edit_copy_entry = menu.addAction('Edit copy of entry')
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
