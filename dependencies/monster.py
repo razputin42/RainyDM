@@ -1,4 +1,5 @@
 import re
+import copy
 
 xp_dict = {
     "00": 0,
@@ -50,9 +51,15 @@ size_dict = dict(
 
 
 class Monster:
-    database_fields = ['name', 'size', 'type', 'alignment', 'ac', 'hp', 'speed', ['str', 'dex', 'con', 'int', 'wis', 'cha']]
+    database_fields = [
+        'name', 'size', 'type', 'alignment', 'ac', 'hp', 'speed',
+        ['str', 'dex', 'con', 'int', 'wis', 'cha'],
+        'save', 'resist', 'immune', 'conditionImmune', 'skill', 'senses', 'languages', 'passive', 'cr', 'spells'
+    ]
 
     class Action:
+        database_fields = ['name', 'text', 'attack']
+
         def __init__(self, attr):
             s = ""
             for itt, _attr in enumerate(attr):
@@ -92,7 +99,7 @@ class Monster:
                     self.size = size_dict[size]
                 else:
                     self.size = attr.text
-            elif attr.tag == "type":
+            elif attr.tag == "type" and ',' in attr.text:
                 temp_list = attr.text.split(",")
                 self.type = ",".join(temp_list[:-1]).strip()
                 if 'swarm' in self.type.lower():
@@ -152,8 +159,9 @@ class Monster:
         else:
             return None
 
-    # def __str__(self):
-    #     return self.name
+    def copy(self):
+        return copy.deepcopy(self)
+
 
 class Monster35(Monster):
     def __init__(self, entry, idx):
