@@ -1,0 +1,8 @@
+
+v1.3
+Added logo
+Implement edit copy of entry
+Implemented edit a custom entry
+Added classes to the spell viewer
+Implemented filter spells by class
+Updated the style of the window

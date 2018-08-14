@@ -1,3 +1,6 @@
+import copy
+
+
 school_dict = dict(
     A="Abjuration",
     C="Conjuration",
@@ -10,6 +13,10 @@ school_dict = dict(
 )
 
 class Spell:
+    database_fields = [
+        'name', 'level', 'school', 'time', 'range', 'components', 'duration', 'text'
+    ]
+
     def __init__(self, entry, idx):
         self.entry = entry
         self.index = idx
@@ -22,6 +29,8 @@ class Spell:
                     s = s + attr.text + "<br>"
             elif attr.tag == "school":
                 self.school = school_dict[attr.text]
+            elif attr.tag == 'classes':
+                self.classes = attr.text.split(', ')
             else:
                 setattr(self, attr.tag, attr.text)
         self.text = s
@@ -29,6 +38,8 @@ class Spell:
     def __str__(self):
         return self.name
 
+    def copy(self):
+        return copy.deepcopy(self)
 
 class Spell35(Spell):
     def __init__(self, entry, idx):

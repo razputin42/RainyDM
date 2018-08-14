@@ -135,15 +135,19 @@ class Filter:
         cond = True
         for key, arg in self.filter.items():
             if not hasattr(entry, key):
-                print("Wrong filter key passed to entry in SearchableTable")
+                # print("Wrong filter key passed to entry in SearchableTable")
                 return False
             attr = getattr(entry, key)
-            if type(arg) is str:
+            if type(arg) is str and type(attr) is str:  # single attribute, single argument. Easy as pie
                 p = re.compile('{}'.format(arg), re.IGNORECASE)
                 cond = cond and (p.match(attr))
-            elif type(arg) is list:  # numerical range
+            elif type(attr) is list:  # single argument, multiple attributes, eval individually for each element
+                p = re.compile('{}'.format(arg), re.IGNORECASE)
+                cond = cond and any([p.match(_attr) for _attr in attr])
+            elif type(arg) is list:  # numerical range, must be inbetween two values
                 attr = eval("float({})".format(attr))
                 cond = cond and (arg[0] <= attr <= arg[1])
+
         return cond
 
     def clear_filters(self):

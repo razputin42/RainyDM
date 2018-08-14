@@ -159,7 +159,7 @@
 		<classes>Mystic (UA)</classes>
 		<text>You can alter your body to withstand punishing environments.</text>
 		<text>Psychic Focus:</text>
-		<text>While focused on this discipline, you don’t need to eat, sleep, or breathe.</text>
+		<text>While focused on this discipline, you don't need to eat, sleep, or breathe.</text>
 		<text>Energy Adaptation (5 points, C):</text>
 		<text>As an action, you touch a creature and give it resistance to acid, cold, fire, lightning, or thunder damage for up to 1 hour.</text>
 		<text>Energy Immunity (7 points, C):</text>
@@ -210,7 +210,7 @@
 				<text />
 				<text>Armor: light armor, medium armor</text>
 				<text>Weapons: simple weapons</text>
-				<text>Tools: thieves’ tools + 2 other of your choice</text>
+				<text>Tools: thieves' tools + 2 other of your choice</text>
 				<text>Skills: Choose three from Arcana, Deception, History, Investigation, Medicine, Nature, Religion, Sleight of Hand</text>
 			</feature>
 			<feature>
@@ -220,7 +220,7 @@
 				<text>• (a) a hand axe and light hammer or (b) any two simple weapons</text>
 				<text>• light crossbow and 20 bolts</text>
 				<text>• (a) scale mail or (b) studded leather armor</text>
-				<text>• Thieves’ tools and dungeoneer’s pack</text>
+				<text>• Thieves' tools and dungeoneer's pack</text>
 				<text />
 			</feature>
 		</autolevel>
@@ -231,7 +231,7 @@
 			</feature>
 			<feature>
 				<name>Magic Item Analysis</name>
-				<text>Starting at 1st level, your understanding of magic items allows you to analyze and understand their secrets. You know the artificer spells detect magic and identify, and you can cast them as rituals. You don’t need to provide a material component when casting identify with this class feature.</text>
+				<text>Starting at 1st level, your understanding of magic items allows you to analyze and understand their secrets. You know the artificer spells detect magic and identify, and you can cast them as rituals. You don't need to provide a material component when casting identify with this class feature.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Artificer Specialist: Alchemist</name>
@@ -242,51 +242,51 @@
 				<text>A master of engineering, you forge a firearm powered by a combination of science and magic.</text>
 			</feature>
 			<feature optional="YES">
-				<name>Alchemist: Alchemist’s Satchel</name>
-				<text>At 1st level, you craft an Alchemist’s Satchel, a bag of reagents that you use to create a variety of concoctions. The bag and its contents are both magical, and this magic allows you to pull out exactly the right materials you need for your Alchemical Formula options, described below. After you use one of those options, the bag reclaims the materials. </text>
+				<name>Alchemist: Alchemist's Satchel</name>
+				<text>At 1st level, you craft an Alchemist's Satchel, a bag of reagents that you use to create a variety of concoctions. The bag and its contents are both magical, and this magic allows you to pull out exactly the right materials you need for your Alchemical Formula options, described below. After you use one of those options, the bag reclaims the materials. </text>
 				<text>If you lose this satchel, you can create a new one over the course of three days of work (eight hours each day) by expending 100 gp worth of leather, glass, and other raw materials.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemist: Alchemical Formula</name>
 				<text>At 1st level, you learn three Alchemical Formula options: Alchemical Fire, Alchemical Acid, and one other option of your choice. You learn an additional formula of your choice at 3rd, 9th, 14th, and 17th levels.</text>
-				<text>To use any of these options, your Alchemist’s Satchel must be within reach.
+				<text>To use any of these options, your Alchemist's Satchel must be within reach.
 If an Alchemical Formula option requires a saving throw, the DC is 8 + your proficiency bonus + your Intelligence modifier.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Alchemical Fire</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel, pull out a vial of volatile liquid, and hurl the vial at a creature, object, or surface within 30 feet of you (the vial and its contents disappear if you don’t hurl the vial by the end of the current turn). On impact, the vial detonates in a 5-foot radius. Any creature in that area must succeed on a Dexterity saving throw or take 1d6 fire damage. </text>
-				<text>This formula’s damage increases by 1d6 when you reach certain levels in this class: 4th level (2d6), 7th level (3d6), 10th level (4d6), 13th level (5d6), 16th level (6d6), and 19th level (7d6).</text>
+				<text>As an action, you can reach into your Alchemist's Satchel, pull out a vial of volatile liquid, and hurl the vial at a creature, object, or surface within 30 feet of you (the vial and its contents disappear if you don't hurl the vial by the end of the current turn). On impact, the vial detonates in a 5-foot radius. Any creature in that area must succeed on a Dexterity saving throw or take 1d6 fire damage. </text>
+				<text>This formula's damage increases by 1d6 when you reach certain levels in this class: 4th level (2d6), 7th level (3d6), 10th level (4d6), 13th level (5d6), 16th level (6d6), and 19th level (7d6).</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Alchemical Acid</name>
-				<text>Alchemical Acid. As an action, you can reach into your Alchemist’s Satchel, pull out a vial of acid, and hurl the vial at a creature or object within 30 feet of you (the vial and its contents disappear if you don’t hurl the vial by the end of the current turn). The vial shatters on impact. A creature must succeed on a Dexterity saving throw or take 1d6 acid damage. An object automatically takes that damage, and the damage is maximized.</text>
-				<text>This formula’s damage increases by 1d6 when you reach certain levels in this class: 3rd level (2d6), 5th level (3d6), 7th level (4d6), 9th level (5d6), 11th level (6d6), 13th level (7d6), 15th level (8d6), 17th level (9d6), and 19th level (10d6).</text>
+				<text>Alchemical Acid. As an action, you can reach into your Alchemist's Satchel, pull out a vial of acid, and hurl the vial at a creature or object within 30 feet of you (the vial and its contents disappear if you don't hurl the vial by the end of the current turn). The vial shatters on impact. A creature must succeed on a Dexterity saving throw or take 1d6 acid damage. An object automatically takes that damage, and the damage is maximized.</text>
+				<text>This formula's damage increases by 1d6 when you reach certain levels in this class: 3rd level (2d6), 5th level (3d6), 7th level (4d6), 9th level (5d6), 11th level (6d6), 13th level (7d6), 15th level (8d6), 17th level (9d6), and 19th level (10d6).</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Healing Draught</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can’t do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can’t use this formula.</text>
-				<text>This formula’s healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can't do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can't use this formula.</text>
+				<text>This formula's healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
 			</feature>				
 			<feature optional="YES">
 				<name>Alchemical Formula: Smoke Stick</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Swift Step Draught</name>
-				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist’s Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature’s speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist's Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature's speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Tanglefoot Bag</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don’t hurl the bag by the end of the current turn). </text>
-				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don't hurl the bag by the end of the current turn). </text>
+				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Thunderstone</name>
-				<text>Thunderstone. As an action, you can reach into your Alchemist’s Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don’t hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
+				<text>Thunderstone. As an action, you can reach into your Alchemist's Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don't hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Gunsmith: Master Smith</name>
-				<text>When you choose this specialization at 1st level, you gain proficiency with smith’s tools, and you learn the mending cantrip.</text>
+				<text>When you choose this specialization at 1st level, you gain proficiency with smith's tools, and you learn the mending cantrip.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Gunsmith: Thunder Cannon</name>
@@ -312,11 +312,11 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text>At 2nd level, you gain the use of a magic item that you have crafted. Choose the item from the list of 2nd-level items below. </text>
 				<text>Crafting an item is a difficult task. When you gain a magic item from this feature, it reflects long hours of study, tinkering, and experimentation that allowed you to finally complete the item. You are assumed to work on this item in your leisure time and to finish it when you level up.</text>
 				<text>You complete another item of your choice when you reach certain levels in this class: 5th, 10th, 15th, and 20th level. The item you choose must be on the list for your current artificer level or a lower level.</text>
-				<text>These magic items are detailed in the Dungeon Master’s Guide.</text>
+				<text>These magic items are detailed in the Dungeon Master's Guide.</text>
 				<text />
 				<text>2nd Level: bag of holding, cap of water breathing, driftglobe, goggles of night, sending stones</text>
 				<text>5th Level: alchemy jug, helm of comprehending languages, lantern of revealing, ring of swimming, robe of useful items, rope of climbing, wand of magic detection, wand of secrets</text>
-				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward’s handy haversack</text>
+				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward's handy haversack</text>
 				<text>15th Level: boots of striding and springing, bracers of archery, brooch of shielding, broom of flying, hat of disguise, slippers of spider climbing</text>
 				<text>20th Level: eyes of the eagle, gem of brightness, gloves of missile snaring, gloves of swimming and climbing, ring of jumping, ring of mind shielding, wings of flying</text>
 			</feature>
@@ -329,7 +329,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text />
 				<text>Spell Slots</text>
 				<text />
-				<text>The Artificer table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest.</text>
+				<text>The Artificer table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.</text>
 				<text />
 				<text>Spells Known of 1st Level and Higher</text>
 				<text />
@@ -349,31 +349,31 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text />
 				<text>Spellcasting Focus</text>
 				<text />
-				<text>You can use an arcane focus as a spellcasting focus for your artificer spells. See chapter 5, “Equipment,” in the Player’s Handbook for various arcane focus options.</text>
+				<text>You can use an arcane focus as a spellcasting focus for your artificer spells. See chapter 5, “Equipment,” in the Player's Handbook for various arcane focus options.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula - Healing Draught</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can’t do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can’t use this formula.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can't do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can't use this formula.</text>
 				<text />
-				<text>This formula’s healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
+				<text>This formula's healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula - Smoke Stick</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula - Swift Step Draught</name>
-				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist’s Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature’s speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist's Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature's speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula - Tanglefoot Bag</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don’t hurl the bag by the end of the current turn). </text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don't hurl the bag by the end of the current turn). </text>
 				<text />
-				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula - Thunderstone</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don’t hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don't hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Gunsmith: Thundermonger</name>
@@ -401,7 +401,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text>At 5th level, you gain the use of a magic item that you have crafted.</text>
 				<text>Crafting an item is a difficult task. When you gain a magic item from this feature, it reflects long hours of study, tinkering, and experimentation that allowed you to finally complete the item. You are assumed to work on this item in your leisure time and to finish it when you level up.</text>
 				<text>The item you choose must be on the list for your current artificer level or a lower level.</text>
-				<text>These magic items are detailed in the Dungeon Master’s Guide.</text>
+				<text>These magic items are detailed in the Dungeon Master's Guide.</text>
 				<text />
 				<text>2nd Level: bag of holding, cap of water breathing, driftglobe, goggles of night, sending stones</text>
 				<text>5th Level: alchemy jug, helm of comprehending languages, lantern of revealing, ring of swimming, robe of useful items, rope of climbing, wand of magic detection, wand of secrets</text>
@@ -411,13 +411,13 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 			<feature>
 				<name>Mechanical Servant</name>
 				<text>At 6th level, your research and mastery of your craft allow you to produce a mechanical servant. The servant is a construct that obeys your commands without hesitation and functions in combat to protect you. Though magic fuels its creation, the servant is not magical itself. You are assumed to have been working on the servant for quite some time, finally finishing it during a short or long rest after you reach 6th level.</text>
-				<text>Select a Large beast with a challenge rating of 2 or less. The servant uses that beast’s game statistics, but it can look however you like, as long as its form is appropriate for its statistics. It has the following modifications:</text>
+				<text>Select a Large beast with a challenge rating of 2 or less. The servant uses that beast's game statistics, but it can look however you like, as long as its form is appropriate for its statistics. It has the following modifications:</text>
 				<text />
 				<text>• It is a construct instead of a beast.</text>
-				<text>• It can’t be charmed.</text>
+				<text>• It can't be charmed.</text>
 				<text>• It is immune to poison damage and the poisoned condition.</text>
-				<text>• It gains darkvision with a range of 60 feet if it doesn’t have it already.</text>
-				<text>• It understands the languages you can speak when you create it, but it can’t speak.</text>
+				<text>• It gains darkvision with a range of 60 feet if it doesn't have it already.</text>
+				<text>• It understands the languages you can speak when you create it, but it can't speak.</text>
 				<text>• If you are the target of a melee attack and the servant is within 5 feet of the attacker, you can use your reaction to command the servant to respond, using its reaction to make a melee attack against the attacker. </text>
 				<text />
 				<text>The servant obeys your orders to the best of its ability. In combat, it rolls its own initiative and acts on its own.</text>
@@ -434,25 +434,25 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<autolevel level="9">
 			<feature optional="YES">
 				<name>Alchemical Formula: Healing Draught</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can’t do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can’t use this formula.</text>
-				<text>This formula’s healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can't do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can't use this formula.</text>
+				<text>This formula's healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
 			</feature>				
 			<feature optional="YES">
 				<name>Alchemical Formula: Smoke Stick</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Swift Step Draught</name>
-				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist’s Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature’s speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist's Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature's speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Tanglefoot Bag</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don’t hurl the bag by the end of the current turn). </text>
-				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don't hurl the bag by the end of the current turn). </text>
+				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula: Thunderstone</name>
-				<text>Thunderstone. As an action, you can reach into your Alchemist’s Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don’t hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
+				<text>Thunderstone. As an action, you can reach into your Alchemist's Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don't hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Gunsmith: Blast Wave</name>
@@ -466,11 +466,11 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text>At 10th level, you gain the use of a magic item that you have crafted.</text>
 				<text>Crafting an item is a difficult task. When you gain a magic item from this feature, it reflects long hours of study, tinkering, and experimentation that allowed you to finally complete the item. You are assumed to work on this item in your leisure time and to finish it when you level up.</text>
 				<text>The item you choose must be on the list for your current artificer level or a lower level.</text>
-				<text>These magic items are detailed in the Dungeon Master’s Guide.</text>
+				<text>These magic items are detailed in the Dungeon Master's Guide.</text>
 				<text />
 				<text>2nd Level: bag of holding, cap of water breathing, driftglobe, goggles of night, sending stones</text>
 				<text>5th Level: alchemy jug, helm of comprehending languages, lantern of revealing, ring of swimming, robe of useful items, rope of climbing, wand of magic detection, wand of secrets</text>
-				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward’s handy haversack</text>
+				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward's handy haversack</text>
 			</feature>
 		</autolevel>
 		<autolevel level="12">
@@ -483,25 +483,25 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
         <autolevel level="14">
 			<feature optional="YES">
 				<name>Alchemical Formula 6 Healing Draught</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can’t do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can’t use this formula.</text>
-				<text>This formula’s healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can't do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can't use this formula.</text>
+				<text>This formula's healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
 			</feature>				
 			<feature optional="YES">
 				<name>Alchemical Formula 6 Smoke Stick</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula 6 Swift Step Draught</name>
-				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist’s Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature’s speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist's Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature's speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula 6 Tanglefoot Bag</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don’t hurl the bag by the end of the current turn). </text>
-				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don't hurl the bag by the end of the current turn). </text>
+				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula 6 Thunderstone</name>
-				<text>Thunderstone. As an action, you can reach into your Alchemist’s Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don’t hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
+				<text>Thunderstone. As an action, you can reach into your Alchemist's Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don't hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Gunsmith: Piercing Round</name>
@@ -520,11 +520,11 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text>At 15th level, you gain the use of a magic item that you have crafted.</text>
 				<text>Crafting an item is a difficult task. When you gain a magic item from this feature, it reflects long hours of study, tinkering, and experimentation that allowed you to finally complete the item. You are assumed to work on this item in your leisure time and to finish it when you level up.</text>
 				<text>The item you choose must be on the list for your current artificer level or a lower level.</text>
-				<text>These magic items are detailed in the Dungeon Master’s Guide.</text>
+				<text>These magic items are detailed in the Dungeon Master's Guide.</text>
 				<text />
 				<text>2nd Level: bag of holding, cap of water breathing, driftglobe, goggles of night, sending stones</text>
 				<text>5th Level: alchemy jug, helm of comprehending languages, lantern of revealing, ring of swimming, robe of useful items, rope of climbing, wand of magic detection, wand of secrets</text>
-				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward’s handy haversack</text>
+				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward's handy haversack</text>
 				<text>15th Level: boots of striding and springing, bracers of archery, brooch of shielding, broom of flying, hat of disguise, slippers of spider climbing</text>
 			</feature>
 		</autolevel>
@@ -538,25 +538,25 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
         <autolevel level="17">
 			<feature optional="YES">
 				<name>Alchemical Formula 7 Healing Draught</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can’t do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can’t use this formula.</text>
-				<text>This formula’s healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a vial of healing liquid. A creature can drink it as an action to regain 1d8 hit points. The vial then disappears. Once a creature regains hit points from this alchemical formula, the creature can't do so again until it finishes a long rest. If not used, the vial and its contents disappear after 1 hour. While the vial exists, you can't use this formula.</text>
+				<text>This formula's healing increases by 1d8 when you reach certain levels in this class: 3rd level (2d8), 5th level (3d8), 7th level (4d8), 9th level (5d8), 11th level (6d8), 13th level (7d8), 15th level (8d8), 17th level (9d8), and 19th level (10d8).</text>
 			</feature>				
 			<feature optional="YES">
 				<name>Alchemical Formula 7 Smoke Stick</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a stick that produces a thick plume of smoke. You can hold on to the stick or throw it to a point up to 30 feet away as part of the action used to produce it. The area in a 10-foot radius around the stick is filled with thick smoke that blocks vision, including darkvision. The stick and smoke persist for 1 minute and then disappear. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula 7 Swift Step Draught</name>
-				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist’s Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature’s speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>Swift Step Draught. As a bonus action, you can reach into your Alchemist's Satchel and pull out a vial filled with a bubbling, brown liquid. As an action, a creature can drink it. Doing so increases the creature's speed by 20 feet for 1 minute, and the vial disappears. If not used, the vial and its contents disappear after 1 minute. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula 7 Tanglefoot Bag</name>
-				<text>As an action, you can reach into your Alchemist’s Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don’t hurl the bag by the end of the current turn). </text>
-				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can’t do so again for 1 minute.</text>
+				<text>As an action, you can reach into your Alchemist's Satchel and pull out a bag filled with writhing, sticky black tar and hurl it at a point on the ground within 30 feet of you (the bag and its contents disappear if you don't hurl the bag by the end of the current turn). </text>
+				<text>The bag bursts on impact and covers the ground in a 5- foot radius with sticky goo. That area becomes difficult terrain for 1 minute, and any creature that starts its turn on the ground in that area has its speed halved for that turn. After using this formula, you can't do so again for 1 minute.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Alchemical Formula 7 Thunderstone</name>
-				<text>Thunderstone. As an action, you can reach into your Alchemist’s Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don’t hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
+				<text>Thunderstone. As an action, you can reach into your Alchemist's Satchel and pull out a crystalline shard and hurl it at a creature, object, or surface within 30 feet of you (the shard disappears if you don't hurl it by the end of the current turn). The shard shatters on impact with a blast of concussive energy. Each creature within 10 feet of the point of impact must succeed on a Constitution saving throw or be knocked prone and pushed 10 feet away from that point.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Gunsmith: Explosive Round</name>
@@ -576,11 +576,11 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 				<text>At 20th level, you gain the use of a magic item that you have crafted.</text>
 				<text>Crafting an item is a difficult task. When you gain a magic item from this feature, it reflects long hours of study, tinkering, and experimentation that allowed you to finally complete the item. You are assumed to work on this item in your leisure time and to finish it when you level up.</text>
 				<text>The item you choose must be on the list for your current artificer level or a lower level.</text>
-				<text>These magic items are detailed in the Dungeon Master’s Guide.</text>
+				<text>These magic items are detailed in the Dungeon Master's Guide.</text>
 				<text />
 				<text>2nd Level: bag of holding, cap of water breathing, driftglobe, goggles of night, sending stones</text>
 				<text>5th Level: alchemy jug, helm of comprehending languages, lantern of revealing, ring of swimming, robe of useful items, rope of climbing, wand of magic detection, wand of secrets</text>
-				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward’s handy haversack</text>
+				<text>10th Level: bag of beans, chime of opening, decanter of endless water, eyes of minute seeing, folding boat, Heward's handy haversack</text>
 				<text>15th Level: boots of striding and springing, bracers of archery, brooch of shielding, broom of flying, hat of disguise, slippers of spider climbing</text>
 				<text>20th Level: eyes of the eagle, gem of brightness, gloves of missile snaring, gloves of swimming and climbing, ring of jumping, ring of mind shielding, wings of flying</text>
 			</feature>
@@ -1353,18 +1353,18 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 			<feature optional="YES">
 				<name>Bard College: College of Swords (UA)</name>
 				<text>Bards of the College of Swords are called blades, and they entertain through daring feats of weapon prowess. Blades perform stunts such as sword swallowing, knife throwing and juggling, and mock combats. But though they use their weapons to entertain, they are also highly trained and skilled warriors in their own right.</text>
-				<text>Their talent with weapons inspires many blades to lead double lives. One blade might use a circus troupe as cover for nefarious deeds such as assassination, robbery, and blackmail. Other blades strike at the wicked, bringing justice to bear against the cruel and powerful. Most troupes are happy to accept a blade’s talent for the excitement it adds to a performance, but few entertainers fully trust them.</text>
-				<text>Blades who abandon lives as entertainers have often run into trouble that makes maintaining their secret activities impossible. A blade caught stealing or engaging in vigilante justice is too great a liability for most performer troupes. With their weapon skills as their greatest asset, these blades either take up work as enforcers for thieves’ guilds or strike out on their own as adventurers.</text>
+				<text>Their talent with weapons inspires many blades to lead double lives. One blade might use a circus troupe as cover for nefarious deeds such as assassination, robbery, and blackmail. Other blades strike at the wicked, bringing justice to bear against the cruel and powerful. Most troupes are happy to accept a blade's talent for the excitement it adds to a performance, but few entertainers fully trust them.</text>
+				<text>Blades who abandon lives as entertainers have often run into trouble that makes maintaining their secret activities impossible. A blade caught stealing or engaging in vigilante justice is too great a liability for most performer troupes. With their weapon skills as their greatest asset, these blades either take up work as enforcers for thieves' guilds or strike out on their own as adventurers.</text>
                 <text />
                 <text>This Bard College is from Unearthed Arcana: Kits of Old, and as such may not be allowed in your game. Consult your DM before choosing this option.</text>
 			</feature>
 			<feature optional="YES">
 				<name>Bard College: College of Satire (UA)</name>
-				<text>Bards of the College of Satire are called jesters. They use lowbrow stories, daring acrobatics, and cutting jokes to entertain audiences, ranging from the crowds in a rundown dockside pub to the nobles of a king’s royal court. Where other bards seek forgotten lore or tales of epic bravery, jesters ferret out embarrassing and hilarious stories of all kinds. Whether telling the ribald tale of a brawny stable hand’s affair with an aged duchess or a mocking satire of a paladin of Helm’s cloying innocence, a jester never lets taste, social decorum, or shame get in the way of a good laugh.</text>
-				<text>While jesters are masters of puns, jokes, and verbal barbs, they are much more than just comic relief. They are expected to mock and provoke, taking advantage of how even the most powerful folk are expected by tradition to endure a jester’s barbs with good humor. This expectation allows a jester to serve as a critic or a voice of reason when others are too intimidated to speak the truth.</text>
-				<text>For the duchess with a taste for strapping young laborers, such tales might serve to warn the targets of her affections and force her to change her ways for lack of willing partners. Striking back at the jester only ruins her already damaged reputation, and might provide the best evidence that the jester’s satires have hit their mark. But if she is kind and generous to her conquests, the jokes and stories cast her as a kind of folk hero, while drawing even more potential partners to her.</text>
-				<text>Jesters are loyal to only one cause: the pursuit and propagation of the truth. They use their comedy and innocuous appearance to break down social barriers and expose corruption, incompetence, and stupidity among the rich and powerful. Whether revealing a con artist’s treachery or exposing a baron’s plans for war as driven by greed and bloodlust, a jester serves as the conscience of a realm.</text>
-				<text>Jesters adventure to safeguard the common folk and to undermine the plans of the rich, powerful, and arrogant. Their magic bolsters allies’ spirits while casting doubt into foes’ minds. Among bards, jesters are unmatched acrobats, and their ability to tumble, dodge, leap, and climb makes them slippery opponents in battle.</text>
+				<text>Bards of the College of Satire are called jesters. They use lowbrow stories, daring acrobatics, and cutting jokes to entertain audiences, ranging from the crowds in a rundown dockside pub to the nobles of a king's royal court. Where other bards seek forgotten lore or tales of epic bravery, jesters ferret out embarrassing and hilarious stories of all kinds. Whether telling the ribald tale of a brawny stable hand's affair with an aged duchess or a mocking satire of a paladin of Helm's cloying innocence, a jester never lets taste, social decorum, or shame get in the way of a good laugh.</text>
+				<text>While jesters are masters of puns, jokes, and verbal barbs, they are much more than just comic relief. They are expected to mock and provoke, taking advantage of how even the most powerful folk are expected by tradition to endure a jester's barbs with good humor. This expectation allows a jester to serve as a critic or a voice of reason when others are too intimidated to speak the truth.</text>
+				<text>For the duchess with a taste for strapping young laborers, such tales might serve to warn the targets of her affections and force her to change her ways for lack of willing partners. Striking back at the jester only ruins her already damaged reputation, and might provide the best evidence that the jester's satires have hit their mark. But if she is kind and generous to her conquests, the jokes and stories cast her as a kind of folk hero, while drawing even more potential partners to her.</text>
+				<text>Jesters are loyal to only one cause: the pursuit and propagation of the truth. They use their comedy and innocuous appearance to break down social barriers and expose corruption, incompetence, and stupidity among the rich and powerful. Whether revealing a con artist's treachery or exposing a baron's plans for war as driven by greed and bloodlust, a jester serves as the conscience of a realm.</text>
+				<text>Jesters adventure to safeguard the common folk and to undermine the plans of the rich, powerful, and arrogant. Their magic bolsters allies' spirits while casting doubt into foes' minds. Among bards, jesters are unmatched acrobats, and their ability to tumble, dodge, leap, and climb makes them slippery opponents in battle.</text>
                 <text />
                 <text>This Bard College is from Unearthed Arcana: Kits of Old, and as such may not be allowed in your game. Consult your DM before choosing this option.</text>
 			</feature>
@@ -1622,7 +1622,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<text>Seize the Initiative (1–5 points):</text>
 		<text>When you roll initiative, you can use your reaction to give yourself or one creature you can see within 60 feet of you a +2 bonus to initiative for each psi point you spend.</text>
 		<text>Surge of Speed (2 points):</text>
-		<text>As a bonus action, you increase your speed by 30 feet until the end of your turn. In addition, you don’t provoke opportunity attacks this turn.</text>
+		<text>As a bonus action, you increase your speed by 30 feet until the end of your turn. In addition, you don't provoke opportunity attacks this turn.</text>
 		<text>Surge of Action (5 points):</text>
 		<text>As a bonus action, you can gain an additional action this turn. That action can be used only to take the Attack (one attack only), Dash, Disengage, Hide, or Use an Object action.</text>
 	</spell>
@@ -2483,11 +2483,11 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<text>Psychic Focus:</text>
 		<text>While focused on this discipline, you gain proficiency in one of the following skills of your choice: Deception, Intimidation, Performance, or Persuasion. You can change the chosen skill each time you apply your focus to this discipline.</text>
 		<text>Exacting Query (2 points):</text>
-		<text>As an action, you target a creature that you can see within 120 feet of you. The target must make an Intelligence saving throw (it succeeds automatically if it is immune to being charmed). On a failed save, the target truthfully answers one brief question you ask it as part of this action, provided that it understands the question. On a successful save, the target is unaffected, and you can’t use this ability on it again until you finish a long rest.</text>
+		<text>As an action, you target a creature that you can see within 120 feet of you. The target must make an Intelligence saving throw (it succeeds automatically if it is immune to being charmed). On a failed save, the target truthfully answers one brief question you ask it as part of this action, provided that it understands the question. On a successful save, the target is unaffected, and you can't use this ability on it again until you finish a long rest.</text>
 		<text>Occluded Mind (2 points):</text>
-		<text>As an action, you target a creature that you can see within 120 feet of you. The target must make an Intelligence saving throw (it succeeds automatically if it is immune to being charmed). On a failed save, the target believes one statement of your choice for the next 5 minutes, provided that it understands the statement. The statement can be up to ten words long, and must describe you or a creature or object the target can see. On a successful save, the target is unaffected, and you can’t use this ability on it again until you finish a long rest.</text>
+		<text>As an action, you target a creature that you can see within 120 feet of you. The target must make an Intelligence saving throw (it succeeds automatically if it is immune to being charmed). On a failed save, the target believes one statement of your choice for the next 5 minutes, provided that it understands the statement. The statement can be up to ten words long, and must describe you or a creature or object the target can see. On a successful save, the target is unaffected, and you can't use this ability on it again until you finish a long rest.</text>
 		<text>Broken Will (5 points):</text>
-		<text>As an action, you target a creature that you can see within 120 feet of you. The target must make an Intelligence saving throw. On a failed save, the target is charmed until the end of its next turn, during which you choose its movement and action. On a successful save, the target is unaffected, and you can’t use this ability on that creature again until you finish a long rest.</text>
+		<text>As an action, you target a creature that you can see within 120 feet of you. The target must make an Intelligence saving throw. On a failed save, the target is charmed until the end of its next turn, during which you choose its movement and action. On a successful save, the target is unaffected, and you can't use this ability on that creature again until you finish a long rest.</text>
 		<text>Psychic Grip (7 points, C):</text>
 		<text>As an action, you target a creature you can see. The target must make an Intelligence saving throw. On a failed save, you overload the creature with psychic energy. The target is paralyzed for 1 minute, but at the end of each of its turns it can make another Intelligence saving throw. On a success, this effect ends. On a failure, you can use your reaction to force the target to move up to half its speed, despite being paralyzed.</text>
 	</spell>
@@ -5315,7 +5315,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		</trait>
 		<trait>
 			<name>Feature: Factor</name>
-			<text>Although you’ve left the day-to-day life of a merchant behind, your family has assigned you the services of a loyal retainer from the business, a factor, husbanding agent, seafarer, caravan guard, or clerk. This individual is a commoner who can perform mundane tasks for you such as making purchases, delivering messages, and running errands. He or she will not fight for you and will not follow you into obviously dangerous areas (such as dungeons), and will leave if frequently endangered or abused. If he or she is killed, the family assigns you another within a few days.</text>
+			<text>Although you've left the day-to-day life of a merchant behind, your family has assigned you the services of a loyal retainer from the business, a factor, husbanding agent, seafarer, caravan guard, or clerk. This individual is a commoner who can perform mundane tasks for you such as making purchases, delivering messages, and running errands. He or she will not fight for you and will not follow you into obviously dangerous areas (such as dungeons), and will leave if frequently endangered or abused. If he or she is killed, the family assigns you another within a few days.</text>
 			<text>    [Note: This feature is a variant of the Noble Knight feature.]</text>
 		</trait>
 		<trait>
@@ -5349,7 +5349,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		</trait>
 		<trait>
 			<name>Feature: Secret Passage</name>
-			<text>You can call on your contacts within the smuggling community to secure secret passage into or out of Hillsfar for yourself and your adventuring companions, no questions asked, and no Red Plume entanglements. Because you’re calling in a favor, you can’t be certain they will be able to help on your timetable or at all. Your Dungeon Master will determine whether you can be smuggled into or out of the city. In return for your passage, you and your companions may owe the Rouges Guild a favor and/or may have to pay bribes.</text>
+			<text>You can call on your contacts within the smuggling community to secure secret passage into or out of Hillsfar for yourself and your adventuring companions, no questions asked, and no Red Plume entanglements. Because you're calling in a favor, you can't be certain they will be able to help on your timetable or at all. Your Dungeon Master will determine whether you can be smuggled into or out of the city. In return for your passage, you and your companions may owe the Rouges Guild a favor and/or may have to pay bribes.</text>
 			<text>    [Note: This feature is a variant of the Sailor feature.]</text>
 		</trait>
 	</background>
@@ -5501,7 +5501,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<text>Psionic Recovery (2 points):</text>
 		<text>As an action, you can spend up to two Hit Dice. Roll each die, add your Constitution modifier to it, and regain hit points equal to the total.</text>
 		<text>Iron Hide (1-3 points):</text>
-		<text>As a reaction when you are attacked, you gain a +2 bonus to AC for each psi point you spend. You spend these points after learning the attack’s result but before applying its effects.</text>
+		<text>As a reaction when you are attacked, you gain a +2 bonus to AC for each psi point you spend. You spend these points after learning the attack's result but before applying its effects.</text>
 	</spell>
 	<feat>
 		<name>Keen Mind</name>
@@ -5776,7 +5776,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<components>N/A</components>
 		<duration>Instantaneous</duration>
 		<classes>Mystic (UA)</classes>
-		<text>As a bonus action, you can communicate telepathically with one creature you can see within 120 feet of you. You don’t need to share a language with a creature for it to understand your telepathic utterances, and the creature understands you even if it lacks a language. You can allow a creature to respond to you telepathically, but it must understand at least one language in order to communicate this way. This ability to communicate lasts until the start of your next turn. You can’t communicate with an unwilling creature.</text>
+		<text>As a bonus action, you can communicate telepathically with one creature you can see within 120 feet of you. You don't need to share a language with a creature for it to understand your telepathic utterances, and the creature understands you even if it lacks a language. You can allow a creature to respond to you telepathically, but it must understand at least one language in order to communicate this way. This ability to communicate lasts until the start of your next turn. You can't communicate with an unwilling creature.</text>
 	</spell>
 	<spell>
 		<name>Mind Thrust (Psionic Talent)</name>
@@ -5787,7 +5787,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<duration>Instantaneous</duration>
 		<classes>Mystic (UA)</classes>
 		<text>As an action, you blast psychic energy at one creature that you can see within 5 feet of you. The target must succeed on an Intelligence saving throw or take 1d6 psychic damage. If the target takes any of this damage, you can push it up to 10 feet away from you.</text>
-		<text>    The talent’s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).</text>
+		<text>    The talent's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).</text>
 	</spell>
 	<spell>
 		<name>Mind Vault (Awakened)</name>
@@ -5803,7 +5803,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<text>Borrow Language (5 points):</text>
 		<text>As an action, you gain the ability to speak, read, and understand one language for 8 hours. You can use this ability multiple times to gain its benefits with several languages.</text>
 		<text>Borrow Lore (7 points):</text>
-		<text>As an action, name one specific location in your mind. You learn a summary of the important lore regarding that place. At the DM’s option, you also learn up to three secrets about it, such as the location of traps, passwords, or where treasure is hidden within it.</text>
+		<text>As an action, name one specific location in your mind. You learn a summary of the important lore regarding that place. At the DM's option, you also learn up to three secrets about it, such as the location of traps, passwords, or where treasure is hidden within it.</text>
 	</spell>
 	<spell>
 		<name>Mind over Emotion (Awakened)</name>
@@ -5817,7 +5817,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<text>Charming Presence (1-7 points):</text>
 		<text>As an action, you exert an aura of sympathetic power. Roll 2d8 per psi point you spend on this ability; the total is how many hit points worth of creatures this spell can affect. Creatures within 30 feet of you are affected in ascending order of their hit point maximum, ignoring unconscious creatures or creatures immune to this effect. Each creature affected by this ability is charmed by you for 10 minutes. While charmed, it regards you as a friendly acquaintance. A creature engaged in combat is immune to this effect.</text>
 		<text>Revolting Presence (5 points, C):</text>
-		<text>As an action, you exert an aura of repulsive power. Up to five creatures of your choice that you can see within 30 feet of you must each make an Intelligence saving throw. On a failed save, a target is frightened of you for 10 minutes. While frightened, it takes psychic damage equal to twice your mystic level if it doesn’t end its turn at least 10 feet farther away from you than it was at the start of that turn. It can then make another Intelligence saving throw at the end of the turn. On a success, this effect ends.</text>
+		<text>As an action, you exert an aura of repulsive power. Up to five creatures of your choice that you can see within 30 feet of you must each make an Intelligence saving throw. On a failed save, a target is frightened of you for 10 minutes. While frightened, it takes psychic damage equal to twice your mystic level if it doesn't end its turn at least 10 feet farther away from you than it was at the start of that turn. It can then make another Intelligence saving throw at the end of the turn. On a success, this effect ends.</text>
 		<text>Invoke Awe (7 points, C):</text>
 		<text>As an action, you exert an aura that inspires awe and adulation in others. Up to five creatures of your choice that you can see within 60 feet of you must each make an Intelligence saving throw. On a failed save, the target is charmed by you for 10 minutes. While charmed, it obeys all your orders to the best of its ability and without risking its life. The target will only harm creatures that it has seen harm you since it first came under the effect of this ability. At the end of each of its turns it can make another Intelligence saving throw. On a success, this effect ends.</text>
 	</spell>
@@ -6441,7 +6441,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
         <feature>
         	<name>Psi Points</name>
             <text>You have an internal reservoir of energy that can be devoted to the psionic disciplines you know. This energy is represented by psi points. Each psionic discipline describes effects you can create with it by spending a certain number of psi points. A psionic talent requires no psi points.</text>
-            <text>    The number of psi points you have is based on your mystic level, as shown in the Psi Points column of the Mystic table. The number shown for your level is your psi point maximum. Your psi point total returns to its maximum after you finish a long rest. The number of psi points you have can’t go below 0 or over your maximum.</text>
+            <text>    The number of psi points you have is based on your mystic level, as shown in the Psi Points column of the Mystic table. The number shown for your level is your psi point maximum. Your psi point total returns to its maximum after you finish a long rest. The number of psi points you have can't go below 0 or over your maximum.</text>
         </feature>
         <feature>
         	<name>Psi Limit</name>
@@ -6477,7 +6477,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
         </feature>
         <feature>
         	<name>Psychic Focus</name>
-        	<text>You can focus psychic energy on one of your psionic disciplines to draw ongoing benefits from it. As a bonus action, you can choose one of your psionic disciplines and gain its psychic focus benefit, which is detailed in that discipline’s description. The benefit lasts until you are incapacitated or until you use another bonus action to choose a psychic focus benefit. You can have only one psychic focus benefit at a time.</text>
+        	<text>You can focus psychic energy on one of your psionic disciplines to draw ongoing benefits from it. As a bonus action, you can choose one of your psionic disciplines and gain its psychic focus benefit, which is detailed in that discipline's description. The benefit lasts until you are incapacitated or until you use another bonus action to choose a psychic focus benefit. You can have only one psychic focus benefit at a time.</text>
         </feature>
         <feature>
             <name>Psionic Ability</name>
@@ -6491,22 +6491,22 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
         	<text>Psychic Focus</text>
         	<text>    The Psychic Focus section of a discipline describes the benefit you gain when you choose that discipline for your psychic focus.</text>
         	<text>Effect Options and Psi Points</text>
-        	<text>    A discipline provides different options for how to use it with your psi points. Each effect option has a name, and the psi point cost of that option appears in parentheses after its name. You must spend that number of psi points to use that option, while abiding by your psi limit. If you don’t have enough psi points left, or the cost is above your psi limit, you can’t use the option.</text>
+        	<text>    A discipline provides different options for how to use it with your psi points. Each effect option has a name, and the psi point cost of that option appears in parentheses after its name. You must spend that number of psi points to use that option, while abiding by your psi limit. If you don't have enough psi points left, or the cost is above your psi limit, you can't use the option.</text>
         	<text>    Some options show a range of psi points, rather than a specific cost. To use that option, you must spend a number of points within that point range, still abiding by your psi limit.</text>
-        	<text>    Each option notes specific information about its effect, including the action required to use it (if any), its range, and whether it requires concentration. If an option doesn’t state that it is used as an action, a bonus action, or a reaction, using it requires no action.</text>
+        	<text>    Each option notes specific information about its effect, including the action required to use it (if any), its range, and whether it requires concentration. If an option doesn't state that it is used as an action, a bonus action, or a reaction, using it requires no action.</text>
         	<text>Components</text>
-        	<text>    Disciplines don’t require the components that many spells require. Using a discipline requires no spoken words, gestures, or materials. The power of psionics comes from the mind.</text>
+        	<text>    Disciplines don't require the components that many spells require. Using a discipline requires no spoken words, gestures, or materials. The power of psionics comes from the mind.</text>
         	<text>Duration</text>
-        	<text>    An option in a discipline specifies how long its effect lasts. Instantaneous: If no duration is specified, the effect of an option is instantaneous. Concentration: Some effect options require concentration. This requirement is noted with a “C” after the option’s psi point cost.</text>
-        	<text>    Concentrating on a discipline follows the same rules as concentrating on a spell. This rule means you can’t concentrate on a spell and a discipline at the same time, nor can you concentrate on two disciplines at the same time.</text>
+        	<text>    An option in a discipline specifies how long its effect lasts. Instantaneous: If no duration is specified, the effect of an option is instantaneous. Concentration: Some effect options require concentration. This requirement is noted with a “C” after the option's psi point cost.</text>
+        	<text>    Concentrating on a discipline follows the same rules as concentrating on a spell. This rule means you can't concentrate on a spell and a discipline at the same time, nor can you concentrate on two disciplines at the same time.</text>
         	<text>Targets and Areas of Effect</text>
-        	<text>    Psionic disciplines use the same rules as spells for determining targets and areas of effect. See chapter 10, “Spellcasting,” of the Player’s Handbook.</text>
+        	<text>    Psionic disciplines use the same rules as spells for determining targets and areas of effect. See chapter 10, “Spellcasting,” of the Player's Handbook.</text>
         	<text>Saving Throws and Attack Rolls</text>
         	<text>    If a discipline requires a saving throw, it specifies the type of save and the results of a successful or failed saving throw. The DC is determined by your psionic ability.</text>
-        	<text>    Some disciplines require you to make an attack roll to determine whether the discipline’s effect hits its target. The attack roll uses your psionic ability.</text>
+        	<text>    Some disciplines require you to make an attack roll to determine whether the discipline's effect hits its target. The attack roll uses your psionic ability.</text>
         	<text>Combining Psionic Effects</text>
-        	<text>    The effects of different psionic disciplines add together while the durations of those disciplines overlap. Likewise, different options from a single psionic discipline combine if they are active at the same time. However, a specific option from a psionic discipline doesn’t combine with itself if that option is used multiple times. Instead, the most potent effect — usually dependent on how many psi points were used to create the effect — applies while the durations of the effects overlap.</text>
-        	<text>    Psionics and magic are separate effects, and therefore their benefits and drawbacks overlap. A psionic effect that reproduces a spell is an exception to this rule (see “Psionics and Magic” earlier, as well as “Combining Magical Effects” in chapter 10, “Spellcasting,” of the Player’s Handbook).</text>
+        	<text>    The effects of different psionic disciplines add together while the durations of those disciplines overlap. Likewise, different options from a single psionic discipline combine if they are active at the same time. However, a specific option from a psionic discipline doesn't combine with itself if that option is used multiple times. Instead, the most potent effect — usually dependent on how many psi points were used to create the effect — applies while the durations of the effects overlap.</text>
+        	<text>    Psionics and magic are separate effects, and therefore their benefits and drawbacks overlap. A psionic effect that reproduces a spell is an exception to this rule (see “Psionics and Magic” earlier, as well as “Combining Magical Effects” in chapter 10, “Spellcasting,” of the Player's Handbook).</text>
         </feature>
         <feature>
         	<name>Mystic Order</name>
@@ -6528,7 +6528,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
         </feature>
         <feature optional="YES">
             <name>Order of the Immortal</name>
-            <text>The Order of the Immortal strives to achieve physical perfection by augmenting the body’s natural strength with psychic power. This order’s goal is for its members to achieve immortality by overcoming the effects of aging through rigorous discipline and psionic perfection. To members of this order, psionic energy is a tool to augment, control, and perfect the physical body.</text>
+            <text>The Order of the Immortal strives to achieve physical perfection by augmenting the body's natural strength with psychic power. This order's goal is for its members to achieve immortality by overcoming the effects of aging through rigorous discipline and psionic perfection. To members of this order, psionic energy is a tool to augment, control, and perfect the physical body.</text>
             <text>    Members of this order who take up the adventuring life are skilled warriors. Their psionic abilities allow them to shrug off injuries and hazards, while focusing their strength and speed in combat.</text>
         </feature>
         <feature optional="YES">
@@ -6548,9 +6548,9 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
     <autolevel level="3">
         <feature optional="YES">
             <name>Psionic Investigation (Order of the Awakened)</name>
-            <text>At 3rd level, you can focus your mind to read the psionic imprint left on an object. If you hold an object and concentrate on it for 10 minutes (as if concentrating on a psionic discipline), you learn a few basic facts about it. You gain a mental image from the object’s point of view, showing the last creature to hold the object, regardless of how long ago it was last handled.</text>
-            <text>You also learn of any events that have occurred within 20 feet of the object within the past 24 hours. The events you perceive unfold from the object’s perspective. You see and hear such events as if you were there, but can’t use other senses.</text>
-            <text>Additionally, you can embed an intangible psionic sensor within the object. For the next 24 hours, you can use an action to learn the object’s location relative to you (its distance and direction) and to look at the object’s surroundings from its point of view as if you were there. This perception lasts until the start of your next turn.</text>
+            <text>At 3rd level, you can focus your mind to read the psionic imprint left on an object. If you hold an object and concentrate on it for 10 minutes (as if concentrating on a psionic discipline), you learn a few basic facts about it. You gain a mental image from the object's point of view, showing the last creature to hold the object, regardless of how long ago it was last handled.</text>
+            <text>You also learn of any events that have occurred within 20 feet of the object within the past 24 hours. The events you perceive unfold from the object's perspective. You see and hear such events as if you were there, but can't use other senses.</text>
+            <text>Additionally, you can embed an intangible psionic sensor within the object. For the next 24 hours, you can use an action to learn the object's location relative to you (its distance and direction) and to look at the object's surroundings from its point of view as if you were there. This perception lasts until the start of your next turn.</text>
         </feature>
         <feature optional="YES">
             <name>Psionic Resilience (Order of the Immortal)</name>
@@ -6581,11 +6581,11 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
     <autolevel level="6">
         <feature optional="YES">
             <name>Psychic Surge (Order of the Awakened)</name>
-            <text>Starting at 6th level, you overload your psychic focus to batter down an opponent’s defenses. You can impose disadvantage on a target’s saving throw against a discipline or talent you use, but at the cost of using your psychic focus. Your focus immediately ends, and you can’t use it again until you finish a short or long rest. You can’t use this feature if you can’t use your psychic focus.</text>
+            <text>Starting at 6th level, you overload your psychic focus to batter down an opponent's defenses. You can impose disadvantage on a target's saving throw against a discipline or talent you use, but at the cost of using your psychic focus. Your focus immediately ends, and you can't use it again until you finish a short or long rest. You can't use this feature if you can't use your psychic focus.</text>
         </feature>
         <feature optional="YES">
             <name>Surge of Health (Order of the Immortal)</name>
-            <text>Starting at 6th level, you can draw on your psychic focus to escape death’s grasp. As a reaction when you take damage, you can halve that damage against you. Your psychic focus immediately ends, and you can’t use it again until you finish a short or long rest. You can’t use this ability if you can’t use your psychic focus.</text>
+            <text>Starting at 6th level, you can draw on your psychic focus to escape death's grasp. As a reaction when you take damage, you can halve that damage against you. Your psychic focus immediately ends, and you can't use it again until you finish a short or long rest. You can't use this ability if you can't use your psychic focus.</text>
         </feature>
     </autolevel>
 
@@ -6608,8 +6608,8 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 	<autolevel level="10">
         <feature>
             <name>Consumptive Power</name>
-            <text>At 10th level, you gain the ability to sacrifice your health in exchange for psychic power. As a bonus action, you regain up to 5 psi points. For each point you choose to regain this way, your current hit points and hit point maximum are both reduced by 1 for each level you have in this class. This reduction can’t be lessened in any way.</text>
-            <text>    Once you use this feature, you can’t use it again until you finish a long rest, and the reduction to your hit point maximum lasts until you finish a long rest.</text>
+            <text>At 10th level, you gain the ability to sacrifice your health in exchange for psychic power. As a bonus action, you regain up to 5 psi points. For each point you choose to regain this way, your current hit points and hit point maximum are both reduced by 1 for each level you have in this class. This reduction can't be lessened in any way.</text>
+            <text>    Once you use this feature, you can't use it again until you finish a long rest, and the reduction to your hit point maximum lasts until you finish a long rest.</text>
         </feature>
     </autolevel>
 </class>
@@ -7355,7 +7355,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		</trait>
 		<trait>
 			<name>Equipment</name>
-			<text>A set of artisan’s tools (one of your choice), a token of the life you once knew, a set of traveler’s clothes, and a belt pouch containing 15 gps</text>
+			<text>A set of artisan's tools (one of your choice), a token of the life you once knew, a set of traveler's clothes, and a belt pouch containing 15 gps</text>
 		</trait>
 		<trait>
 			<name>Starting Lifestyle</name>
@@ -7411,7 +7411,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<text>Psychic Focus:</text>
 		<text>While focused on this discipline, you charge one nonmagical weapon you carry, or one of your fists, with psionic energy. Attacks you make with it are considered magical and have a +1 bonus to attack rolls and damage rolls.</text>
 		<text>Ethereal Weapon (1 point):</text>
-		<text>As a bonus action, you can momentarily transform a weapon you hold into psionic energy. The next attack you make with this weapon requires no attack roll. Instead, the target must make a Dexterity saving throw against this discipline. On a failed save, the target takes the attack’s normal damage and suffers any additional effects. On a successful save, the target takes half damage from the attack, but suffers no additional effects that would normally be imposed on a hit.</text>
+		<text>As a bonus action, you can momentarily transform a weapon you hold into psionic energy. The next attack you make with this weapon requires no attack roll. Instead, the target must make a Dexterity saving throw against this discipline. On a failed save, the target takes the attack's normal damage and suffers any additional effects. On a successful save, the target takes half damage from the attack, but suffers no additional effects that would normally be imposed on a hit.</text>
 		<text>Lethal Strike (1-5 points):</text>
 		<text>When you hit a target with a melee weapon attack, you can increase the damage to that target. The target takes an extra 1d10 psychic damage for each psi point you spend.</text>
 		<text>Augmented Weapon (5 points, C):</text>
@@ -8831,7 +8831,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
             </feature>
             <feature optional="YES">
                 <name>Scout: Skirmisher</name>
-                <text>Starting at 3rd level, you are difficult to pin down during a fight. You can move up to half your speed as a reaction when an enemy ends its turn within 5 feet of you. This movement doesn’t provoke opportunity attacks.</text>
+                <text>Starting at 3rd level, you are difficult to pin down during a fight. You can move up to half your speed as a reaction when an enemy ends its turn within 5 feet of you. This movement doesn't provoke opportunity attacks.</text>
             </feature>
 		</autolevel>
         <autolevel level="9">
@@ -8853,8 +8853,8 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 			</feature>
             <feature optional="YES">
                 <name>Scout: Ambush Master</name>
-                <text>Starting at 13th level, you excel at leading ambushes. If any of your foes are surprised, you can use a bonus action on your turn in the first round of the combat to grant each ally who can see you a +5 bonus to initiative that lasts until the combat ends. If the initiative bonus would increase an ally’s initiative above yours, the ally’s initiative instead equals your initiative.</text>
-                <text>  Each of the allies also receives a 10 -foot increase to speed that lasts until the end of the ally’s next turn.</text>
+                <text>Starting at 13th level, you excel at leading ambushes. If any of your foes are surprised, you can use a bonus action on your turn in the first round of the combat to grant each ally who can see you a +5 bonus to initiative that lasts until the combat ends. If the initiative bonus would increase an ally's initiative above yours, the ally's initiative instead equals your initiative.</text>
+                <text>  Each of the allies also receives a 10 -foot increase to speed that lasts until the end of the ally's next turn.</text>
             </feature>
         </autolevel>    
 
@@ -9834,7 +9834,7 @@ If an Alchemical Formula option requires a saving throw, the DC is 8 + your prof
 		<duration>Instantaneous</duration>
 		<classes>Mystic (UA)</classes>
 		<text>As an action, you psychically strike one creature that you can see within 120 feet of you. The target must succeed on an Intelligence saving throw or take 1d8 psychic damage.</text>
-		<text>    The talent’s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).</text>
+		<text>    The talent's damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).</text>
 	</spell>
 	<race>
 		<name>Tiefling (Infernal)</name>
