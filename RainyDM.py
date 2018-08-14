@@ -5,7 +5,6 @@ from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget,
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, EncounterTable
-from dependencies.db_editor import DBEditor
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -28,6 +27,8 @@ class DMTool(QMainWindow):
 
         self.load_meta()
         self._setup_ui()
+        self._setup_menu()
+        self.bind_signals()
         self.load_session()
         self._display_ui()
         # self.db_editor = DBEditor(self, self.monster_table_widget.list[0])
@@ -172,6 +173,9 @@ class DMTool(QMainWindow):
 
         self.monster_viewer_bar.setHidden(True)
 
+        self.window_frame.setLayout(self.window_layout)
+
+    def _setup_menu(self):
         ### Menubar
         menu = self.menuBar()
         version = menu.addMenu("Version")
@@ -188,8 +192,16 @@ class DMTool(QMainWindow):
         button_plain_text = QAction("Plain text monsters", self, checkable=True)
         button_plain_text.setStatusTip("Plain text monsters")
         button_plain_text.triggered.connect(self.toggle_monster_bar)
+        # self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
+        # self.edit_entries_action.setStatusTip("Enable edit data entries")
+        ## development
+        # self.edit_entries_action.setChecked(True)
+        # self.enable_edit_data_entries()
+        ##
+        # self.edit_entries_action.triggered.connect(self.enable_edit_data_entries)
 
         experimental.addAction(button_plain_text)
+        # experimental.addAction(self.edit_entries_action)
 
         tools = menu.addMenu("Tools")
         self.button_hide_spells = QAction("Spells", tools, checkable=True)

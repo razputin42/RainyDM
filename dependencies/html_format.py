@@ -167,6 +167,8 @@ th, td {
 <div><span class="bold">Component:</span><span> $components</span></div>
 <div><span class="bold">Duration:</span><span> $duration</span></div>
 <br>
+<div><span class="bold">$classes</span></div>
+<br>
 
 <div><span>$text</span></div>
 </div>

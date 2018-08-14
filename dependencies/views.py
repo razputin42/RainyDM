@@ -65,7 +65,7 @@ class MonsterViewer(Viewer):
                 cr="Challenge Rating"
             )
             for desc in descriptive:
-                if hasattr(monster, desc):
+                if hasattr(monster, desc) and getattr(monster, desc) is not None:
                     template = Template(monster_dict['desc'])
                     html = html + template.safe_substitute(
                         name=name_dict[desc],
@@ -137,7 +137,8 @@ class SpellViewer(Viewer):
                 range=spell.range,
                 components=spell.components,
                 duration=spell.duration,
-                text=spell.text
+                text=spell.text,
+                classes=', '.join(spell.classes)
             )
         self.setHtml(html)
 
