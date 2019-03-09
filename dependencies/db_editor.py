@@ -171,7 +171,9 @@ class DBEditor(QWidget):
         #         pass  # save to the entry
 
         if self.copy:  # either copy the entry, or update the existing
-            self.parent.copy_entry(self.entry)
+            result = self.parent.copy_entry(self.entry)
+            if result is False:
+                return
             self.parent.save_entry(self.entry)
 
         else:
@@ -179,6 +181,7 @@ class DBEditor(QWidget):
             self.parent.update_entry(row, self.entry)
             self.parent.save_entry(self.entry, old_name=self.old_entries['name'])
 
+        self.parent.viewer.redraw_view()
         self.close()
 
     def cancel_handle(self):

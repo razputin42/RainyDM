@@ -80,9 +80,22 @@ item_dict = dict(
     name="""
     <div class="name"> $desc </div>
     """,
-    
+
+    desc="""
+    <div><span class="bold">$name</span><span> $desc</span></div>  
+    """,
+
+    dmg="""
+    <div><span class="bold">Damage</span><span> $dmg1 $dmgType</span></div>  
+    """,
+
+    dmg_vers="""
+    <div><span class="bold">Damage</span><span> $dmg1($dmg2) $dmgType</span></div>  
+    """,
+
     text="""
-    <div><span> $desc</span></div>
+    
+    <div><span> $text</span></div>
     
     """,
     

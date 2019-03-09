@@ -6,10 +6,13 @@ from string import Template
 from .monster import Monster35
 from .spell import Spell35
 from .item import Item35
+from abc import abstractmethod as abstract
 
 
 
 class Viewer(QTextBrowser):
+    current_view = None
+
     def __init__(self):
         QTextBrowser.__init__(self)
         self.horizontalScrollBar().setHidden(True)
@@ -23,6 +26,13 @@ class Viewer(QTextBrowser):
 
     def loadResource(self, type, name):
         return QtGui.QPixmap("assets/linear_gradient.png")
+
+    @abstract
+    def draw_view(self, entry):
+        pass
+
+    def redraw_view(self):
+        self.draw_view(self.current_view)
 
 
 class MonsterViewer(Viewer):
@@ -121,6 +131,7 @@ class MonsterViewer(Viewer):
             html = html + template.safe_substitute()
         self.html = html
         self.setHtml(html)
+        self.current_view = monster
 
 
 class SpellViewer(Viewer):
@@ -141,6 +152,7 @@ class SpellViewer(Viewer):
                 classes=', '.join(spell.classes)
             )
         self.setHtml(html)
+        self.current_view = spell
 
     @staticmethod
     def ordinal(n):
@@ -151,31 +163,62 @@ class SpellViewer(Viewer):
 
 
 class ItemViewer(Viewer):
+    item_keyname_dict = dict(
+        dmg1="Damage",
+        ac="AC",
+        range="Range",
+        weight="Weight",
+        value="Value"
+    )
+
     def aux_format(self):
         self.setMaximumWidth(53000)  # i.e. as large as it wants
 
     def draw_view(self, item):
-        if isinstance(item, Item35):
+        if isinstance(item, Item35):  # 3.5e item
             if hasattr(item, "full_text"):
                 html = general_head + item.full_text + general_foot
             else:
                 html = general_head + item_dict['body35'] + general_foot
-        else:
+        else:  # 5e item
             html = item_dict['header']
             template = Template(item_dict["name"])
             html = html + template.safe_substitute(desc=item.name)
             html = html + item_dict['gradient']
 
-            for desc in ["ac", "weight", "value"]:  # also add dmg1 and dmgType, with a dicionary instead of capitalize...
-                if hasattr(item, desc):
-                    template = Template(general_desc)
-                    html = html + template.safe_substitute(
-                        name=desc.capitalize(),
-                        desc=getattr(item, desc)
-                    )
+            for desc in ["ac", "dmg1", "range", "weight", "value"]:
+                if desc in self.item_keyname_dict.keys():
+                    name = self.item_keyname_dict[desc]
+                else:
+                    name = desc.capitalize()
+
+                if hasattr(item, desc):  # exceptions first, then the general case
+                    if desc == "dmg1":
+                        if hasattr(item, "dmg2"):  # has two dmg dice (for example with versatile weapons)
+                            template = Template(item_dict['dmg_vers'])
+                            html = html + template.safe_substitute(
+                                name=name,
+                                dmg1=getattr(item, "dmg1"),
+                                dmg2=getattr(item, "dmg2"),
+                                dmgType=item.damage_type_dict[getattr(item, "dmgType")]
+                            )
+                        else:  # has only one damage dice
+                            template = Template(item_dict['dmg'])
+                            html = html + template.safe_substitute(
+                                name=name,
+                                dmg1=getattr(item, "dmg1"),
+                                dmgType=item.damage_type_dict[getattr(item, "dmgType")]
+                            )
+                    else:  # general case
+                        template = Template(item_dict['desc'])
+                        html = html + template.safe_substitute(
+                            name=name,
+                            desc=getattr(item, desc)
+                        )
 
             template = Template(item_dict["text"])
-            html = html + template.safe_substitute(desc=item.text)
+            html = html + template.safe_substitute(text=item.text)
 
             html = html + item_dict['foot']
         self.setHtml(html)
+        self.current_view = item

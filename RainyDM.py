@@ -8,7 +8,7 @@ from dependencies.input_tables import PlayerTable, EncounterTable
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QLabel
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QLabel, QMessageBox, QSpacerItem
 import sys, json, os
 import html2text
 import pyperclip
@@ -80,13 +80,13 @@ class DMTool(QMainWindow):
 
         ## Tables
         # Spell Table
-        self.spell_table_widget = SpellTableWidget(self)
+        self.spell_table_widget = SpellTableWidget(self, self.spell_viewer)
 
         # Monster table
-        self.monster_table_widget = MonsterTableWidget(self)
+        self.monster_table_widget = MonsterTableWidget(self, self.monster_viewer)
 
         # Item table
-        self.item_table_widget = ItemTableWidget(self)
+        self.item_table_widget = ItemTableWidget(self, self.item_viewer)
         self.item_table_widget.layout().addWidget(self.item_viewer)
 
         self.load_resources()
@@ -195,7 +195,7 @@ class DMTool(QMainWindow):
         self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
         self.edit_entries_action.setStatusTip("Enable edit data entries")
         # development
-        self.edit_entries_action.setChecked(False)
+        self.edit_entries_action.setChecked(True)  # default ON
         self.enable_edit_data_entries()
         ##
         self.edit_entries_action.triggered.connect(self.enable_edit_data_entries)
@@ -219,6 +219,7 @@ class DMTool(QMainWindow):
         cond = self.edit_entries_action.isChecked()
         self.monster_table_widget.EDITABLE = cond
         self.spell_table_widget.EDITABLE = cond
+        self.item_table_widget.EDITABLE = cond
 
     def bind_signals(self):
         self.spell_table_widget.table.selectionModel().selectionChanged.connect(
@@ -481,6 +482,9 @@ class DMTool(QMainWindow):
             return output[0]
         return output
 
+    def print(self, s):
+        self.text_box.append(s)
+
     def print_attack(self, monster, attack):
         comp = attack.split("|")
         if monster is not None:
@@ -497,7 +501,7 @@ class DMTool(QMainWindow):
         else:
             halved = max(1, int(damage_roll/2))
         s = s + "for {} ({} halved)".format(str(damage_roll), str(halved))
-        self.text_box.append(s)
+        self.print(s)
 
     def extract_and_add_spellbook(self, monster):
         spells = monster.extract_spellbook()

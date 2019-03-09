@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
-    QInputDialog, QTableWidgetItem, QSizePolicy
+    QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem
 from PyQt5.QtCore import Qt
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
@@ -35,10 +35,11 @@ class SearchableTable(QFrame):
     EDITABLE = False
     DATABASE_ENTRY_FIELD = 'entry'
 
-    def __init__(self, parent):
+    def __init__(self, parent, viewer):
         self.old_n = None
         self.order = None
         self.COLUMNS = len(self.HEADERS)
+        self.viewer = viewer
 
         QFrame.__init__(self)
         self.filter = Filter(self.search_handle)
@@ -190,8 +191,12 @@ class SearchableTable(QFrame):
 
     def copy_entry(self, entry):
         if self.find_entry('name', entry.name) is not None:
-            print('Entry with name {} already exists'.format(entry.name))
-            return
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText('Entry with name {} already exists'.format(entry.name))
+            msg.setWindowTitle("Duplicate Entry")
+            msg.exec_()
+            return False
         self.list.append(entry)
         entry.index = self.list.index(entry)
         self.table.setRowCount(len(self.list))
@@ -206,7 +211,7 @@ class SearchableTable(QFrame):
                     return db_entry
 
     def save_entry(self, entry, old_name=None):
-        flat_fields = []
+        flat_fields = []  # list of database fields for the specific entry
         for field in entry.database_fields:
             if type(field) is str:
                 flat_fields.append(field)
@@ -214,7 +219,6 @@ class SearchableTable(QFrame):
                 for _field in field:
                     flat_fields.append(_field)
         path = os.path.join(self.dir, 'custom.xml')
-        # path = os.path.join('resources', '5', 'Bestiary', 'custom.xml')
         if not os.path.exists(path):
             with open(path, 'w') as f:  # create the file
                 pass
@@ -233,8 +237,10 @@ class SearchableTable(QFrame):
         for field in flat_fields:
             if hasattr(entry, field):
                 db_field = db_entry.find(field)
+                print(field, getattr(entry, field))
                 if db_field is None:
                     db_field = ET.SubElement(db_entry, field)
+
                 db_field.text = str(getattr(entry, field))
 
         # a few custom fields with content pre-defined
@@ -246,24 +252,43 @@ class SearchableTable(QFrame):
                 db_field = ET.SubElement(db_entry, field)
             db_field.text = value
 
-        # save traits
-        fields = ['name', 'text']
-        if hasattr(entry, 'trait_list'):
-            for trait in entry.trait_list:
-                db_trait = ET.SubElement(db_entry, 'trait')
-                for field in fields:
-                    if hasattr(trait, field):
-                        # if '<br>' in getattr(trait, field):  # html format break line
-                        pieces = getattr(trait, field).split('<br>')
-                        for piece in pieces:
-                            db_field = ET.SubElement(db_trait, field)
-                            db_field.text = piece
-
+        # save lists
+        listnames = ['trait_list', 'action_list', 'legendary_list']
+        fieldnames = ['trait', 'action', 'legendary']
+        subfields_list = [
+            ['name', 'text', 'attack'],
+            ['name', 'text', 'attack'],
+            ['name', 'text', 'attack']
+        ]
+        for listname, fieldname, subfields in zip(listnames, fieldnames, subfields_list):
+            if hasattr(entry, listname):
+                for field in getattr(entry, listname):
+                    db_field = ET.SubElement(db_entry, fieldname)
+                    for subfield in subfields:
+                        if hasattr(field, subfield):
+                            pieces = getattr(field, subfield).split('<br>')
+                            print(pieces)
+                            # for piece in pieces:
+                            #     if piece == '':
+                            #         if piece is pieces[-1]:
+                            #             continue
+                            db_subfield = ET.SubElement(db_field, subfield)
+                            db_subfield.text = getattr(field, subfield)
 
         # save actions
-        if hasattr(entry, 'action_list'):
-            for action in entry.action_list:
-                pass
+        # fields = ['name', 'text', 'attack']
+        # if hasattr(entry, 'action_list'):
+        #     for action in entry.action_list:
+        #         db_action = ET.SubElement(db_entry, 'action')
+        #         for field in fields:
+        #             if hasattr(action, field):
+        #                 # if '<br>' in getattr(trait, field):  # html format break line
+        #                 pieces = getattr(action, field).split('<br>')
+        #                 for piece in pieces:
+        #                     if piece == '':
+        #                         continue
+        #                     db_field = ET.SubElement(db_trait, field)
+        #                     db_field.text = piece
 
         mydata = ET.tostring(root, encoding="unicode", pretty_print=True)
         myfile = open(path, "w")
@@ -381,6 +406,7 @@ class SpellTableWidget(SearchableTable):
     INDEX_COLUMN = 1
     LEVEL_COLUMN = 2
     HEADERS = ['Name', 'REFERENCE', 'Spell Level']
+    DATABASE_ENTRY_FIELD = 'spell'
     EDITABLE = True
 
     def update_entry(self, row, entry):
@@ -435,6 +461,8 @@ class SpellTableWidget(SearchableTable):
 class ItemTableWidget(SearchableTable):
     NAME_COLUMN = 0
     INDEX_COLUMN = 1
+    DATABASE_ENTRY_FIELD = 'item'
+    EDITABLE = True
 
     def format(self):
         t = self.table
@@ -448,3 +476,25 @@ class ItemTableWidget(SearchableTable):
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
         elif version == "3.5":
             self.filter.add_dropdown("Category", self.unique_attr("category"))
+
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+
+        current_row = self.table.currentRow()
+        idx = int(self.table.item(current_row, 1).text())
+        item = self.list[idx]
+
+        if self.EDITABLE and hasattr(item, 'custom'):
+            edit_entry = menu.addAction("Edit entry")
+        else:
+            edit_entry = None
+        edit_copy_entry = menu.addAction('Edit copy of entry')
+
+        action = menu.exec_(self.mapToGlobal(event.pos()))
+        if action is None:
+            return
+
+        if self.EDITABLE and action is edit_entry:
+            self.edit_entry(item)
+        elif self.EDITABLE and action is edit_copy_entry:
+            self.edit_copy_of_entry(item)

@@ -1,0 +1,27 @@
+<compendium version="5">
+  <item>
+    <name>10</name>
+    <type>Valuables</type>
+    <magic>No</magic>
+    <value>10gp</value>
+    <weight>0</weight>
+    <text>An opaque mottled deep blue gemstone worth 10 gp.
+
+Source: Dungeon Master's Guide, page 134
+&lt;br&gt;</text>
+    <source>Custom</source>
+    <custom/>
+  </item>
+  <item>
+    <name>11</name>
+    <type>Valuables</type>
+    <magic>No</magic>
+    <value>10gp</value>
+    <weight>0</weight>
+    <text>An opaque mottled deep blue gemstone worth 10 gp.
+Source: Dungeon Master's Guide, page 134
+&lt;br&gt;</text>
+    <source>Custom</source>
+    <custom/>
+  </item>
+</compendium>
