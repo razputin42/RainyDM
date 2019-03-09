@@ -11,8 +11,8 @@ Installation:
 There are two ways to run RainyDM, either by cloning the repository or running the standalone. If you want to try out any of the features in development, you'd need to go the repository route. The standalone is intended to by friendly to non-git and non-python oriented people. Note that the project is written in python 3.
 
 Standalone:
-1. Download the standalone from the releases page.
-2. Unpack to a folder of your choice.
+1. Download the standalone from the itch.io page https://rainyday-software.itch.io/rainydm.
+2. Unpack to a folder of your choice (make sure it is a folder with write access).
 3. Run the shortcut or navigate to RainyDM.exe.
 4. Goal!
 
