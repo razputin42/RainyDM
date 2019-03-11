@@ -58,17 +58,24 @@ class SearchableTable(QFrame):
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
 
+        self.button_bar_layout = QHBoxLayout()
+
         horizontal_layout = QHBoxLayout()
         horizontal_layout.addWidget(self.search_box)
         horizontal_layout.addWidget(self.filter_button)
         list_layout = QVBoxLayout()
         list_layout.addLayout(horizontal_layout)
         list_layout.addLayout(self.table_layout)
+        list_layout.addLayout(self.button_bar_layout)
         self.setLayout(list_layout)
 
         self.search_box.textChanged.connect(self.search_handle)
         self.filter_button.clicked.connect(self.filter_handle)
+        self.setup_button_bar()
         self.format()
+
+    def setup_button_bar(self):
+        pass
 
     def format(self):
         pass
@@ -237,7 +244,6 @@ class SearchableTable(QFrame):
         for field in flat_fields:
             if hasattr(entry, field):
                 db_field = db_entry.find(field)
-                print(field, getattr(entry, field))
                 if db_field is None:
                     db_field = ET.SubElement(db_entry, field)
 
@@ -267,11 +273,6 @@ class SearchableTable(QFrame):
                     for subfield in subfields:
                         if hasattr(field, subfield):
                             pieces = getattr(field, subfield).split('<br>')
-                            print(pieces)
-                            # for piece in pieces:
-                            #     if piece == '':
-                            #         if piece is pieces[-1]:
-                            #             continue
                             db_subfield = ET.SubElement(db_field, subfield)
                             db_subfield.text = getattr(field, subfield)
 
@@ -317,6 +318,24 @@ class MonsterTableWidget(SearchableTable):
             n = self.CR_COLUMN
         super().sort_columns(n, order=order)
 
+    def setup_button_bar(self):
+        #  find current selected monster
+        current_row = self.table.currentRow()
+
+        add_enc_button = QPushButton("Add to initiative")
+        add_enc_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        add_enc_button.clicked.connect(lambda state, x=1: self.add_monster_to_encounter(x))
+        add_x_enc_button = QPushButton("Add more to initiative")
+        add_x_enc_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        add_x_enc_button.clicked.connect(self.add_monster_to_encounter)
+        add_tool_button = QPushButton("Add to toolkit")
+        add_tool_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        hspacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.button_bar_layout.addWidget(add_enc_button)
+        self.button_bar_layout.addWidget(add_x_enc_button)
+        self.button_bar_layout.addWidget(add_tool_button)
+        self.button_bar_layout.addItem(hspacer)
+
     def format(self):
         h = self.table.horizontalHeader()
         t = self.table
@@ -359,6 +378,19 @@ class MonsterTableWidget(SearchableTable):
             # self.filter.add_dropdown("Source", self.unique_attr("source"))
             self.filter.add_range("CR")
         self.search_handle()
+
+    def add_monster_to_encounter(self, number=False):
+
+        current_row = self.table.currentRow()
+        if current_row == -1:
+            return False
+        monster_idx = int(self.table.item(current_row, 1).text())
+        monster = self.list[monster_idx]
+        if number is False:
+            number, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
+            if not (ok and number < 2000):
+                return False
+        self.parent.encounter_table.add_to_encounter(monster, number)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
