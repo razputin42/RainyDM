@@ -56,6 +56,9 @@ class Monster:
         ['str', 'dex', 'con', 'int', 'wis', 'cha'],
         'save', 'resist', 'immune', 'conditionImmune', 'skill', 'senses', 'languages', 'passive', 'cr', 'spells'
     ]
+    required_database_fields = ['name',
+                                'str', 'dex', 'con', 'int', 'wis', 'cha',
+                                ]
 
     class Action:
         database_fields = ['name', 'text', 'attack']
@@ -86,39 +89,66 @@ class Monster:
         self.action_list = []
         self.trait_list = []
         self.legendary_list = []
-        for attr in entry:
-            if attr.tag == "trait":
-                self._add_trait(attr)
-            elif attr.tag == "action":
-                self._add_action(attr)
-            elif attr.tag == "legendary":
-                self._add_legendary(attr)
-            elif attr.tag == "size":
-                size = attr.text.upper()
-                if size in size_dict.keys():
-                    self.size = size_dict[size]
+        if entry is not None:
+            for attr in entry:
+                # print(attr.tag, attr.text)
+                if attr.text is None:
+                    setattr(self, attr.tag, attr.text)
+                elif attr.tag == "trait":
+                    self._add_trait(attr)
+                elif attr.tag == "action":
+                    self._add_action(attr)
+                elif attr.tag == "legendary":
+                    self._add_legendary(attr)
+                elif attr.tag == "size":
+                    size = attr.text.upper()
+                    if size in size_dict.keys():
+                        self.size = size_dict[size]
+                    else:
+                        self.size = attr.text
+                elif attr.tag == "type" and attr.text is not None and ',' in attr.text:
+                    temp_list = attr.text.split(",")
+                    self.type = ",".join(temp_list[:-1]).strip()
+                    if 'swarm' in self.type.lower():
+                        self.type = 'Swarm'
+                    self.source = temp_list[-1]
+                    if "(" in self.type:
+                        subtype_raw = self.type[self.type.find("(") + 1:self.type.find(")")]
+                        subtype_list = subtype_raw.split(", ")
+                        self.subtype = []
+                        for subtype in subtype_list:
+                            self.subtype.append(subtype.strip())
                 else:
-                    self.size = attr.text
-            elif attr.tag == "type" and ',' in attr.text:
-                temp_list = attr.text.split(",")
-                self.type = ",".join(temp_list[:-1]).strip()
-                if 'swarm' in self.type.lower():
-                    self.type = 'Swarm'
-                self.source = temp_list[-1]
-                if "(" in self.type:
-                    subtype_raw = self.type[self.type.find("(") + 1:self.type.find(")")]
-                    subtype_list = subtype_raw.split(", ")
-                    self.subtype = []
-                    for subtype in subtype_list:
-                        self.subtype.append(subtype.strip())
+                    setattr(self, attr.tag, attr.text)
+            if hasattr(self, 'cr') and self.cr is not None:
+                self.xp = xp_dict[self.cr]
             else:
-                setattr(self, attr.tag, attr.text)
-        self.xp = xp_dict[self.cr]
-        self.initiative = self.calculate_modifier(self.dex)
-        self.hp_no_dice, self.HD = self.extract_hp(self.hp)
+                self.xp = 0
+            if hasattr(self, 'dex') and self.dex is not None:
+                self.initiative = self.calculate_modifier(self.dex)
+            if hasattr(self, 'hp') and self.hp is not None:
+                self.hp_no_dice, self.HD = self.extract_hp(self.hp)
+        else:
+            self.name = ""
+            self.size = ""
+            self.type = ""
+            self.alignment = ""
+            self.ac = ""
+            self.hp = ""
+            self.speed = ""
+            self.str = 0
+            self.dex = 0
+            self.con = 0
+            self.wis = 0
+            self.int = 0
+            self.cha = 0
+            self.cr = ""
+            self.xp = 0
 
     @staticmethod
     def extract_hp(hp):
+        if hp is None:
+            return "", ""
         i = hp.find("(")
         if i is not -1:
             j = hp.find(")")
@@ -131,6 +161,8 @@ class Monster:
 
     @staticmethod
     def calculate_modifier(score, sign=False):
+        if score is None:
+            return 0
         score = int(score)
         mod = int((score-10)/2)
         if sign:

@@ -211,8 +211,6 @@ class DMTool(QMainWindow):
 
         tools.addAction(self.button_hide_spells)
 
-        self.bind_signals()
-
         self.window_frame.setLayout(self.window_layout)
 
     def enable_edit_data_entries(self):
@@ -389,7 +387,7 @@ class DMTool(QMainWindow):
         row_position = table.rowCount()
         table.insertRow(row_position)
         table.setItem(row_position, 0, QTableWidgetItem(""))  # necessary so that the row isn't picked up in garbage collection
-        if type(player) == list:
+        if type(player) is list:
             for itt, value in enumerate(player):
                 table.setItem(row_position, itt, QTableWidgetItem(str(value)))
 

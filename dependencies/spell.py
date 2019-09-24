@@ -13,6 +13,7 @@ school_dict = dict(
 )
 
 class Spell:
+    required_database_fields = ["name"]
     database_fields = [
         'name', 'level', 'school', 'time', 'range', 'components', 'duration', 'text'
     ]
