@@ -1,10 +1,20 @@
 from PyQt5.QtWidgets import QLineEdit, QLabel, QPushButton, QShortcut, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QWidget, QSpacerItem
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QWidget, QSpacerItem, QPlainTextEdit
 from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5.QtCore import Qt
 import os
 from .monster import Monster
 import time
+
+
+class ResizeableTextEditor(QPlainTextEdit):
+    def __init__(self):
+        super().__init__()
+        self.textChanged.connect(self._resizeToFit)
+
+    def _resizeToFit(self):
+        self.setMaximumHeight(72)
+
 
 class DBEditor(QWidget):
     def __init__(self, parent, entry, copy=False):
@@ -72,10 +82,14 @@ class DBEditor(QWidget):
                 self.attributes_layout.addLayout(horizontal_layout)
 
         # actions tab
-        if type(self.entry) is Monster:
+        if hasattr(self.entry, 'action_list') and len(self.entry.action_list) is not 0:
             self.action_list = self.add_tab(self.entry.action_list, 'Actions')
-            self.trait_list = self.add_tab(self.entry.trait_list, 'Traits')
-            self.legendary_list = self.add_tab(self.entry.legendary_list, 'Legendary Actions')
+        #
+        # if hasattr(self.entry, 'trait_list') and len(self.entry.trait_list) is not 0:
+        #     self.trait_list = self.add_tab(self.entry.trait_list, 'Traits')
+        #
+        # if hasattr(self.entry, 'legendary_list') and len(self.entry.legendary_list) is not 0:
+        #     self.legendary_list = self.add_tab(self.entry.legendary_list, 'Legendary Actions')
 
         self.new_entries = self.old_entries.copy()
         accept_button = QPushButton('Accept')
@@ -96,7 +110,7 @@ class DBEditor(QWidget):
         self.setWindowModality(Qt.ApplicationModal)
         enter.activated.connect(self.accept_handle)
 
-    def add_tab(self, list, tab_name):
+    def add_tab(self, element_list, tab_name):
         tab_frame = QFrame()
         tab_layout = QVBoxLayout()
         tab_frame.setLayout(tab_layout)
@@ -105,18 +119,41 @@ class DBEditor(QWidget):
         button_bar_frame.setLayout(button_bar_layout)
         self.tab_widget.addTab(tab_frame, tab_name)
         return_list = []
-        for element in list:
-            [frame, edit_dict] = create_element_field(element)
+        for element in element_list:
+            edit_dict = dict()
+            layout = QHBoxLayout()  # horizontal layout
+            frame = QFrame()
+            frame.setLayout(layout)
+            frame.setFrameShadow(1)
+            for attr in element.database_fields:  # for each attribute
+                if hasattr(element, attr):
+                    field_layout = QVBoxLayout()
+                    label = QLabel(attr.capitalize())
+                    # if len(getattr(element, attr)) > 50:
+                    #     edit = QTextEdit()
+                    # else:
+                    #     edit = QLineEdit()
+                    edit = ResizeableTextEditor()
+
+                    if attr is 'text':
+                        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                        sizePolicy.setHorizontalStretch(3)
+                    else:
+                        # edit.setMinimumWidth(150)
+                        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                        sizePolicy.setHorizontalStretch(1)
+                        edit.setMaximumWidth(150)
+                    edit.setSizePolicy(sizePolicy)
+                    # edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                    edit_dict[attr] = edit
+                    edit.setPlainText(getattr(element, attr))
+                    field_layout.addWidget(edit)
+                    field_layout.addStretch(0)
+                    layout.addLayout(field_layout)  # add to horizontal layout
             tab_layout.addWidget(frame)  # add to vertical tab_layout
             return_list.append(edit_dict)
-        tab_layout.addSpacerItem(QSpacerItem(0, 1, QSizePolicy.Expanding, QSizePolicy.MinimumExpanding))
-        # add_button = QPushButton("Add")
-        # def add_element(list_frame):
-        #
-        #     print(tab_name)
-        # add_button.clicked.connect(lambda state, list_frame=tab_layout: add_element(list_frame))
-        # add_button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        # tab_layout.addWidget(add_button)
+        # tab_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        tab_layout.addWidget(button_bar_frame)
         return return_list
 
     def accept_handle(self):
