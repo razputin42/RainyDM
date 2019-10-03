@@ -482,11 +482,11 @@ class MonsterTableWidget(SearchableTable):
         if action is None:
             return
         if action == addAction:
-            self.parent.encounter_table.add_to_encounter(monster, 1)
+            self.parent.encounterWidget.add_to_encounter(monster, 1)
         elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok and X < 2000:
-                self.parent.encounter_table.add_to_encounter(monster, X)
+                self.parent.encounterWidget.add_to_encounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
         elif hasattr(monster, "spells") and action is add_spellbook:

@@ -45,3 +45,5 @@ resources/3\.5/SpellForge_3\.5_4\.5\.0 - readme_SF\.txt
 resources/3\.5/srd-db-v1\.3\.sql
 
 resources/5/*/custom.xml
+
+assets/unused/*

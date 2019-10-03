@@ -17,6 +17,7 @@ class Viewer(QTextBrowser):
         QTextBrowser.__init__(self)
         self.horizontalScrollBar().setHidden(True)
         self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
+        # self.setStyleSheet("border-image: url(assets/unused/guimegapack/SpaceDepotUI/SpaceDepotUI_png/plank_01_02.png);")
         # self.setMaximumWidth(530)
         # self.setMinimumWidth(530)
         self.aux_format()

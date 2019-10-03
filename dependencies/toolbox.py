@@ -129,10 +129,14 @@ class ToolboxWidget:
         layout.addWidget(self.monster_tabWidget)
         layout.addWidget(self.spell_tabWidget)
         self.frame.setLayout(layout)
+        self.hidden = False
 
     def dice_instructions(self):
         self.parent.text_box.append("\nEither input diceroll in format xdy+z, AttackBonus|DamageRoll, or"
                                     " AttackBonus, DamageRoll\nExample: 1d20+6\n5|2d6+3\n5, 2d6+3\n")
+    def toggle_hide(self):
+        self.hidden = not self.hidden
+        self.frame.setHidden(self.hidden)
     # @staticmethod
     # def remove_from_toolbox(table, row):
     #     table.remove_row(row)
