@@ -112,12 +112,15 @@ class InitiativeWidget(EntryWidget):
         self.layout().setContentsMargins(10, 0, 10, 0)
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.setMinimumHeight(50)
+        self.setFrameShape(QFrame.Box)
+
+    def getInitiative(self):
+        return self.m_initiative.get()
 
 
 class MonsterWidget(InitiativeWidget):
     def __init__(self, monster, viewer=None, init=None, hp=None, desc=None):
         super().__init__()
-        self.setFrameShape(QFrame.Box)
         self.m_health = HealthFrame(hp)
         self.m_initiative = InitiativeFrame("")
         self.monster = monster
@@ -137,8 +140,13 @@ class MonsterWidget(InitiativeWidget):
 
 
 class PlayerWidget(InitiativeWidget):
-    pass
+    def __init__(self, character):
+        self.m_initiative = InitiativeFrame("")
+        self.m_character = character
+        self.layout().addWidget(self.m_initiative)
 
+    def getCharName(self):
+        return self.m_character.getCharName()
 
 class EncounterWidget(ListWidget):
     def __init__(self, viewer):
@@ -165,6 +173,32 @@ class EncounterWidget(ListWidget):
 
     def load(self, monster_table):
         pass
+
+    def getCharacterNames(self):
+        charNameList = []
+        for entry in self.m_widgetList:
+            if type(entry) is PlayerWidget:
+                if entry.getCharName() not in charNameList:
+                    charNameList.append(entry.getCharName())
+        return charNameList
+
+    def updateCharacterInitiative(self, character):
+        pass
+
+
+    def sortInitiative(self):
+        unsortedList = []
+        for entry in self.m_widgetList:
+            unsortedList.append((entry.getInitiative(), entry))
+        sortedList = sorted(unsortedList, key=lambda x: x[0], reverse=True)
+        self.clear()
+        for itt, entry in sortedList:
+            self.add(entry)
+
+    def rollInitiative(self):
+        for entry in self.m_widgetList:
+            if type(entry) is MonsterWidget:
+                entry.rollInitiative()
 
     def add_to_encounter(self, monster, number=1, init=None, hp=None, desc=None):
         if hp is None:

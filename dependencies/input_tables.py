@@ -1,6 +1,12 @@
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QMenu, QVBoxLayout, QFrame, QLabel, QTableWidgetItem, \
-    QInputDialog, QFileDialog
+    QInputDialog, QFileDialog, QLineEdit, QHBoxLayout
+from PyQt5.QtGui import QIntValidator, QFont
+from PyQt5.QtCore import Qt
+
 import os
+from dependencies.list_widget import ListWidget
+from dependencies.player import Character
+from dependencies.encounter import InitiativeFrame
 
 
 class InputTableWidget(QTableWidget):
@@ -257,33 +263,96 @@ class EncounterTable(InputTableWidget):
 
             self.calculate_encounter_xp()
 
-class PlayerTable(InputTableWidget):
-    PLAYER_COLUMN = 1
-    INITIATIVE_COLUMN = 2
-    PASSIVE_PERCEPTION_COLUMN = 3
-    PASSIVE_INSIGHT_COLUMN = 4
 
-    def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        addAction = menu.addAction("Add player")
-        removeAction = menu.addAction("Remove player")
+class InputFrame(QFrame):
+    def __init__(self, text, type=str):
+        super().__init__()
+        self.type = type
+        self.setLayout(QVBoxLayout())
+        label = QLabel(text)
+        font = QFont("Helvetica [Cronyx]", 10)
+        font.setCapitalization(QFont.SmallCaps)
+        label.setFont(font)
+        self.edit = QLineEdit()
+        if type is int:
+            self.edit.setFixedWidth(30)
+        else:
+            self.edit.setFixedWidth(60)
+        if type is int:
+            self.edit.setValidator(QIntValidator(-999, 999))
 
-        action = menu.exec_(self.mapToGlobal(event.pos()))
-        if action is None:
-            return
-        current_row = self.currentRow()
-        if action == addAction:
-            self.parent.add_player()
-        elif action == removeAction:
-            self.remove_rows()
+        self.layout().addWidget(label)
+        self.layout().addWidget(self.edit)
+        self.layout().setAlignment(Qt.AlignHCenter)
 
-    def format(self):
-        columns = 5
-        self.setColumnCount(columns)
-        self.setHorizontalHeaderLabels(["Name", "Player", "Initiative", "Passive Insight",
-                                        "Passive Perception", "Inactive"])
-        self.setShowGrid(True)
-        for i in range(columns):
-            self.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
-        self.setColumnWidth(self.NAME_COLUMN, 150)
-        self.verticalHeader().hide()
+    def get(self):
+        if self.type is int:
+            return int(self.edit.text())
+        elif self.type is str:
+            return self.edit.text()
+
+
+class PlayerFrame(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setLayout(QHBoxLayout())
+        self.nameFrame = InputFrame("Character Name")
+        self.playerName = InputFrame("Player Name")
+        self.initFrame = InputFrame("Initiative", int)
+        self.perceptionFrame = InputFrame("Perception", int)
+        self.insightFrame = InputFrame("Insigt", int)
+        self.layout().addWidget(self.nameFrame)
+        self.layout().addWidget(self.playerName)
+        self.layout().addWidget(self.initFrame)
+        self.layout().addWidget(self.perceptionFrame)
+        self.layout().addWidget(self.insightFrame)
+
+        self.layout().setContentsMargins(10, 0, 10, 0)
+        self.setStyleSheet("background-color: rgb(240, 240, 240);")
+        self.setMinimumHeight(50)
+        self.setFrameShape(QFrame.Box)
+
+
+    def getCharacter(self):
+        return Character(self.nameFrame.get(), self.playerName.get(), self.initFrame.get(), True)
+
+
+class PlayerTable(ListWidget):
+    def __init__(self):
+        super().__init__()
+        frame = PlayerFrame()
+        self.add(frame)
+
+
+
+
+# class PlayerTable(InputTableWidget):
+#     PLAYER_COLUMN = 1
+#     INITIATIVE_COLUMN = 2
+#     PASSIVE_PERCEPTION_COLUMN = 3
+#     PASSIVE_INSIGHT_COLUMN = 4
+#
+#     def contextMenuEvent(self, event):
+#         menu = QMenu(self)
+#         addAction = menu.addAction("Add player")
+#         removeAction = menu.addAction("Remove player")
+#
+#         action = menu.exec_(self.mapToGlobal(event.pos()))
+#         if action is None:
+#             return
+#         current_row = self.currentRow()
+#         if action == addAction:
+#             self.parent.add_player()
+#         elif action == removeAction:
+#             self.remove_rows()
+#
+#     def format(self):
+#         columns = 5
+#         self.setColumnCount(columns)
+#         self.setHorizontalHeaderLabels(["Name", "Player", "Initiative", "Passive Insight",
+#                                         "Passive Perception", "Inactive"])
+#         self.setShowGrid(True)
+#         for i in range(columns):
+#             self.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+#         self.setColumnWidth(self.NAME_COLUMN, 150)
+#         self.verticalHeader().hide()
