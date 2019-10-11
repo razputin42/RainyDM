@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
+    QLabel, QLineEdit, QMenu
 from PyQt5.QtGui import QFont, QIcon, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
@@ -103,12 +104,16 @@ class InitiativeFrame(QFrame):
         self.textLabel.setText(str(value))
 
     def get(self):
-        return int(self.textLabel.text())
+        try:
+            return int(self.textLabel.text())
+        except ValueError:
+            return 0
 
 
 class InitiativeWidget(EntryWidget):
     def __init__(self):
         super().__init__()
+        self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(10, 0, 10, 0)
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.setMinimumHeight(50)
@@ -119,12 +124,13 @@ class InitiativeWidget(EntryWidget):
 
 
 class MonsterWidget(InitiativeWidget):
-    def __init__(self, monster, viewer=None, init=None, hp=None, desc=None):
+    def __init__(self, monster, parentList, viewer=None, init=None, hp=None, desc=None):
         super().__init__()
         self.m_health = HealthFrame(hp)
         self.m_initiative = InitiativeFrame("")
         self.monster = monster
         self.viewer = viewer
+        self.parent = parentList
         self.layout().addWidget(NameLabel(monster.name))
         self.layout().addWidget(self.m_health)
         self.layout().addWidget(DamageInputFrame(self.m_health))
@@ -138,6 +144,16 @@ class MonsterWidget(InitiativeWidget):
             return
         self.viewer.draw_view(self.monster)
 
+    def contextMenuEvent(self, event):
+        menu = QMenu()
+        removeAction = menu.addAction("Remove from Initiative")
+
+        action = menu.exec_(self.mapToGlobal(event.pos()))
+        if action is None:
+            return
+        elif action == removeAction:
+            self.parent.remove(self)
+
 
 class PlayerWidget(InitiativeWidget):
     def __init__(self, character):
@@ -147,6 +163,7 @@ class PlayerWidget(InitiativeWidget):
 
     def getCharName(self):
         return self.m_character.getCharName()
+
 
 class EncounterWidget(ListWidget):
     def __init__(self, viewer):
@@ -185,7 +202,6 @@ class EncounterWidget(ListWidget):
     def updateCharacterInitiative(self, character):
         pass
 
-
     def sortInitiative(self):
         unsortedList = []
         for entry in self.m_widgetList:
@@ -204,8 +220,5 @@ class EncounterWidget(ListWidget):
         if hp is None:
             hp = monster.hp_no_dice
         for itt in range(number):
-            # button = QPushButton("TEST")
-            # button.setMinimumHeight(30)
-            # self.add(button)
-            self.add(MonsterWidget(monster, self.viewer, init, hp, desc))
+            self.add(MonsterWidget(monster, self, self.viewer, init, hp, desc))
 

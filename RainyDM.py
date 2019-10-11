@@ -5,7 +5,7 @@ from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget,
 from dependencies.toolbox import ToolboxWidget
 from dependencies.encounter import MonsterWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
-from dependencies.input_tables import PlayerTable
+from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.encounter import EncounterWidget
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QIcon, QPixmap
@@ -387,13 +387,14 @@ class DMTool(QMainWindow):
         self.spell_table_widget.define_filters(self.version)
 
     def add_player(self, player=None):
-        table = self.playerWidget
-        row_position = table.rowCount()
-        table.insertRow(row_position)
-        table.setItem(row_position, 0, QTableWidgetItem(""))  # necessary so that the row isn't picked up in garbage collection
-        if type(player) is list:
-            for itt, value in enumerate(player):
-                table.setItem(row_position, itt, QTableWidgetItem(str(value)))
+        self.playerWidget.add(PlayerFrame(self.playerWidget))
+        # table = self.playerWidget
+        # row_position = table.rowCount()
+        # table.insertRow(row_position)
+        # table.setItem(row_position, 0, QTableWidgetItem(""))  # necessary so that the row isn't picked up in garbage collection
+        # if type(player) is list:
+        #     for itt, value in enumerate(player):
+        #         table.setItem(row_position, itt, QTableWidgetItem(str(value)))
 
     def add_players_handle(self):
         encounter_table = self.encounterWidget

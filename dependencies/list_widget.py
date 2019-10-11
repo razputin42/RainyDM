@@ -6,8 +6,8 @@ from PyQt5.QtCore import Qt
 class EntryWidget(QFrame):
     def __init__(self):
         super().__init__()
-        layout = QHBoxLayout()
-        self.setLayout(layout)
+        self.setStyleSheet("background-color: rgb(240, 240, 240);")
+        self.setFrameShape(QFrame.Box)
 
 
 class ListWidget(QWidget):
@@ -18,6 +18,7 @@ class ListWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         scrollLayout = QVBoxLayout()
         self.scroll_frame = QWidget()
+        self.scroll_frame.setContentsMargins(0, 0, 0, 0)
         self.scroll_frame.setLayout(scrollLayout)
         scroll = QScrollArea()
         scroll.setWidget(self.scroll_frame)
@@ -47,3 +48,12 @@ class ListWidget(QWidget):
 
     def getEntries(self):
         return self.m_widgetList
+
+    def remove(self, widget):
+        for entry in self.m_widgetList:
+            if entry is widget:
+                entry.setParent(None)
+        try:
+            self.m_widgetList.remove(widget)
+        except ValueError:
+            pass
