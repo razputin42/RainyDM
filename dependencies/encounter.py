@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
-    QLabel, QLineEdit, QMenu
+    QLabel, QLineEdit, QMenu, QInputDialog, QFileDialog
 from PyQt5.QtGui import QFont, QIcon, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
 from dependencies.auxiliaries import rollFunction
+import os, json
 
 
 class NameLabel(QLabel):
@@ -29,7 +30,7 @@ class HealthFrame(QFrame):
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
-        self.textLabel = QLabel(self.m_maxHP)
+        self.textLabel = QLabel(str(self.m_maxHP))
         self.textLabel.setFixedWidth(30)
         self.textLabel.setFont(QFont("Helvetica [Cronyx]", 12))
         self.layout().addWidget(iconLabel)
@@ -154,6 +155,16 @@ class MonsterWidget(InitiativeWidget):
         elif action == removeAction:
             self.parent.remove(self)
 
+    def jsonlify(self):
+        output = dict(
+            type="Monster",
+            monster=self.monster.name,
+            hp=self.m_health.get(),
+            init=self.m_initiative.get()
+        )
+        return json.dumps(output)
+
+
 
 class PlayerWidget(InitiativeWidget):
     def __init__(self, character):
@@ -164,6 +175,13 @@ class PlayerWidget(InitiativeWidget):
     def getCharName(self):
         return self.m_character.getCharName()
 
+    def jsonlify(self):
+        output = dict(
+            type="Player",
+            name=self.getCharName(),
+            init=self.m_initiative.get()
+        )
+        return json.dumps(output)
 
 class EncounterWidget(ListWidget):
     def __init__(self, viewer):
@@ -186,10 +204,31 @@ class EncounterWidget(ListWidget):
         pass
 
     def save(self):
-        pass
+        if not os.path.exists("encounters"):
+            os.mkdir("encounters")
+        output = []
+        for entry in self.m_widgetList:
+            if type(entry) is MonsterWidget:
+                output.append(entry.jsonlify())
 
-    def load(self, monster_table):
-        pass
+        encounter_name, ok = QInputDialog.getText(self, "Save", "Encounter Name:")
+        if not ok or encounter_name.strip() == "":
+            return
+        elif encounter_name[-4:] != ".txt":
+            encounter_name = encounter_name + ".txt"
+        with open("encounters/" + encounter_name, 'w') as file:
+            file.write(json.dumps(output))
+
+    def load(self, monsterList):
+        filename, _ = QFileDialog.getOpenFileName(self, "Select encounter", "encounters", "Text files (*.txt)")
+        if filename and os.path.exists(filename):
+            self.clear()
+            with open(filename, 'r') as f:
+                encounter = json.load(f)
+            for jsonEntry in encounter:
+                entry = json.loads(jsonEntry)
+                monster = monsterList.find_entry("name", entry["monster"])
+                self.addToEncounter(monster, init=entry["init"], hp=entry["hp"])
 
     def getCharacterNames(self):
         charNameList = []
@@ -216,7 +255,7 @@ class EncounterWidget(ListWidget):
             if type(entry) is MonsterWidget:
                 entry.rollInitiative()
 
-    def add_to_encounter(self, monster, number=1, init=None, hp=None, desc=None):
+    def addToEncounter(self, monster, number=1, init=None, hp=None, desc=None):
         if hp is None:
             hp = monster.hp_no_dice
         for itt in range(number):

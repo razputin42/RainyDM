@@ -422,7 +422,7 @@ class DMTool(QMainWindow):
                     init = ""
                 else:
                     init = init.text()
-                self.encounterWidget.add_to_encounter([name, -1, init, "", "", ""])
+                self.encounterWidget.addToEncounter([name, -1, init, "", "", ""])
 
     def sort_init_handle(self):
         self.encounterWidget.sortInitiative()
@@ -495,7 +495,7 @@ class DMTool(QMainWindow):
                 for monster_tuple in meta_dict['toolbox_meta']:
                     self.add_to_toolbox(monster_tuple)
                 for monster_tuple in meta_dict['initiative_meta']:
-                    self.encounterWidget.add_to_encounter(monster_tuple)
+                    self.encounterWidget.addToEncounter(monster_tuple)
                 for player_tuple in meta_dict['player_meta']:
                     self.add_player(player_tuple)
 
