@@ -99,15 +99,21 @@ class LinkedSpellTable(LinkedTableWidget):
             self.remove_rows()
 
 
-class ToolboxWidget:
+class ToolboxWidget(QFrame):
     SPELL_TAB = 0
     DICE_TAB = 1
 
     def __init__(self, parent):
+        super().__init__()
         self.parent = parent
-        self.frame = QFrame()
-        self.frame.setMaximumHeight(300)
-        layout = QHBoxLayout()
+        self.toolbox_frame = QFrame()
+        self.toolbox_frame.setMaximumHeight(300)
+        self.button_bar = QFrame()
+        self.button_bar.setLayout(QHBoxLayout())
+        toolbox_layout = QHBoxLayout()
+        self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
         self.spell_toolbox = LinkedSpellTable(self.parent.spell_table_widget, self.parent)
         self.monster_toolbox = LinkedMonsterTable(self.parent.monster_table_widget, self.parent)
         self.monster_tabWidget = QTabWidget()
@@ -126,9 +132,19 @@ class ToolboxWidget:
         self.dice_toolbox.setLayout(dice_layout)
         self.spell_tabWidget.addTab(self.dice_toolbox, "Dice")
 
-        layout.addWidget(self.monster_tabWidget)
-        layout.addWidget(self.spell_tabWidget)
-        self.frame.setLayout(layout)
+        toolbox_layout.addWidget(self.monster_tabWidget)
+        toolbox_layout.addWidget(self.spell_tabWidget)
+        self.toolbox_frame.setLayout(toolbox_layout)
+
+        self.clear_toolbox_button = QPushButton("Clear Toolbox")
+        self.toggle_toolbox_button = QPushButton("Toggle Toolbox")
+        self.button_bar.layout().setContentsMargins(0, 0, 0, 0)
+        self.button_bar.layout().addWidget(self.clear_toolbox_button)
+        self.button_bar.layout().addWidget(self.toggle_toolbox_button)
+
+        self.layout().addWidget(self.toolbox_frame)
+        self.layout().addWidget(self.button_bar)
+
         self.hidden = False
 
     def dice_instructions(self):
@@ -136,7 +152,7 @@ class ToolboxWidget:
                                     " AttackBonus, DamageRoll\nExample: 1d20+6\n5|2d6+3\n5, 2d6+3\n")
     def toggle_hide(self):
         self.hidden = not self.hidden
-        self.frame.setHidden(self.hidden)
+        self.toolbox_frame.setHidden(self.hidden)
     # @staticmethod
     # def remove_from_toolbox(table, row):
     #     table.remove_row(row)

@@ -101,53 +101,52 @@ class DMTool(QMainWindow):
         self.encounterWidget = EncounterWidget(self.monster_viewer)
 
         # encounter buttons - maybe move these to the subclass?
-        button_layout = QHBoxLayout()
-        top_button_layout = QHBoxLayout()
-        self.sort_init_button = QPushButton("Sort Initiative")
-        self.roll_init_button = QPushButton("Roll Initiative")
-        # self.add_players_button = QPushButton("Add Players")
-        self.clear_encounter_button = QPushButton("Clear Encounter")
+        # encounter_button_layout = QHBoxLayout()
+        # top_button_layout = QHBoxLayout()
+        # self.sort_init_button = QPushButton("Sort Initiative")
+        # self.roll_init_button = QPushButton("Roll Initiative")
+        # # self.add_players_button = QPushButton("Add Players")
+        # self.clear_encounter_button = QPushButton("Clear Encounter")
+        # self.save_encounter_button = QPushButton("Save Encounter")
+        # self.load_encounter_button = QPushButton("Load Encounter")
+        # encounter_button_layout.addWidget(self.sort_init_button)
+        # encounter_button_layout.addWidget(self.roll_init_button)
+        # top_button_layout.addWidget(self.save_encounter_button)
+        # top_button_layout.addWidget(self.load_encounter_button)
+        # # button_layout.addWidget(self.add_players_button)
+        # encounter_button_layout.addWidget(self.clear_encounter_button)
+        # top_button_layout.addStretch(0)
+
+        # Toolbox buttons
+        toolbox_button_layout = QHBoxLayout()
         self.clear_toolbox_button = QPushButton("Clear Toolbox")
         self.toggle_toolbox_button = QPushButton("Toggle Toolbox")
-        self.save_encounter_button = QPushButton("Save Encounter")
-        self.load_encounter_button = QPushButton("Load Encounter")
-        button_layout.addWidget(self.sort_init_button)
-        button_layout.addWidget(self.roll_init_button)
-        top_button_layout.addWidget(self.save_encounter_button)
-        top_button_layout.addWidget(self.load_encounter_button)
-        # button_layout.addWidget(self.add_players_button)
-        button_layout.addWidget(self.clear_encounter_button)
-        button_layout.addWidget(self.clear_toolbox_button)
-        button_layout.addWidget(self.toggle_toolbox_button)
-        top_button_layout.addStretch(0)
-
-        # "{{:<{}}}".format(length) - format or aligning tabs
+        toolbox_button_layout.addWidget(self.clear_toolbox_button)
+        toolbox_button_layout.addWidget(self.toggle_toolbox_button)
 
         # toolbox
         self.toolbox_widget = ToolboxWidget(self)
-        toolbox_layout = QVBoxLayout()
-        toolbox_layout.addWidget(self.toolbox_widget.frame)
 
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
-        encounter_layout.addLayout(top_button_layout)
+        # encounter_layout.addLayout(top_button_layout)
         encounter_layout.addWidget(self.encounterWidget)
-        encounter_layout.addLayout(button_layout)
-        encounter_layout.addLayout(toolbox_layout)
+        # encounter_layout.addLayout(encounter_button_layout)
+        encounter_layout.addWidget(self.toolbox_widget)
         encounter_frame.setLayout(encounter_layout)
         self.tab_widget.addTab(encounter_frame, "Encounter")
 
         # player tab
         player_table_frame = QFrame()
         player_table_layout = QVBoxLayout()
-        button_layout = QHBoxLayout()
+        encounter_button_layout = QHBoxLayout()
         self.add_player_button = QPushButton("Add Player")
         self.add_player_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.playerWidget = PlayerTable()
-        button_layout.addWidget(self.add_player_button)
-        button_layout.addStretch(0)
+        encounter_button_layout.addWidget(self.add_player_button)
+        encounter_button_layout.addStretch(0)
         player_table_layout.addWidget(self.playerWidget)
-        player_table_layout.addLayout(button_layout)
+        player_table_layout.addLayout(encounter_button_layout)
         player_table_frame.setLayout(player_table_layout)
         self.tab_widget.addTab(player_table_frame, "Players")
 
@@ -235,20 +234,17 @@ class DMTool(QMainWindow):
         self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
 
-        # self.encounter_table.selectionModel().selectionChanged.connect(
-        #     lambda: self.monster_clicked_handle(self.encounter_table))
-
         self.item_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.item_clicked_handle(self.item_table_widget.table))
 
-        # self.add_players_button.clicked.connect(self.add_players_handle)
-        self.sort_init_button.clicked.connect(self.sort_init_handle)
-        self.roll_init_button.clicked.connect(self.roll_init_handle)
-        self.save_encounter_button.clicked.connect(self.encounterWidget.save)
-        self.load_encounter_button.clicked.connect(lambda: self.encounterWidget.load(self.monster_table_widget))
-        self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
-        self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
-        self.toggle_toolbox_button.clicked.connect(self.toggle_toolbox_handle)
+        self.encounterWidget.add_players_button.clicked.connect(self.addPlayersToCombat)
+        self.encounterWidget.sort_init_button.clicked.connect(self.sort_init_handle)
+        self.encounterWidget.roll_init_button.clicked.connect(self.roll_init_handle)
+        self.encounterWidget.save_encounter_button.clicked.connect(self.encounterWidget.save)
+        self.encounterWidget.load_encounter_button.clicked.connect(lambda: self.encounterWidget.load(self.monster_table_widget))
+        self.encounterWidget.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
+        self.toolbox_widget.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
+        self.toolbox_widget.toggle_toolbox_button.clicked.connect(self.toggle_toolbox_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
 
@@ -405,11 +401,11 @@ class DMTool(QMainWindow):
 
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, but shouldn't be
-            if entry.getCharName() in characterNames and not entry.isEnabled():
+            if entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
                 pass
 
             # character not in encounter, but should be
-            elif entry.getCharName() not in characterNames and entry.isEnabled():
+            elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
                 pass
 
             # character not in encounter, but shouldn't be

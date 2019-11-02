@@ -16,6 +16,7 @@ class ListWidget(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
         scrollLayout = QVBoxLayout()
         self.scroll_frame = QWidget()
         self.scroll_frame.setContentsMargins(0, 0, 0, 0)
@@ -23,17 +24,26 @@ class ListWidget(QWidget):
         scroll = QScrollArea()
         scroll.setWidget(self.scroll_frame)
         scroll.setWidgetResizable(True)
-        layout.addWidget(scroll)
-        self.setLayout(layout)
+
+        self.setup_top_button_bar()
+
+        self.layout().addWidget(scroll)
         self.m_widgetList = []
         self.widget = QWidget()
         self.widget.setLayout(QVBoxLayout())
         self.scroll_frame.layout().addWidget(self.widget)
         self.scroll_frame.layout().addStretch(1)
+        self.setup_bottom_button_bar()
 
     def add(self, widget):
         self.m_widgetList.append(widget)
         self.widget.layout().addWidget(widget)
+
+    def setup_bottom_button_bar(self):
+        pass
+
+    def setup_top_button_bar(self):
+        pass
 
     def clear(self):
         for i in reversed(range(self.widget.layout().count())):

@@ -193,6 +193,36 @@ class EncounterWidget(ListWidget):
     def format(self):
         pass
 
+    def setup_top_button_bar(self):
+        button_frame = QFrame()
+        button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_frame.setLayout(button_layout)
+
+        self.save_encounter_button = QPushButton("Save Encounter")
+        self.load_encounter_button = QPushButton("Load Encounter")
+        button_layout.addWidget(self.save_encounter_button)
+        button_layout.addWidget(self.load_encounter_button)
+        button_layout.addStretch(0)
+        self.layout().addWidget(button_frame)
+
+    def setup_bottom_button_bar(self):
+        button_frame = QFrame()
+        button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_frame.setLayout(button_layout)
+
+        self.sort_init_button = QPushButton("Sort Initiative")
+        self.roll_init_button = QPushButton("Roll Initiative")
+        self.add_players_button = QPushButton("Add Players")
+        self.clear_encounter_button = QPushButton("Clear Encounter")
+        button_layout.addWidget(self.sort_init_button)
+        button_layout.addWidget(self.roll_init_button)
+        button_layout.addWidget(self.add_players_button)
+        button_layout.addWidget(self.clear_encounter_button)
+        button_layout.addStretch(0)
+        self.layout().addWidget(button_frame)
+
     def contextMenuEvent(self, event):
         pass
 
