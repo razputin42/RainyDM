@@ -165,7 +165,6 @@ class MonsterWidget(InitiativeWidget):
         return json.dumps(output)
 
 
-
 class PlayerWidget(InitiativeWidget):
     def __init__(self, character):
         self.m_initiative = InitiativeFrame("")

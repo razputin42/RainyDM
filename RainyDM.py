@@ -396,33 +396,46 @@ class DMTool(QMainWindow):
         #     for itt, value in enumerate(player):
         #         table.setItem(row_position, itt, QTableWidgetItem(str(value)))
 
-    def add_players_handle(self):
-        encounter_table = self.encounterWidget
-        character_names = encounter_table.getCharacterNames()
+    def addPlayersToCombat(self):
+        encounterWidget = self.encounterWidget
+        characterNames = encounterWidget.getCharacterNames()
 
         # Get active players
-        player_table = self.playerWidget
-        player_rows = player_table.rowCount()
-        for itt in range(player_rows):
-            item = player_table.item(itt, player_table.NAME_COLUMN)
-            if item is None or item.text() == "":
-                continue
-            name = item.text()
-            init = player_table.item(itt, player_table.INITIATIVE_COLUMN)
-            if init is None or init.text() == "":
-                continue
-            if name in character_names:
-                idx = character_names.index(name)
-                self.encounterWidget.setItem(idx, self.encounterWidget.INIT_COLUMN,
-                                             QTableWidgetItem(init.text()))
-                continue
+        playerWidget = self.playerWidget
+
+        for entry in self.playerWidget.m_widgetList:
+            # character in encounter, but shouldn't be
+            if entry.getCharName() in characterNames and not entry.isEnabled():
+                pass
+
+            # character not in encounter, but should be
+            elif entry.getCharName() not in characterNames and entry.isEnabled():
+                pass
+
+            # character not in encounter, but shouldn't be
             else:
-                init = player_table.item(itt, player_table.INITIATIVE_COLUMN)
-                if init is None:
-                    init = ""
-                else:
-                    init = init.text()
-                self.encounterWidget.addToEncounter([name, -1, init, "", "", ""])
+                pass
+
+        # for itt in range(player_rows):
+        #     item = playerWidget.item(itt, playerWidget.NAME_COLUMN)
+        #     if item is None or item.text() == "":
+        #         continue
+        #     name = item.text()
+        #     init = playerWidget.item(itt, playerWidget.INITIATIVE_COLUMN)
+        #     if init is None or init.text() == "":
+        #         continue
+        #     if name in character_names:
+        #         idx = character_names.index(name)
+        #         self.encounterWidget.setItem(idx, self.encounterWidget.INIT_COLUMN,
+        #                                      QTableWidgetItem(init.text()))
+        #         continue
+        #     else:
+        #         init = playerWidget.item(itt, playerWidget.INITIATIVE_COLUMN)
+        #         if init is None:
+        #             init = ""
+        #         else:
+        #             init = init.text()
+        #         self.encounterWidget.addToEncounter([name, -1, init, "", "", ""])
 
     def sort_init_handle(self):
         self.encounterWidget.sortInitiative()

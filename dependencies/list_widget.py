@@ -40,8 +40,14 @@ class ListWidget(QWidget):
             self.widget.layout().itemAt(i).widget().setParent(None)
         self.m_widgetList = []
 
-    def sort(self, parameter):
-        pass
+    def sort(self, attribute):
+        unsortedList = []
+        for entry in self.m_widgetList:
+            unsortedList.append((getattr(entry, attribute), entry))
+        sortedList = sorted(unsortedList, key=lambda x: x[0], reverse=True)
+        self.clear()
+        for itt, entry in sortedList:
+            self.add(entry)
 
     def jsonlify(self):
         return []

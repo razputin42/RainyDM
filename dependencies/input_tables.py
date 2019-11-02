@@ -334,6 +334,9 @@ class PlayerFrame(EntryWidget):
         elif action == removeAction:
             self.parent.remove(self)
 
+    def isEnabled(self):
+        return self.checkBox.isChecked()
+
 
 class PlayerTable(ListWidget):
     def __init__(self):
