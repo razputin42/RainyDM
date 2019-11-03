@@ -1,24 +1,24 @@
+from dependencies.signals import sNexus
 from dependencies.monster import Monster, Monster35
 from dependencies.spell import Spell, Spell35
 from dependencies.item import Item, Item35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
 from dependencies.toolbox import ToolboxWidget
-from dependencies.encounter import MonsterWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.encounter import EncounterWidget
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QLabel, QMessageBox, QSpacerItem
 import sys, json, os
 import html2text
 import pyperclip
-import time
 from dependencies.auxiliaries import rollFunction
 
 MONSTER_TAB = 0
 SPELL_TAB = 1
+
 
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
@@ -247,6 +247,7 @@ class DMTool(QMainWindow):
         self.toolbox_widget.toggle_toolbox_button.clicked.connect(self.toggle_toolbox_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
+        sNexus.attackSignal.connect(self.attackSlot)
 
     def _display_ui(self):
         self.setCentralWidget(self.window_frame)
@@ -292,16 +293,6 @@ class DMTool(QMainWindow):
         self.monster_table_widget.filter.clear_filters()
 
         self.load_resources()
-        # self.monster_table_widget.load_all("./monster", "resources/3.5/Bestiary/", Monster35)
-        # self.monster_table_widget.fill_table()
-
-        # self.spell_table_widget.load_all("./spell", "resources/3.5/Spells/", Spell35)
-        # self.spell_table_widget.fill_table()
-        # self.spell_table_widget.define_filters()
-
-        # self.item_table_widget.load_all("./item", "resources/3.5/Items/", Item35)
-        # self.item_table_widget.fill_table()
-        # self.item_table_widget.define_filters()
 
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()
@@ -402,13 +393,13 @@ class DMTool(QMainWindow):
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, but shouldn't be
             if entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
-                pass
+                encounterWidget.remove(entry)
 
             # character not in encounter, but should be
             elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
-                pass
+                encounterWidget.addPlayerToEncounter(entry.getCharacter())
 
-            # character not in encounter, but shouldn't be
+            # character not in encounter, and shouldn't be
             else:
                 pass
 
@@ -454,12 +445,9 @@ class DMTool(QMainWindow):
     def print(self, s):
         self.text_box.append(s)
 
-    def print_attack(self, monster, attack):
+    def print_attack(self, monsterName, attack):
         comp = attack.split("|")
-        if monster is not None:
-            s = "{} uses {} -- ".format(monster.name, comp[0])
-        else:
-            s = "Roll -- "
+        s = "{} uses {} -- ".format(monsterName, comp[0])
         if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
             attack_roll = rollFunction("1d20+"+comp[1])
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
@@ -504,7 +492,7 @@ class DMTool(QMainWindow):
                 for monster_tuple in meta_dict['toolbox_meta']:
                     self.add_to_toolbox(monster_tuple)
                 for monster_tuple in meta_dict['initiative_meta']:
-                    self.encounterWidget.addToEncounter(monster_tuple)
+                    self.encounterWidget.addMonsterToEncounter(monster_tuple)
                 for player_tuple in meta_dict['player_meta']:
                     self.add_player(player_tuple)
 
@@ -524,6 +512,11 @@ class DMTool(QMainWindow):
             json.dump(dict(
                 version=self.version
             ), f)
+
+    # SLOTS
+    @pyqtSlot(str, str)
+    def attackSlot(self, name, attack):
+        self.print_attack(name, attack)
 
 
 if __name__ == '__main__':

@@ -73,3 +73,9 @@ class ListWidget(QWidget):
             self.m_widgetList.remove(widget)
         except ValueError:
             pass
+
+    def find(self, target):
+        for idx, entry in enumerate(self.m_widgetList):
+            if entry is target:
+                return idx
+        return None

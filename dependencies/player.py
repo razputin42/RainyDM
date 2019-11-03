@@ -8,6 +8,9 @@ class Character:
     def getCharName(self):
         return self.m_charName
 
+    def getInit(self):
+        return self.m_init
+
     @property
     def isEnabled(self):
         return self.m_enabled

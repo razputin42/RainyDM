@@ -60,11 +60,11 @@ class LinkedMonsterTable(LinkedTableWidget):
         entry_idx = int(self.item(current_row, 1).text())
         entry = self.linked_table.list[entry_idx]
         if action == add_action:
-            self.parent.encounter_table.addToEncounter(entry, 1)
+            self.parent.encounter_table.addMonsterToEncounter(entry, 1)
         if action == add_x_action:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok:
-                self.parent.encounter_table.addToEncounter(entry, X)
+                self.parent.encounter_table.addMonsterToEncounter(entry, X)
         elif action == remove:
             self.remove_rows()
         elif action == add_spellbook:
