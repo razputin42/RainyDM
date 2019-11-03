@@ -1,24 +1,24 @@
+from dependencies.signals import sNexus
 from dependencies.monster import Monster, Monster35
 from dependencies.spell import Spell, Spell35
 from dependencies.item import Item, Item35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
 from dependencies.toolbox import ToolboxWidget
-from dependencies.encounter import MonsterWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.encounter import EncounterWidget
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QLabel, QMessageBox, QSpacerItem
 import sys, json, os
 import html2text
 import pyperclip
-import time
 from dependencies.auxiliaries import rollFunction
 
 MONSTER_TAB = 0
 SPELL_TAB = 1
+
 
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
@@ -101,53 +101,52 @@ class DMTool(QMainWindow):
         self.encounterWidget = EncounterWidget(self.monster_viewer)
 
         # encounter buttons - maybe move these to the subclass?
-        button_layout = QHBoxLayout()
-        top_button_layout = QHBoxLayout()
-        self.sort_init_button = QPushButton("Sort Initiative")
-        self.roll_init_button = QPushButton("Roll Initiative")
-        # self.add_players_button = QPushButton("Add Players")
-        self.clear_encounter_button = QPushButton("Clear Encounter")
+        # encounter_button_layout = QHBoxLayout()
+        # top_button_layout = QHBoxLayout()
+        # self.sort_init_button = QPushButton("Sort Initiative")
+        # self.roll_init_button = QPushButton("Roll Initiative")
+        # # self.add_players_button = QPushButton("Add Players")
+        # self.clear_encounter_button = QPushButton("Clear Encounter")
+        # self.save_encounter_button = QPushButton("Save Encounter")
+        # self.load_encounter_button = QPushButton("Load Encounter")
+        # encounter_button_layout.addWidget(self.sort_init_button)
+        # encounter_button_layout.addWidget(self.roll_init_button)
+        # top_button_layout.addWidget(self.save_encounter_button)
+        # top_button_layout.addWidget(self.load_encounter_button)
+        # # button_layout.addWidget(self.add_players_button)
+        # encounter_button_layout.addWidget(self.clear_encounter_button)
+        # top_button_layout.addStretch(0)
+
+        # Toolbox buttons
+        toolbox_button_layout = QHBoxLayout()
         self.clear_toolbox_button = QPushButton("Clear Toolbox")
         self.toggle_toolbox_button = QPushButton("Toggle Toolbox")
-        self.save_encounter_button = QPushButton("Save Encounter")
-        self.load_encounter_button = QPushButton("Load Encounter")
-        button_layout.addWidget(self.sort_init_button)
-        button_layout.addWidget(self.roll_init_button)
-        top_button_layout.addWidget(self.save_encounter_button)
-        top_button_layout.addWidget(self.load_encounter_button)
-        # button_layout.addWidget(self.add_players_button)
-        button_layout.addWidget(self.clear_encounter_button)
-        button_layout.addWidget(self.clear_toolbox_button)
-        button_layout.addWidget(self.toggle_toolbox_button)
-        top_button_layout.addStretch(0)
-
-        # "{{:<{}}}".format(length) - format or aligning tabs
+        toolbox_button_layout.addWidget(self.clear_toolbox_button)
+        toolbox_button_layout.addWidget(self.toggle_toolbox_button)
 
         # toolbox
         self.toolbox_widget = ToolboxWidget(self)
-        toolbox_layout = QVBoxLayout()
-        toolbox_layout.addWidget(self.toolbox_widget.frame)
 
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
-        encounter_layout.addLayout(top_button_layout)
+        # encounter_layout.addLayout(top_button_layout)
         encounter_layout.addWidget(self.encounterWidget)
-        encounter_layout.addLayout(button_layout)
-        encounter_layout.addLayout(toolbox_layout)
+        # encounter_layout.addLayout(encounter_button_layout)
+        encounter_layout.addWidget(self.toolbox_widget)
         encounter_frame.setLayout(encounter_layout)
         self.tab_widget.addTab(encounter_frame, "Encounter")
 
         # player tab
         player_table_frame = QFrame()
         player_table_layout = QVBoxLayout()
-        button_layout = QHBoxLayout()
+        encounter_button_layout = QHBoxLayout()
         self.add_player_button = QPushButton("Add Player")
         self.add_player_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.playerWidget = PlayerTable()
-        button_layout.addWidget(self.add_player_button)
-        button_layout.addStretch(0)
+        encounter_button_layout.addWidget(self.add_player_button)
+        encounter_button_layout.addStretch(0)
         player_table_layout.addWidget(self.playerWidget)
-        player_table_layout.addLayout(button_layout)
+        player_table_layout.addLayout(encounter_button_layout)
         player_table_frame.setLayout(player_table_layout)
         self.tab_widget.addTab(player_table_frame, "Players")
 
@@ -235,22 +234,20 @@ class DMTool(QMainWindow):
         self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
             lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
 
-        # self.encounter_table.selectionModel().selectionChanged.connect(
-        #     lambda: self.monster_clicked_handle(self.encounter_table))
-
         self.item_table_widget.table.selectionModel().selectionChanged.connect(
             lambda: self.item_clicked_handle(self.item_table_widget.table))
 
-        # self.add_players_button.clicked.connect(self.add_players_handle)
-        self.sort_init_button.clicked.connect(self.sort_init_handle)
-        self.roll_init_button.clicked.connect(self.roll_init_handle)
-        self.save_encounter_button.clicked.connect(self.encounterWidget.save)
-        self.load_encounter_button.clicked.connect(lambda: self.encounterWidget.load(self.monster_table_widget))
-        self.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
-        self.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
-        self.toggle_toolbox_button.clicked.connect(self.toggle_toolbox_handle)
+        self.encounterWidget.add_players_button.clicked.connect(self.addPlayersToCombat)
+        self.encounterWidget.sort_init_button.clicked.connect(self.sort_init_handle)
+        self.encounterWidget.roll_init_button.clicked.connect(self.roll_init_handle)
+        self.encounterWidget.save_encounter_button.clicked.connect(self.encounterWidget.save)
+        self.encounterWidget.load_encounter_button.clicked.connect(lambda: self.encounterWidget.load(self.monster_table_widget))
+        self.encounterWidget.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
+        self.toolbox_widget.clear_toolbox_button.clicked.connect(self.clear_toolbox_handle)
+        self.toolbox_widget.toggle_toolbox_button.clicked.connect(self.toggle_toolbox_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
+        sNexus.attackSignal.connect(self.attackSlot)
 
     def _display_ui(self):
         self.setCentralWidget(self.window_frame)
@@ -296,16 +293,6 @@ class DMTool(QMainWindow):
         self.monster_table_widget.filter.clear_filters()
 
         self.load_resources()
-        # self.monster_table_widget.load_all("./monster", "resources/3.5/Bestiary/", Monster35)
-        # self.monster_table_widget.fill_table()
-
-        # self.spell_table_widget.load_all("./spell", "resources/3.5/Spells/", Spell35)
-        # self.spell_table_widget.fill_table()
-        # self.spell_table_widget.define_filters()
-
-        # self.item_table_widget.load_all("./item", "resources/3.5/Items/", Item35)
-        # self.item_table_widget.fill_table()
-        # self.item_table_widget.define_filters()
 
     def spell_clicked_handle(self, table):
         current_row = table.currentRow()
@@ -405,14 +392,14 @@ class DMTool(QMainWindow):
 
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, but shouldn't be
-            if entry.getCharName() in characterNames and not entry.isEnabled():
-                pass
+            if entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
+                encounterWidget.remove(entry)
 
             # character not in encounter, but should be
-            elif entry.getCharName() not in characterNames and entry.isEnabled():
-                pass
+            elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
+                encounterWidget.addPlayerToEncounter(entry.getCharacter())
 
-            # character not in encounter, but shouldn't be
+            # character not in encounter, and shouldn't be
             else:
                 pass
 
@@ -458,12 +445,9 @@ class DMTool(QMainWindow):
     def print(self, s):
         self.text_box.append(s)
 
-    def print_attack(self, monster, attack):
+    def print_attack(self, monsterName, attack):
         comp = attack.split("|")
-        if monster is not None:
-            s = "{} uses {} -- ".format(monster.name, comp[0])
-        else:
-            s = "Roll -- "
+        s = "{} uses {} -- ".format(monsterName, comp[0])
         if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
             attack_roll = rollFunction("1d20+"+comp[1])
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
@@ -508,7 +492,7 @@ class DMTool(QMainWindow):
                 for monster_tuple in meta_dict['toolbox_meta']:
                     self.add_to_toolbox(monster_tuple)
                 for monster_tuple in meta_dict['initiative_meta']:
-                    self.encounterWidget.addToEncounter(monster_tuple)
+                    self.encounterWidget.addMonsterToEncounter(monster_tuple)
                 for player_tuple in meta_dict['player_meta']:
                     self.add_player(player_tuple)
 
@@ -528,6 +512,11 @@ class DMTool(QMainWindow):
             json.dump(dict(
                 version=self.version
             ), f)
+
+    # SLOTS
+    @pyqtSlot(str, str)
+    def attackSlot(self, name, attack):
+        self.print_attack(name, attack)
 
 
 if __name__ == '__main__':

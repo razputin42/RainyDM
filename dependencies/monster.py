@@ -1,5 +1,7 @@
 import re
 import copy
+from PyQt5.QtCore import pyqtSignal, QObject
+from dependencies.signals import sNexus
 
 xp_dict = {
     "00": 0,
@@ -50,7 +52,7 @@ size_dict = dict(
 )
 
 
-class Monster:
+class Monster (QObject):
     database_fields = [
         'name', 'size', 'type', 'alignment', 'ac', 'hp', 'speed',
         ['str', 'dex', 'con', 'int', 'wis', 'cha'],
@@ -84,6 +86,7 @@ class Monster:
         pass
 
     def __init__(self, entry, idx):
+        super().__init__()
         self.entry = entry
         self.index = idx
         self.action_list = []
@@ -193,6 +196,9 @@ class Monster:
 
     def copy(self):
         return copy.deepcopy(self)
+
+    def performAttack(self, attack):
+        sNexus.attackSignal.emit(self.name, attack.attack)
 
 
 class Monster35(Monster):

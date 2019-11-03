@@ -456,7 +456,7 @@ class MonsterTableWidget(SearchableTable):
             number, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if not (ok and number < 2000):
                 return False
-        self.parent.encounter_table.addToEncounter(monster, number)
+        self.parent.encounter_table.addMonsterToEncounter(monster, number)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -482,11 +482,11 @@ class MonsterTableWidget(SearchableTable):
         if action is None:
             return
         if action == addAction:
-            self.parent.encounterWidget.addToEncounter(monster, 1)
+            self.parent.encounterWidget.addMonsterToEncounter(monster, 1)
         elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok and X < 2000:
-                self.parent.encounterWidget.addToEncounter(monster, X)
+                self.parent.encounterWidget.addMonsterToEncounter(monster, X)
         elif action == addToolbox:
             self.parent.add_to_toolbox(monster)
         elif hasattr(monster, "spells") and action is add_spellbook:

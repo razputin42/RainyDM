@@ -283,7 +283,9 @@ class InputFrame(QFrame):
         self.layout().setAlignment(Qt.AlignHCenter)
 
     def get(self):
-        if self.type is int:
+        if self.edit.text() == '':
+            return None
+        elif self.type is int:
             return int(self.edit.text())
         elif self.type is str:
             return self.edit.text()

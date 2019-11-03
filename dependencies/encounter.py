@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
 from dependencies.auxiliaries import rollFunction
 import os, json
+from dependencies.monster import Monster
 
 
 class NameLabel(QLabel):
@@ -133,6 +134,7 @@ class MonsterWidget(InitiativeWidget):
         self.viewer = viewer
         self.parent = parentList
         self.layout().addWidget(NameLabel(monster.name))
+        self.layout().addStretch(1)
         self.layout().addWidget(self.m_health)
         self.layout().addWidget(DamageInputFrame(self.m_health))
         self.layout().addWidget(self.m_initiative)
@@ -147,13 +149,70 @@ class MonsterWidget(InitiativeWidget):
 
     def contextMenuEvent(self, event):
         menu = QMenu()
+        moveUpAction = menu.addAction("Move Up")
+        moveDownAction = menu.addAction("Move Down")
+        menu.addSeparator()
         removeAction = menu.addAction("Remove from Initiative")
+
+        menu.addSeparator()
+        actionMenuHandles = []
+        for attack in self.monster.action_list:
+            if hasattr(attack, "attack"):
+                actionMenuHandles.append((menu.addAction(attack.name), attack))
+
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
         elif action == removeAction:
             self.parent.remove(self)
+        elif action == moveUpAction:
+            self.parent.moveEntry(self, -1)
+        elif action == moveDownAction:
+            self.parent.moveEntry(self, 1)
+        elif action in [i[0] for i in actionMenuHandles]:
+            for _action, attack in actionMenuHandles:
+                if action is _action:
+                    self.monster.performAttack(attack)
+
+            action_indexes = []
+#         action_menu_handles = []
+#         menu = QMenu(self)
+#         if monster_idx is not -1:
+#             monster = self.parent.monster_table_widget.list[monster_idx]
+#             if hasattr(monster, "action_list"):
+#                 for itt, action in enumerate(monster.action_list):
+#                     if hasattr(action, "attack"):
+#                         action_indexes.append(itt)
+#                         action_menu_handles.append(menu.addAction(action.name))
+#
+#             menu.addSeparator()
+#         removeAction = menu.addAction("Remove from initiative")
+#
+#         if monster_idx is not -1:
+#             addToolbox = menu.addAction("Add to toolbox")
+#             if hasattr(monster, "spells"):
+#                 add_spellbook = menu.addAction("Add monster's spells to toolbox")
+#
+#         action = menu.exec_(self.mapToGlobal(event.pos()))
+#         if action is None:
+#             return
+#         elif action == addToolbox:
+#             if monster_idx == -1:  # monster is a player
+#                 return
+#             monster = self.parent.monster_table_widget.list[monster_idx]
+#             self.parent.add_to_toolbox(monster)
+#         elif action == removeAction:
+#             self.remove_rows()
+#             self.calculate_encounter_xp()
+#         elif action in action_menu_handles:
+#             idx = action_menu_handles.index(action)
+#             attack = monster.action_list[action_indexes[idx]]
+#             if hasattr(attack, "attack"):
+#                 self.parent.print_attack(monster, attack.attack)
+#         elif hasattr(monster, "spells") and action is add_spellbook:
+#             if monster_idx is not -1:
+#                 self.parent.extract_and_add_spellbook(monster)
 
     def jsonlify(self):
         output = dict(
@@ -167,8 +226,11 @@ class MonsterWidget(InitiativeWidget):
 
 class PlayerWidget(InitiativeWidget):
     def __init__(self, character):
-        self.m_initiative = InitiativeFrame("")
+        super().__init__()
+        self.m_initiative = InitiativeFrame(str(character.getInit()))
         self.m_character = character
+        self.layout().addWidget(NameLabel(character.getCharName()))
+        self.layout().addStretch(1)
         self.layout().addWidget(self.m_initiative)
 
     def getCharName(self):
@@ -182,6 +244,24 @@ class PlayerWidget(InitiativeWidget):
         )
         return json.dumps(output)
 
+    def contextMenuEvent(self, event):
+        menu = QMenu()
+        moveUpAction = menu.addAction("Move Up")
+        moveDownAction = menu.addAction("Move Down")
+        menu.addSeparator()
+        removeAction = menu.addAction("Remove from Initiative")
+
+        action = menu.exec_(self.mapToGlobal(event.pos()))
+        if action is None:
+            return
+        elif action == removeAction:
+            self.parent.remove(self)
+        elif action == moveUpAction:
+            self.parent.moveEntry(self, -1)
+        elif action == moveDownAction:
+            self.parent.moveEntry(self, 1)
+
+
 class EncounterWidget(ListWidget):
     def __init__(self, viewer):
         super().__init__()
@@ -192,6 +272,36 @@ class EncounterWidget(ListWidget):
 
     def format(self):
         pass
+
+    def setup_top_button_bar(self):
+        button_frame = QFrame()
+        button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_frame.setLayout(button_layout)
+
+        self.save_encounter_button = QPushButton("Save Encounter")
+        self.load_encounter_button = QPushButton("Load Encounter")
+        button_layout.addWidget(self.save_encounter_button)
+        button_layout.addWidget(self.load_encounter_button)
+        button_layout.addStretch(0)
+        self.layout().addWidget(button_frame)
+
+    def setup_bottom_button_bar(self):
+        button_frame = QFrame()
+        button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_frame.setLayout(button_layout)
+
+        self.sort_init_button = QPushButton("Sort Initiative")
+        self.roll_init_button = QPushButton("Roll Initiative")
+        self.add_players_button = QPushButton("Add Players")
+        self.clear_encounter_button = QPushButton("Clear Encounter")
+        button_layout.addWidget(self.sort_init_button)
+        button_layout.addWidget(self.roll_init_button)
+        button_layout.addWidget(self.add_players_button)
+        button_layout.addWidget(self.clear_encounter_button)
+        button_layout.addStretch(0)
+        self.layout().addWidget(button_frame)
 
     def contextMenuEvent(self, event):
         pass
@@ -227,7 +337,7 @@ class EncounterWidget(ListWidget):
             for jsonEntry in encounter:
                 entry = json.loads(jsonEntry)
                 monster = monsterList.find_entry("name", entry["monster"])
-                self.addToEncounter(monster, init=entry["init"], hp=entry["hp"])
+                self.addMonsterToEncounter(monster, init=entry["init"], hp=entry["hp"])
 
     def getCharacterNames(self):
         charNameList = []
@@ -245,8 +355,11 @@ class EncounterWidget(ListWidget):
         for entry in self.m_widgetList:
             unsortedList.append((entry.getInitiative(), entry))
         sortedList = sorted(unsortedList, key=lambda x: x[0], reverse=True)
+        self.refill(sortedList)
+
+    def refill(self, newList):
         self.clear()
-        for itt, entry in sortedList:
+        for entry in newList:
             self.add(entry)
 
     def rollInitiative(self):
@@ -254,9 +367,21 @@ class EncounterWidget(ListWidget):
             if type(entry) is MonsterWidget:
                 entry.rollInitiative()
 
-    def addToEncounter(self, monster, number=1, init=None, hp=None, desc=None):
+    def addMonsterToEncounter(self, monster, number=1, init=None, hp=None, desc=None):
         if hp is None:
             hp = monster.hp_no_dice
         for itt in range(number):
             self.add(MonsterWidget(monster, self, self.viewer, init, hp, desc))
 
+    def addPlayerToEncounter(self, character):
+        self.add(PlayerWidget(character))
+
+    def moveEntry(self, entry, move):
+        newList = self.m_widgetList
+        idx = self.find(entry)
+        if idx is None:
+            return
+        if idx + move > len(newList)-1 or idx + move < 0:
+            return
+        newList[idx], newList[idx+move] = newList[idx+move], newList[idx]
+        self.refill(newList)
