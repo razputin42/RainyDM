@@ -6,8 +6,11 @@ from PyQt5.QtCore import Qt
 class EntryWidget(QFrame):
     def __init__(self):
         super().__init__()
-        self.setStyleSheet("background-color: rgb(240, 240, 240);")
+        # self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.setFrameShape(QFrame.Box)
+
+    def redraw(self):
+        self.setStyle(self.style())
 
 
 class ListWidget(QWidget):
@@ -50,14 +53,17 @@ class ListWidget(QWidget):
             self.widget.layout().itemAt(i).widget().setParent(None)
         self.m_widgetList = []
 
+    def refill(self, newList):
+        self.clear()
+        for entry in newList:
+            self.add(entry)
+
     def sort(self, attribute):
         unsortedList = []
         for entry in self.m_widgetList:
-            unsortedList.append((getattr(entry, attribute), entry))
+            unsortedList.append((getattr(entry, attribute)(), entry))
         sortedList = sorted(unsortedList, key=lambda x: x[0], reverse=True)
-        self.clear()
-        for itt, entry in sortedList:
-            self.add(entry)
+        self.refill([i[1] for i in sortedList])
 
     def jsonlify(self):
         return []

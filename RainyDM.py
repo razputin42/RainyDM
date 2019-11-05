@@ -49,6 +49,7 @@ class DMTool(QMainWindow):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
+        self.setStyleSheet(open(os.path.join("dependencies", "styles", "default.qss")).read())
         self.setWindowIcon(QIcon(os.path.join('assets', 'tear.png')))
         self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
@@ -69,6 +70,7 @@ class DMTool(QMainWindow):
 
         # Text box
         self.text_box = QTextEdit()
+        self.text_box.setObjectName("OutputField")
         self.text_box.setReadOnly(True)
         self.text_box.setFontPointSize(10)
         # self.text_box.setMaximumWidth(530)
@@ -197,7 +199,7 @@ class DMTool(QMainWindow):
         self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
         self.edit_entries_action.setStatusTip("Enable edit data entries")
         # development
-        self.edit_entries_action.setChecked(True)  # default ON
+        self.edit_entries_action.setChecked(False)  # default OFF
         self.enable_edit_data_entries()
         ##
         self.edit_entries_action.triggered.connect(self.enable_edit_data_entries)
@@ -248,6 +250,7 @@ class DMTool(QMainWindow):
 
         self.add_player_button.clicked.connect(self.add_player)
         sNexus.attackSignal.connect(self.attackSlot)
+        sNexus.addSpellsSignal.connect(self.addSpellsToToolboox)
 
     def _display_ui(self):
         self.setCentralWidget(self.window_frame)
@@ -342,6 +345,11 @@ class DMTool(QMainWindow):
         else:
             self.toolbox_widget.monster_toolbox.setItem(row_position, 0, QTableWidgetItem(str(monster.name)))
             self.toolbox_widget.monster_toolbox.setItem(row_position, 1, QTableWidgetItem(str(monster.index)))
+
+    def addSpellsToToolboox(self, spells):
+        for spell in spells:
+            _spell = self.spell_table_widget.find_entry('name', spell)
+            self.add_to_toolbox_spell(_spell)
 
     def add_to_toolbox_spell(self, spell):
         row_position = self.toolbox_widget.spell_toolbox.rowCount()

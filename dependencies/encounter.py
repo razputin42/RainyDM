@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
     QLabel, QLineEdit, QMenu, QInputDialog, QFileDialog
-from PyQt5.QtGui import QFont, QIcon, QPixmap, QIntValidator
+from PyQt5.QtGui import QFont, QMouseEvent, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
 from dependencies.auxiliaries import rollFunction
+from dependencies.signals import sNexus
 import os, json
-from dependencies.monster import Monster
 
 
 class NameLabel(QLabel):
@@ -117,12 +117,20 @@ class InitiativeWidget(EntryWidget):
         super().__init__()
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(10, 0, 10, 0)
-        self.setStyleSheet("background-color: rgb(240, 240, 240);")
+        # self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.setMinimumHeight(50)
         self.setFrameShape(QFrame.Box)
+        self.setProperty('clicked', False)
+        self.setObjectName("InitiativeWidget")
+        # self.clicked.connect(self.clickedSlot)
 
     def getInitiative(self):
         return self.m_initiative.get()
+
+    def mousePressEvent(self, a0: QMouseEvent):
+        sNexus.encounterDeselectSignal.emit()
+        self.setProperty('clicked', True)
+        self.redraw()
 
 
 class MonsterWidget(InitiativeWidget):
@@ -154,65 +162,32 @@ class MonsterWidget(InitiativeWidget):
         menu.addSeparator()
         removeAction = menu.addAction("Remove from Initiative")
 
-        menu.addSeparator()
         actionMenuHandles = []
-        for attack in self.monster.action_list:
-            if hasattr(attack, "attack"):
-                actionMenuHandles.append((menu.addAction(attack.name), attack))
+        if len(self.monster.action_list) is not 0:
+            menu.addSeparator()
+            for attack in self.monster.action_list:
+                if hasattr(attack, "attack"):
+                    actionMenuHandles.append((menu.addAction(attack.name), attack))
 
+        if hasattr(self.monster, 'spells'):
+            menu.addSeparator()
+            addSpells = menu.addAction("Add monster's spells to toolbox")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        elif action == removeAction:
+        elif action is removeAction:
             self.parent.remove(self)
-        elif action == moveUpAction:
+        elif action is moveUpAction:
             self.parent.moveEntry(self, -1)
-        elif action == moveDownAction:
+        elif action is moveDownAction:
             self.parent.moveEntry(self, 1)
         elif action in [i[0] for i in actionMenuHandles]:
             for _action, attack in actionMenuHandles:
                 if action is _action:
                     self.monster.performAttack(attack)
-
-            action_indexes = []
-#         action_menu_handles = []
-#         menu = QMenu(self)
-#         if monster_idx is not -1:
-#             monster = self.parent.monster_table_widget.list[monster_idx]
-#             if hasattr(monster, "action_list"):
-#                 for itt, action in enumerate(monster.action_list):
-#                     if hasattr(action, "attack"):
-#                         action_indexes.append(itt)
-#                         action_menu_handles.append(menu.addAction(action.name))
-#
-#             menu.addSeparator()
-#         removeAction = menu.addAction("Remove from initiative")
-#
-#         if monster_idx is not -1:
-#             addToolbox = menu.addAction("Add to toolbox")
-#             if hasattr(monster, "spells"):
-#                 add_spellbook = menu.addAction("Add monster's spells to toolbox")
-#
-#         action = menu.exec_(self.mapToGlobal(event.pos()))
-#         if action is None:
-#             return
-#         elif action == addToolbox:
-#             if monster_idx == -1:  # monster is a player
-#                 return
-#             monster = self.parent.monster_table_widget.list[monster_idx]
-#             self.parent.add_to_toolbox(monster)
-#         elif action == removeAction:
-#             self.remove_rows()
-#             self.calculate_encounter_xp()
-#         elif action in action_menu_handles:
-#             idx = action_menu_handles.index(action)
-#             attack = monster.action_list[action_indexes[idx]]
-#             if hasattr(attack, "attack"):
-#                 self.parent.print_attack(monster, attack.attack)
-#         elif hasattr(monster, "spells") and action is add_spellbook:
-#             if monster_idx is not -1:
-#                 self.parent.extract_and_add_spellbook(monster)
+        elif action is addSpells:
+            self.monster.addSpells()
 
     def jsonlify(self):
         output = dict(
@@ -225,13 +200,14 @@ class MonsterWidget(InitiativeWidget):
 
 
 class PlayerWidget(InitiativeWidget):
-    def __init__(self, character):
+    def __init__(self, parentList, character):
         super().__init__()
         self.m_initiative = InitiativeFrame(str(character.getInit()))
         self.m_character = character
         self.layout().addWidget(NameLabel(character.getCharName()))
         self.layout().addStretch(1)
         self.layout().addWidget(self.m_initiative)
+        self.parent = parentList
 
     def getCharName(self):
         return self.m_character.getCharName()
@@ -266,6 +242,9 @@ class EncounterWidget(ListWidget):
     def __init__(self, viewer):
         super().__init__()
         self.viewer = viewer
+        self.setObjectName("EncounterWidget")
+        self.scroll_frame.setObjectName("EncounterWidgetScrollArea")
+        sNexus.encounterDeselctSignal.connect(self.deselectAll)
 
     def calculate_encounter_xp(self):
         pass
@@ -351,16 +330,7 @@ class EncounterWidget(ListWidget):
         pass
 
     def sortInitiative(self):
-        unsortedList = []
-        for entry in self.m_widgetList:
-            unsortedList.append((entry.getInitiative(), entry))
-        sortedList = sorted(unsortedList, key=lambda x: x[0], reverse=True)
-        self.refill(sortedList)
-
-    def refill(self, newList):
-        self.clear()
-        for entry in newList:
-            self.add(entry)
+        self.sort('getInitiative')
 
     def rollInitiative(self):
         for entry in self.m_widgetList:
@@ -374,7 +344,7 @@ class EncounterWidget(ListWidget):
             self.add(MonsterWidget(monster, self, self.viewer, init, hp, desc))
 
     def addPlayerToEncounter(self, character):
-        self.add(PlayerWidget(character))
+        self.add(PlayerWidget(self, character))
 
     def moveEntry(self, entry, move):
         newList = self.m_widgetList
@@ -385,3 +355,8 @@ class EncounterWidget(ListWidget):
             return
         newList[idx], newList[idx+move] = newList[idx+move], newList[idx]
         self.refill(newList)
+
+    def deselectAll(self):
+        for entry in self.m_widgetList:
+            entry.setProperty("clicked", False)
+            entry.redraw()
