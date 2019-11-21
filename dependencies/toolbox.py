@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
-    QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton
+    QHBoxLayout, QLineEdit, QSizePolicy, QMenu, QTabWidget, QFrame, QPushButton
 
 
 class LinkedTableWidget(QTableWidget):
@@ -113,6 +113,7 @@ class ToolboxWidget(QFrame):
         toolbox_layout = QHBoxLayout()
         self.setLayout(QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum))
 
         self.spell_toolbox = LinkedSpellTable(self.parent.spell_table_widget, self.parent)
         self.monster_toolbox = LinkedMonsterTable(self.parent.monster_table_widget, self.parent)

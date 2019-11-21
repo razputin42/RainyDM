@@ -2,6 +2,13 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QScrollArea, \
     QWidget, QFormLayout, QGroupBox
 from PyQt5.QtCore import Qt
 
+colorDict = dict(
+    white=[240, 240, 240],
+    green=[0, 240, 0],
+    red=[240, 0x00, 0x00],
+    blue=[0x00, 0x00, 240],
+)
+
 
 class EntryWidget(QFrame):
     def __init__(self):
@@ -66,7 +73,10 @@ class ListWidget(QWidget):
         self.refill([i[1] for i in sortedList])
 
     def jsonlify(self):
-        return []
+        return_list = []
+        for entry in self.m_widgetList:
+            return_list.append(entry.jsonlify())
+        return return_list
 
     def getEntries(self):
         return self.m_widgetList
@@ -77,6 +87,15 @@ class ListWidget(QWidget):
                 entry.setParent(None)
         try:
             self.m_widgetList.remove(widget)
+        except ValueError:
+            pass
+
+    def removeCharacter(self, character):
+        for entry in self.m_widgetList:
+            if entry.getName() == character.getCharName():
+                entry.setParent(None)
+        try:
+            self.m_widgetList.remove(entry)
         except ValueError:
             pass
 

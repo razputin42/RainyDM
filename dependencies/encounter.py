@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
     QLabel, QLineEdit, QMenu, QInputDialog, QFileDialog
 from PyQt5.QtGui import QFont, QMouseEvent, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
-from dependencies.list_widget import ListWidget, EntryWidget
+from dependencies.list_widget import ListWidget, EntryWidget, colorDict
 from dependencies.auxiliaries import rollFunction
 from dependencies.signals import sNexus
 import os, json
@@ -115,33 +115,40 @@ class InitiativeFrame(QFrame):
 class InitiativeWidget(EntryWidget):
     def __init__(self):
         super().__init__()
+        self.color = colorDict["white"]
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(10, 0, 10, 0)
         # self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.setMinimumHeight(50)
         self.setFrameShape(QFrame.Box)
-        self.setProperty('clicked', False)
-        self.setObjectName("InitiativeWidget")
-        # self.clicked.connect(self.clickedSlot)
+        self.deselect()
+        # self.color = colorDict['green']
 
     def getInitiative(self):
         return self.m_initiative.get()
 
     def mousePressEvent(self, a0: QMouseEvent):
         sNexus.encounterDeselectSignal.emit()
+        self.darker_color = [i - 30 for i in self.color]
+        self.setStyleSheet("background-color: #{:02X}{:02X}{:02X};".format(*self.darker_color))
         self.setProperty('clicked', True)
         self.redraw()
+
+    def deselect(self):
+        self.setStyleSheet("background-color: #{:02X}{:02X}{:02X};".format(*self.color))
+        self.setProperty('clicked', False)
 
 
 class MonsterWidget(InitiativeWidget):
     def __init__(self, monster, parentList, viewer=None, init=None, hp=None, desc=None):
         super().__init__()
         self.m_health = HealthFrame(hp)
-        self.m_initiative = InitiativeFrame("")
+        self.m_initiative = InitiativeFrame(str(init))
         self.monster = monster
         self.viewer = viewer
         self.parent = parentList
-        self.layout().addWidget(NameLabel(monster.name))
+        self.m_name = NameLabel(monster.name)
+        self.layout().addWidget(self.m_name)
         self.layout().addStretch(1)
         self.layout().addWidget(self.m_health)
         self.layout().addWidget(DamageInputFrame(self.m_health))
@@ -154,6 +161,12 @@ class MonsterWidget(InitiativeWidget):
         if self.viewer is None:
             return
         self.viewer.draw_view(self.monster)
+
+    def getHp(self):
+        return self.m_health.get()
+
+    def getName(self):
+        return self.m_name.text()
 
     def contextMenuEvent(self, event):
         menu = QMenu()
@@ -209,7 +222,7 @@ class PlayerWidget(InitiativeWidget):
         self.layout().addWidget(self.m_initiative)
         self.parent = parentList
 
-    def getCharName(self):
+    def getName(self):
         return self.m_character.getCharName()
 
     def jsonlify(self):
@@ -322,8 +335,8 @@ class EncounterWidget(ListWidget):
         charNameList = []
         for entry in self.m_widgetList:
             if type(entry) is PlayerWidget:
-                if entry.getCharName() not in charNameList:
-                    charNameList.append(entry.getCharName())
+                if entry.getName() not in charNameList:
+                    charNameList.append(entry.getName())
         return charNameList
 
     def updateCharacterInitiative(self, character):
@@ -358,5 +371,11 @@ class EncounterWidget(ListWidget):
 
     def deselectAll(self):
         for entry in self.m_widgetList:
-            entry.setProperty("clicked", False)
+            entry.deselect()
             entry.redraw()
+
+    def jsonlify(self):
+        return_list = []
+        for entry in self.m_widgetList:
+            return_list.append(entry.jsonlify())
+        return return_list

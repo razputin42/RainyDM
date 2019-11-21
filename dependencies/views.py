@@ -150,7 +150,7 @@ class SpellViewer(Viewer):
                 components=spell.components,
                 duration=spell.duration,
                 text=spell.text,
-                classes=', '.join(spell.classes)
+                classes=', '.join(spell.classes) if hasattr(spell, "classes") else ""
             )
         self.setHtml(html)
         self.current_view = spell

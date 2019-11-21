@@ -29,7 +29,11 @@ class Spell:
                 else:
                     s = s + attr.text + "<br>"
             elif attr.tag == "school":
-                self.school = school_dict[attr.text]
+                if attr.text in school_dict.keys():
+                    self.school = school_dict[attr.text]
+                else:
+                    self.school = attr.text
+
             elif attr.tag == 'classes':
                 self.classes = attr.text.split(', ')
             else:

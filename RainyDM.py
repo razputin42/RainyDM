@@ -6,7 +6,7 @@ from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget,
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from dependencies.input_tables import PlayerTable, PlayerFrame
-from dependencies.encounter import EncounterWidget
+from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -199,7 +199,7 @@ class DMTool(QMainWindow):
         self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
         self.edit_entries_action.setStatusTip("Enable edit data entries")
         # development
-        self.edit_entries_action.setChecked(False)  # default OFF
+        self.edit_entries_action.setChecked(True)  # default ON
         self.enable_edit_data_entries()
         ##
         self.edit_entries_action.triggered.connect(self.enable_edit_data_entries)
@@ -219,7 +219,7 @@ class DMTool(QMainWindow):
 
     def enable_edit_data_entries(self):
         cond = self.edit_entries_action.isChecked()
-        self.monster_table_widget.EDITABLE = cond
+        self.monster_table_widget.EDITABLE = False # not for monsters
         self.spell_table_widget.EDITABLE = cond
         self.item_table_widget.EDITABLE = cond
 
@@ -336,7 +336,7 @@ class DMTool(QMainWindow):
             self.monster_table_widget.table_widget.setItem(itt, 0, QTableWidgetItem(str(monster.name)))
             self.monster_table_widget.table_widget.setItem(itt, 1, QTableWidgetItem(str(monster.index)))
 
-    def add_to_toolbox(self, monster):
+    def addMonsterToToolbox(self, monster):
         row_position = self.toolbox_widget.monster_toolbox.rowCount()
         self.toolbox_widget.monster_toolbox.insertRow(row_position)
         if type(monster) == list:
@@ -394,14 +394,14 @@ class DMTool(QMainWindow):
     def addPlayersToCombat(self):
         encounterWidget = self.encounterWidget
         characterNames = encounterWidget.getCharacterNames()
-
+        print(characterNames)
         # Get active players
         playerWidget = self.playerWidget
 
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, but shouldn't be
             if entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
-                encounterWidget.remove(entry)
+                encounterWidget.removeCharacter(entry.getCharacter())
 
             # character not in encounter, but should be
             elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
@@ -498,11 +498,36 @@ class DMTool(QMainWindow):
             with open("metadata/session.txt", "r") as f:
                 meta_dict = eval(f.read())
                 for monster_tuple in meta_dict['toolbox_meta']:
-                    self.add_to_toolbox(monster_tuple)
-                for monster_tuple in meta_dict['initiative_meta']:
-                    self.encounterWidget.addMonsterToEncounter(monster_tuple)
-                for player_tuple in meta_dict['player_meta']:
-                    self.add_player(player_tuple)
+                    self.addMonsterToToolbox(monster_tuple)
+
+                for player in meta_dict['player_meta']:
+                    player_dict = json.loads(player)
+                    self.playerWidget.add(PlayerFrame(
+                        self.playerWidget,
+                        charName=player_dict["characterName"],
+                        playerName=player_dict["playerName"],
+                        init=player_dict["initiative"],
+                        perception=player_dict["perception"],
+                        insight=player_dict["insight"],
+                        isEnabled=player_dict["isEnabled"]
+                        )
+                    )
+
+                for entry in meta_dict['initiative_meta']:
+                    entry_dict = json.loads(entry)
+                    if entry_dict["type"] == "Monster":
+                        self.encounterWidget.add(MonsterWidget(
+                            self.monster_table_widget.find_entry("name", entry_dict["monster"]),
+                            self.encounterWidget,
+                            viewer=self.monster_viewer,
+                            init=entry_dict["init"],
+                            hp=entry_dict["hp"]
+                        ))
+                    elif entry_dict["type"] == "Player":
+                        self.encounterWidget.add(PlayerWidget(
+                            self.encounterWidget,
+                            self.playerWidget.findCharacterByName(entry_dict["name"])
+                        ))
 
     def closeEvent(self, event):
         toolbox_meta = self.toolbox_widget.monster_toolbox.jsonlify()

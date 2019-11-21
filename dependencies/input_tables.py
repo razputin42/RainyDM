@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QMenu, QVBoxLayout, QFrame, QLabel, QTableWidgetItem, \
-    QInputDialog, QFileDialog, QLineEdit, QHBoxLayout, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QTableWidget, QMenu, QVBoxLayout, QFrame, QLabel, QTableWidgetItem, \
+    QInputDialog, QSizePolicy, QLineEdit, QHBoxLayout, QPushButton, QCheckBox
 from PyQt5.QtGui import QIntValidator, QFont
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
 from dependencies.player import Character
 from dependencies.encounter import InitiativeFrame
+import json
 
 
 class InputTableWidget(QTableWidget):
@@ -262,7 +263,7 @@ class InputTableWidget(QTableWidget):
 #             self.calculate_encounter_xp()
 
 class InputFrame(QFrame):
-    def __init__(self, text, type=str):
+    def __init__(self, text, type=str, value=None):
         super().__init__()
         self.type = type
         self.setLayout(QVBoxLayout())
@@ -274,13 +275,17 @@ class InputFrame(QFrame):
         if type is int:
             self.edit.setFixedWidth(30)
         else:
-            self.edit.setFixedWidth(60)
+            pass
+            # self.edit.setFixedWidth(60)
         if type is int:
             self.edit.setValidator(QIntValidator(-999, 999))
+        if value is not None:
+            self.edit.setText(str(value))
 
-        self.layout().addWidget(label)
-        self.layout().addWidget(self.edit)
-        self.layout().setAlignment(Qt.AlignHCenter)
+        self.layout().addWidget(label, Qt.AlignCenter)
+        self.layout().addWidget(self.edit, Qt.AlignCenter)
+        # self.layout().setAlignment(label, Qt.AlignTop)
+        # self.layout().setAlignment(self.edit, Qt.AlignTop)
 
     def get(self):
         if self.edit.text() == '':
@@ -290,38 +295,54 @@ class InputFrame(QFrame):
         elif self.type is str:
             return self.edit.text()
 
+    def set(self, value):
+        self.edit.setText(str(value))
+
+    def setEditSizePolicy(self, policy):
+        self.edit.setSizePolicy(policy)
 
 class CustomCheckBox(QCheckBox):
-    pass
+    def __init__(self, isEnabled=False):
+        super().__init__()
+        self.setChecked(isEnabled)
 
 
 class PlayerFrame(EntryWidget):
-    def __init__(self, parentList):
+    def __init__(self, parentList, charName=None, playerName=None, init=None, perception=None, insight=None, isEnabled=False):
         super().__init__()
         self.parent = parentList
-        self.nameFrame = InputFrame("Character Name", str)
-        self.playerName = InputFrame("Player Name", str)
-        self.initFrame = InputFrame("Initiative", int)
-        self.perceptionFrame = InputFrame("Perception", int)
-        self.insightFrame = InputFrame("Insigt", int)
-        self.checkBox = CustomCheckBox()
+        self.nameFrame = InputFrame("Character Name", str, value=charName)
+        self.nameFrame.setEditSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Minimum))
+        self.playerName = InputFrame("Player Name", str, value=playerName)
+        self.initFrame = InputFrame("Initiative", int, value=init)
+        self.perceptionFrame = InputFrame("Perception", int, value=perception)
+        self.insightFrame = InputFrame("Insigt", int, value=insight)
+        self.checkBox = CustomCheckBox(isEnabled)
 
         self.setLayout(QVBoxLayout())
-        self.layout().setContentsMargins(10, 0, 10, 0)
+        self.layout().setContentsMargins(20, 0, 20, 0)
         topFrame = QFrame()
         botFrame = QFrame()
         topFrame.setLayout(QHBoxLayout())
         topFrame.layout().setContentsMargins(0, 0, 0, 0)
         topFrame.layout().addWidget(self.nameFrame)
         topFrame.layout().addWidget(self.playerName)
+        topFrame.layout().addWidget(self.initFrame)
+        topFrame.layout().addWidget(self.perceptionFrame)
+        topFrame.layout().addWidget(self.insightFrame)
+        topFrame.layout().addStretch(1)
         topFrame.layout().addWidget(self.checkBox)
         botFrame.setLayout(QHBoxLayout())
         botFrame.layout().setContentsMargins(0, 0, 0, 0)
-        botFrame.layout().addWidget(self.initFrame)
-        botFrame.layout().addWidget(self.perceptionFrame)
-        botFrame.layout().addWidget(self.insightFrame)
+        # botFrame.layout().addWidget(self.initFrame)
+        # botFrame.layout().addWidget(self.perceptionFrame)
+        # botFrame.layout().addWidget(self.insightFrame)
+        # botFrame.layout().addStretch(1)
         self.layout().addWidget(topFrame)
-        self.layout().addWidget(botFrame)
+        # self.layout().addWidget(botFrame)
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum))
+        self.setObjectName("PlayerFrame")
+
 
     def getCharacter(self):
         return Character(self.nameFrame.get(), self.playerName.get(), self.initFrame.get(), True)
@@ -339,12 +360,26 @@ class PlayerFrame(EntryWidget):
     def isEnabled(self):
         return self.checkBox.isChecked()
 
+    def jsonlify(self):
+        output = dict(
+            characterName=self.nameFrame.get(),
+            playerName=self.playerName.get(),
+            initiative=self.initFrame.get(),
+            perception=self.perceptionFrame.get(),
+            insight=self.insightFrame.get(),
+            isEnabled=self.checkBox.isChecked()
+        )
+        return json.dumps(output)
+
 
 class PlayerTable(ListWidget):
     def __init__(self):
         super().__init__()
 
-
+    def findCharacterByName(self, name):
+        for entry in self.m_widgetList:
+            if entry.getCharacter().getCharName() == name:
+                return entry.getCharacter()
 
 
 # class PlayerTable(InputTableWidget):

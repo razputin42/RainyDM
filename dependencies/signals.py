@@ -6,5 +6,4 @@ class SignalNexus(QObject):
     addSpellsSignal = pyqtSignal(list, name="addSpellsSignal")
     encounterDeselectSignal = pyqtSignal(name="encounterDeselctSignal")
 
-
 sNexus = SignalNexus()

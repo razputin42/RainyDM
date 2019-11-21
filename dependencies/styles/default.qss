@@ -12,13 +12,19 @@ QTextEdit#OutputField {
 }
 
 QFrame#InitiativeWidget[clicked=false] {
-    background-color: #F5F5F5;
 }
 
 QFrame#InitiativeWidget[clicked=true] {
-    background-color: #BFBFBF;
+}
+
+EntryWidget#PlayerFrame {
+    background-color: #E1E1E1;
 }
 
 EntryWidget {
     background-color: rgb(FF, FF, FF);
+}
+
+PlayerFrame {
+
 }
