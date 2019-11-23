@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
-    QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem
+    QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem, QLabel
 from PyQt5.QtCore import Qt
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
@@ -7,6 +7,9 @@ from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
 import time
+from .monster import Monster
+from .spell import Spell
+from .item import Item
 
 
 class MyTableWidget(QTableWidget):
@@ -34,6 +37,7 @@ class SearchableTable(QFrame):
     HEADERS = ['Name', 'REFERENCE']
     EDITABLE = False
     DATABASE_ENTRY_FIELD = 'entry'
+    ENTRY_CLASS = None
 
     def __init__(self, parent, viewer):
         self.old_n = None
@@ -58,17 +62,32 @@ class SearchableTable(QFrame):
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
 
+        self.button_bar_layout = QHBoxLayout()
+
         horizontal_layout = QHBoxLayout()
         horizontal_layout.addWidget(self.search_box)
         horizontal_layout.addWidget(self.filter_button)
         list_layout = QVBoxLayout()
         list_layout.addLayout(horizontal_layout)
         list_layout.addLayout(self.table_layout)
+        list_layout.addLayout(self.button_bar_layout)
         self.setLayout(list_layout)
 
         self.search_box.textChanged.connect(self.search_handle)
         self.filter_button.clicked.connect(self.filter_handle)
+        self.setup_button_bar()
         self.format()
+
+    def get_current_entry(self):
+        current_row = self.table.currentRow()
+        if current_row == -1:
+            return None
+        idx = int(self.table.item(current_row, 1).text())
+        entry = self.list[idx]
+        return entry
+
+    def setup_button_bar(self):
+        pass
 
     def format(self):
         pass
@@ -123,6 +142,8 @@ class SearchableTable(QFrame):
         for entry in self.list:
             if hasattr(entry, attr):
                 entry_attr = getattr(entry, attr)
+                if entry_attr is None:
+                    continue
                 if type(entry_attr) is not list:
                     entry_attr = [entry_attr]
                 for _entry_attr in entry_attr:
@@ -153,6 +174,8 @@ class SearchableTable(QFrame):
         subtype_dict = dict()
         type_return = []
         for s in options:
+            if s is None:
+                continue
             if "(" in s:  # indicates that there is a subtype
                 type = s[:s.find("(")].strip()  # find the original type
                 if type not in type_return:
@@ -179,13 +202,39 @@ class SearchableTable(QFrame):
     # find entry in the instantiated list of whatever is in the table
     def find_entry(self, attr, value):
         attr = attr.lower()
-        value = value.lower()
+        if type(value) is str:
+            value = value.lower()
         for entry in self.list:
             if hasattr(entry, attr):
-                if getattr(entry, attr).lower() == value:
+                _value = getattr(entry, attr)
+                if type(_value) is str:
+                    _value = _value.lower()
+                if _value == value:
                     return entry
 
-    def edit_entry(self, entry):
+    def new_entry(self):
+        if self.ENTRY_CLASS is None:
+            return
+        new_entry = self.ENTRY_CLASS(None, self.table.rowCount())
+        new_entry.source = 'custom'
+        new_entry.custom = True
+        if not hasattr(new_entry, "required_database_fields"):
+            return
+        self.db_editor = DBEditor(self, new_entry, copy=True)
+        self.db_editor.show()
+
+    def edit_entry(self, entry=None):
+        if entry is None:
+            entry = self.get_current_entry()
+        if entry is None:
+            self.parent.print("No entry selected")
+            return
+        else:
+            if not hasattr(entry, "custom"):
+                self.parent.print("Only custom entries are editable")
+                return
+        if not hasattr(entry, "required_database_fields"):
+            return
         self.db_editor = DBEditor(self, entry)
         self.db_editor.show()  # the DBEditor calls the copy_entry and save_entry functions defined below
 
@@ -237,7 +286,6 @@ class SearchableTable(QFrame):
         for field in flat_fields:
             if hasattr(entry, field):
                 db_field = db_entry.find(field)
-                print(field, getattr(entry, field))
                 if db_field is None:
                     db_field = ET.SubElement(db_entry, field)
 
@@ -267,11 +315,6 @@ class SearchableTable(QFrame):
                     for subfield in subfields:
                         if hasattr(field, subfield):
                             pieces = getattr(field, subfield).split('<br>')
-                            print(pieces)
-                            # for piece in pieces:
-                            #     if piece == '':
-                            #         if piece is pieces[-1]:
-                            #             continue
                             db_subfield = ET.SubElement(db_field, subfield)
                             db_subfield.text = getattr(field, subfield)
 
@@ -294,10 +337,17 @@ class SearchableTable(QFrame):
         myfile = open(path, "w")
         myfile.write(mydata)
 
-    def edit_copy_of_entry(self, entry):
+    def edit_copy_of_entry(self, entry=None):
+        if entry is None:
+            entry = self.get_current_entry()
+        if entry is None:
+            self.parent.print("No entry selected")
+            return
         new_entry = entry.copy()
         new_entry.source = 'custom'
         new_entry.custom = True
+        if not hasattr(entry, "required_database_fields"):
+            return
         self.db_editor = DBEditor(self, new_entry, copy=True)
         self.db_editor.show()
 
@@ -310,12 +360,31 @@ class MonsterTableWidget(SearchableTable):
     CR_COLUMN = 4
     HEADERS = ['Name', 'REFERENCE', 'Type', 'CR', 'FLOAT CR']
     DATABASE_ENTRY_FIELD = 'monster'
-    EDITABLE = True
+    ENTRY_CLASS = Monster
 
     def sort_columns(self, n, order=None):
         if n is self.CR_DISPLAY_COLUMN:
             n = self.CR_COLUMN
         super().sort_columns(n, order=order)
+
+    def setup_button_bar(self):
+        #  find current selected monster
+        current_row = self.table.currentRow()
+
+        add_enc_button = QPushButton("Add to initiative")
+        add_enc_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        add_enc_button.clicked.connect(lambda state, x=1: self.add_monster_to_encounter(x))
+        add_x_enc_button = QPushButton("Add more to initiative")
+        add_x_enc_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        add_x_enc_button.clicked.connect(self.add_monster_to_encounter)
+        add_tool_button = QPushButton("Add to toolbox")
+        add_tool_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        add_tool_button.clicked.connect(self.addMonsterToToolbox)
+        hspacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.button_bar_layout.addWidget(add_enc_button)
+        self.button_bar_layout.addWidget(add_x_enc_button)
+        self.button_bar_layout.addWidget(add_tool_button)
+        self.button_bar_layout.addItem(hspacer)
 
     def format(self):
         h = self.table.horizontalHeader()
@@ -337,13 +406,15 @@ class MonsterTableWidget(SearchableTable):
         self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
         self.table.setItem(row, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
         if hasattr(entry, "cr"):
-            if entry.cr == "00":
+            if entry.cr == "00" or entry.cr is None:
                 shown_cr = "-"
+                true_cr = 0
             else:
                 shown_cr = str(entry.cr)
+                true_cr = eval("float({})".format(entry.cr))
             self.table.setItem(row, self.CR_DISPLAY_COLUMN, QTableWidgetItem(shown_cr))
             cr_item = QTableWidgetItem()
-            cr_item.setData(Qt.DisplayRole, eval("float({})".format(entry.cr)))
+            cr_item.setData(Qt.DisplayRole, true_cr)
             self.table.setItem(row, self.CR_COLUMN, cr_item)
 
     def define_filters(self, version):
@@ -359,13 +430,50 @@ class MonsterTableWidget(SearchableTable):
             # self.filter.add_dropdown("Source", self.unique_attr("source"))
             self.filter.add_range("CR")
         self.search_handle()
+        self.define_filter_buttons()
+
+    def define_filter_buttons(self):
+        if not self.EDITABLE:
+            return
+        edit_entry_button = QPushButton("Edit Entry")
+        new_entry_button = QPushButton("New Entry")
+        edit_copy_button = QPushButton("Edit Copy")
+
+        edit_entry_button.clicked.connect(lambda state, entry=None: self.edit_entry(entry))
+        new_entry_button.clicked.connect(self.new_entry)
+        edit_copy_button.clicked.connect(lambda state, entry=None: self.edit_copy_of_entry(entry))
+
+        self.filter.layout.addWidget(edit_entry_button)
+        self.filter.layout.addWidget(new_entry_button)
+        self.filter.layout.addWidget(edit_copy_button)
+
+    def getSelectedMonster(self):
+        current_row = self.table.currentRow()
+        if current_row == -1:
+            return None
+        monster_idx = int(self.table.item(current_row, 1).text())
+        return self.list[monster_idx]
+
+    def add_monster_to_encounter(self, number=False):
+        monster = self.getSelectedMonster()
+        if monster is None:
+            return
+        if number is False:
+            number, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
+            if not (ok and number < 2000):
+                return False
+        self.parent.encounterWidget.addMonsterToEncounter(monster, number)
+
+    def addMonsterToToolbox(self):
+        monster = self.getSelectedMonster()
+        if monster is None:
+            return
+        self.parent.addMonsterToToolbox(monster)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
 
-        current_row = self.table.currentRow()
-        monster_idx = int(self.table.item(current_row, 1).text())
-        monster = self.list[monster_idx]
+        monster = self.get_current_entry()
 
         addAction = menu.addAction("Add to initiative")
         addXAction = menu.addAction("Add X to initiative")
@@ -386,13 +494,13 @@ class MonsterTableWidget(SearchableTable):
         if action is None:
             return
         if action == addAction:
-            self.parent.encounter_table.add_to_encounter(monster, 1)
+            self.parent.encounterWidget.addMonsterToEncounter(monster, 1)
         elif action == addXAction:
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok and X < 2000:
-                self.parent.encounter_table.add_to_encounter(monster, X)
+                self.parent.encounterWidget.addMonsterToEncounter(monster, X)
         elif action == addToolbox:
-            self.parent.add_to_toolbox(monster)
+            self.parent.addMonsterToToolbox(monster)
         elif hasattr(monster, "spells") and action is add_spellbook:
             self.parent.extract_and_add_spellbook(monster)
         elif self.EDITABLE and action is edit_entry:
@@ -408,6 +516,7 @@ class SpellTableWidget(SearchableTable):
     HEADERS = ['Name', 'REFERENCE', 'Spell Level']
     DATABASE_ENTRY_FIELD = 'spell'
     EDITABLE = True
+    ENTRY_CLASS = Spell
 
     def update_entry(self, row, entry):
         self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
@@ -426,6 +535,7 @@ class SpellTableWidget(SearchableTable):
             self.filter.add_dropdown("School", self.unique_attr("school"))
             self.filter.add_dropdown("Level", self.unique_attr("level"))
             self.filter.add_dropdown('Classes', *self.extract_subtypes(self.unique_attr('classes')))
+            self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr('range')))
         elif version == "3.5":
             self.filter.add_dropdown("School", self.unique_attr("school"))
             # self.filter.add_dropdown("Level", self.unique_attr("level"))
@@ -439,12 +549,13 @@ class SpellTableWidget(SearchableTable):
         idx = int(self.table.item(current_row, 1).text())
         spell = self.list[idx]
 
-        menu.addSeparator()
-        if self.EDITABLE and hasattr(spell, 'custom'):
-            edit_entry = menu.addAction("Edit entry")
-        else:
-            edit_entry = None
-        edit_copy_entry = menu.addAction('Edit copy of entry')
+        edit_entry = None
+        edit_copy_entry = None
+        if self.EDITABLE:
+            menu.addSeparator()
+            if hasattr(spell, 'custom'):
+                edit_entry = menu.addAction("Edit entry")
+            edit_copy_entry = menu.addAction("Edit copy of entry")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -463,6 +574,7 @@ class ItemTableWidget(SearchableTable):
     INDEX_COLUMN = 1
     DATABASE_ENTRY_FIELD = 'item'
     EDITABLE = True
+    ENTRY_CLASS = Item
 
     def format(self):
         t = self.table
@@ -484,11 +596,13 @@ class ItemTableWidget(SearchableTable):
         idx = int(self.table.item(current_row, 1).text())
         item = self.list[idx]
 
-        if self.EDITABLE and hasattr(item, 'custom'):
-            edit_entry = menu.addAction("Edit entry")
-        else:
-            edit_entry = None
-        edit_copy_entry = menu.addAction('Edit copy of entry')
+        edit_entry = None
+        edit_copy_entry = None
+        if self.EDITABLE:
+            menu.addSeparator()
+            if hasattr(item, 'custom'):
+                edit_entry = menu.addAction("Edit entry")
+            edit_copy_entry = menu.addAction("Edit copy of entry")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:

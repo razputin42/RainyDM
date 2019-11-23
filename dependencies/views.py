@@ -17,6 +17,7 @@ class Viewer(QTextBrowser):
         QTextBrowser.__init__(self)
         self.horizontalScrollBar().setHidden(True)
         self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
+        # self.setStyleSheet("border-image: url(assets/unused/guimegapack/SpaceDepotUI/SpaceDepotUI_png/plank_01_02.png);")
         # self.setMaximumWidth(530)
         # self.setMinimumWidth(530)
         self.aux_format()
@@ -149,7 +150,7 @@ class SpellViewer(Viewer):
                 components=spell.components,
                 duration=spell.duration,
                 text=spell.text,
-                classes=', '.join(spell.classes)
+                classes=', '.join(spell.classes) if hasattr(spell, "classes") else ""
             )
         self.setHtml(html)
         self.current_view = spell

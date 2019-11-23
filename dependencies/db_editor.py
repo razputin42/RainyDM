@@ -1,15 +1,26 @@
 from PyQt5.QtWidgets import QLineEdit, QLabel, QPushButton, QShortcut, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QWidget
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QWidget, QSpacerItem, QPlainTextEdit
 from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5.QtCore import Qt
 import os
 from .monster import Monster
 import time
 
+
+class ResizeableTextEditor(QPlainTextEdit):
+    def __init__(self):
+        super().__init__()
+        self.textChanged.connect(self._resizeToFit)
+
+    def _resizeToFit(self):
+        self.setMaximumHeight(72)
+
+
 class DBEditor(QWidget):
     def __init__(self, parent, entry, copy=False):
         super().__init__()
         self.parent = parent
+        self.master_widget = parent.parent
         self.copy = copy
         self.action_list = []
         self.trait_list = []
@@ -31,7 +42,8 @@ class DBEditor(QWidget):
             edit = True
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(self.attributes_frame, 'Attributes')
+        self.tab_widget.addTab(self.attributes_frame, "Attributes")
+        # self.tab_widget.addTab(self.actions_frame, "Actions")
 
         self.old_entries = dict()
         self.line_edit_dict = dict()
@@ -41,7 +53,10 @@ class DBEditor(QWidget):
             if type(field) is str:
                 if edit: #and hasattr(self.entry, field):
                     horizontal_layout = QHBoxLayout()
-                    label = QLabel(field.capitalize())
+                    if field in self.entry.required_database_fields:
+                        label = QLabel("{}*".format(field.capitalize()))
+                    else:
+                        label = QLabel(field.capitalize())
                     label.setMinimumWidth(100)
                     self.old_entries[field] = getattr(self.entry, field) if hasattr(self.entry, field) else None
                     if field == 'text':
@@ -67,8 +82,8 @@ class DBEditor(QWidget):
                 self.attributes_layout.addLayout(horizontal_layout)
 
         # actions tab
-        # if hasattr(self.entry, 'action_list') and len(self.entry.action_list) is not 0:
-        #     self.action_list = self.add_tab(self.entry.action_list, 'Actions')
+        if hasattr(self.entry, 'action_list') and len(self.entry.action_list) is not 0:
+            self.action_list = self.add_tab(self.entry.action_list, 'Actions')
         #
         # if hasattr(self.entry, 'trait_list') and len(self.entry.trait_list) is not 0:
         #     self.trait_list = self.add_tab(self.entry.trait_list, 'Traits')
@@ -95,17 +110,16 @@ class DBEditor(QWidget):
         self.setWindowModality(Qt.ApplicationModal)
         enter.activated.connect(self.accept_handle)
 
-    def add_tab(self, list, tab_name):
+    def add_tab(self, element_list, tab_name):
         tab_frame = QFrame()
-        full_frame = QFrame()
         tab_layout = QVBoxLayout()
-        full_frame.setLayout(tab_layout)
+        tab_frame.setLayout(tab_layout)
         button_bar_frame = QFrame()
         button_bar_layout = QHBoxLayout()
         button_bar_frame.setLayout(button_bar_layout)
         self.tab_widget.addTab(tab_frame, tab_name)
         return_list = []
-        for element in list:
+        for element in element_list:
             edit_dict = dict()
             layout = QHBoxLayout()  # horizontal layout
             frame = QFrame()
@@ -115,25 +129,31 @@ class DBEditor(QWidget):
                 if hasattr(element, attr):
                     field_layout = QVBoxLayout()
                     label = QLabel(attr.capitalize())
-                    if len(getattr(element, attr)) > 50:
-                        edit = QTextEdit()
-                    else:
-                        edit = QLineEdit()
+                    # if len(getattr(element, attr)) > 50:
+                    #     edit = QTextEdit()
+                    # else:
+                    #     edit = QLineEdit()
+                    edit = ResizeableTextEditor()
 
                     if attr is 'text':
-                        edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                        sizePolicy.setHorizontalStretch(3)
                     else:
-                        edit.setMinimumWidth(150)
-                        edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                        # edit.setMinimumWidth(150)
+                        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+                        sizePolicy.setHorizontalStretch(1)
+                        edit.setMaximumWidth(150)
+                    edit.setSizePolicy(sizePolicy)
                     # edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
                     edit_dict[attr] = edit
-                    edit.setText(getattr(element, attr))
+                    edit.setPlainText(getattr(element, attr))
                     field_layout.addWidget(edit)
                     field_layout.addStretch(0)
                     layout.addLayout(field_layout)  # add to horizontal layout
-            # action_layout.setStretch(1, 5)
             tab_layout.addWidget(frame)  # add to vertical tab_layout
             return_list.append(edit_dict)
+        # tab_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        tab_layout.addWidget(button_bar_frame)
         return return_list
 
     def accept_handle(self):
@@ -151,6 +171,9 @@ class DBEditor(QWidget):
                 else:
                     text = edit.text()
                 if text == '' or text is None:
+                    if field in self.entry.required_database_fields:
+                        self.master_widget.print("Failed; {} must be filled out".format(field))
+                        return
                     continue
                 self.new_entries[field] = text
 
@@ -161,28 +184,71 @@ class DBEditor(QWidget):
             if old_value != new_value:
                 setattr(self.entry, field, new_value)
 
-        # lists = ['action_list', 'trait_list', 'legendary_list']
-        # for list in lists:
-        #     if not hasattr(self.entry, list):
-        #         continue
-        #     entry_list
-        #     for action in self.action_list:
-        #         # reset entries action list
-        #         pass  # save to the entry
+        # actions
+        if type(self.entry) is Monster:
+            lists = ["action_list", "trait_list", "legendary_list"]
+            element_classes = [Monster.Action, Monster.Trait, Monster.Action]
+            for list_it, element_class in zip(lists, element_classes):
+                setattr(self.entry, list_it, [])
+                for element in getattr(self, list_it):
+                    _element = element_class([])
+                    for key, value in element.items():
+                        if type(value) is QTextEdit:
+                            text = value.toPlainText()
+                        elif type(value) is QLineEdit:
+                            text = value.text()
+                        if not (text is None or text == ""):
+                            setattr(_element, key, text)
+                    getattr(self.entry, list_it).append(_element)
 
         if self.copy:  # either copy the entry, or update the existing
             result = self.parent.copy_entry(self.entry)
             if result is False:
                 return
             self.parent.save_entry(self.entry)
+            self.parent.viewer.draw_view(self.entry)
 
         else:
             row = self.parent.table.currentRow()
             self.parent.update_entry(row, self.entry)
             self.parent.save_entry(self.entry, old_name=self.old_entries['name'])
+            self.parent.viewer.redraw_view()
 
-        self.parent.viewer.redraw_view()
         self.close()
 
     def cancel_handle(self):
         self.close()
+
+def create_element_field(element):
+    edit_dict = dict()
+    layout = QHBoxLayout()  # horizontal layout
+    frame = QFrame()
+    frame.setLayout(layout)
+    frame.setFrameShadow(1)
+    frame.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Maximum)
+    for attr in element.database_fields:  # for each attribute
+        # if hasattr(element, attr):
+        field_layout = QVBoxLayout()
+        label = QLabel(attr.capitalize())
+        if attr is "text":
+            edit = QTextEdit()
+            edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+            # edit.setMinimumHeight(100)
+        else:
+            edit = QLineEdit()
+            edit.setMinimumWidth(150)
+            edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        # if attr is 'text':
+        #     edit.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        # else:
+        # edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        edit_dict[attr] = edit
+        if hasattr(element, attr):
+            edit.setText(getattr(element, attr))
+        field_layout.addWidget(label)
+        field_layout.addWidget(edit)
+        field_layout.addStretch(0)
+        layout.addLayout(field_layout)  # add to horizontal layout
+    # action_layout.setStretch(1, 5)
+    return [frame, edit_dict]

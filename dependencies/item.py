@@ -4,6 +4,7 @@ import copy
 
 
 class Item:
+    required_database_fields = ['name']
     database_fields = ['name', 'type', 'magic', 'value', 'weight', 'ac', 'strength', 'stealth', 'text']
     damage_type_dict = dict(
         P="Piercing",
