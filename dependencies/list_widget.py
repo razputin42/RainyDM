@@ -104,3 +104,14 @@ class ListWidget(QWidget):
             if entry is target:
                 return idx
         return None
+
+    def getAttrList(self, attr):
+        outputList = []
+        for entry in self.m_widgetList:
+            if hasattr(entry, attr):
+                _attr = getattr(entry, attr)
+                if callable(_attr):
+                    outputList.append(_attr())
+                else:
+                    outputList.append(_attr)
+        return outputList

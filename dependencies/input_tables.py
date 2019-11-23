@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIntValidator, QFont
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
 from dependencies.player import Character
+from dependencies.signals import sNexus
 from dependencies.encounter import InitiativeFrame
 import json
 
@@ -343,7 +344,6 @@ class PlayerFrame(EntryWidget):
         self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum))
         self.setObjectName("PlayerFrame")
 
-
     def getCharacter(self):
         return Character(self.nameFrame.get(), self.playerName.get(), self.initFrame.get(), True)
 
@@ -380,7 +380,6 @@ class PlayerTable(ListWidget):
         for entry in self.m_widgetList:
             if entry.getCharacter().getCharName() == name:
                 return entry.getCharacter()
-
 
 # class PlayerTable(InputTableWidget):
 #     PLAYER_COLUMN = 1

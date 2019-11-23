@@ -228,7 +228,7 @@ class PlayerWidget(InitiativeWidget):
     def jsonlify(self):
         output = dict(
             type="Player",
-            name=self.getCharName(),
+            name=self.getName(),
             init=self.m_initiative.get()
         )
         return json.dumps(output)

@@ -251,6 +251,7 @@ class DMTool(QMainWindow):
         self.add_player_button.clicked.connect(self.add_player)
         sNexus.attackSignal.connect(self.attackSlot)
         sNexus.addSpellsSignal.connect(self.addSpellsToToolboox)
+        sNexus.printSignal.connect(self.print)
 
     def _display_ui(self):
         self.setCentralWidget(self.window_frame)
@@ -394,7 +395,6 @@ class DMTool(QMainWindow):
     def addPlayersToCombat(self):
         encounterWidget = self.encounterWidget
         characterNames = encounterWidget.getCharacterNames()
-        print(characterNames)
         # Get active players
         playerWidget = self.playerWidget
 
