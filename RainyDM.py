@@ -49,7 +49,7 @@ class DMTool(QMainWindow):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
-        self.setStyleSheet(open(os.path.join("dependencies", "styles", "default.qss")).read())
+        self.setStyleSheet(open(os.path.join("assets", "styles", "default.qss")).read())
         self.setWindowIcon(QIcon(os.path.join('assets', 'tear.png')))
         self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
