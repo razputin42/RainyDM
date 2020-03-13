@@ -536,6 +536,7 @@ class SpellTableWidget(SearchableTable):
             self.filter.add_dropdown("Level", self.unique_attr("level"))
             self.filter.add_dropdown('Classes', *self.extract_subtypes(self.unique_attr('classes')))
             self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr('range')))
+            self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr("source")))
         elif version == "3.5":
             self.filter.add_dropdown("School", self.unique_attr("school"))
             # self.filter.add_dropdown("Level", self.unique_attr("level"))
