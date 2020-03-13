@@ -6,6 +6,7 @@ from string import Template
 from .monster import Monster35
 from .spell import Spell35
 from .item import Item35
+from dependencies.signals import sNexus
 from abc import abstractmethod as abstract
 
 
@@ -37,6 +38,10 @@ class Viewer(QTextBrowser):
 
 
 class MonsterViewer(Viewer):
+    def __init__(self, buttonBarLayout):
+        super().__init__()
+        self.buttonBarLayout = buttonBarLayout
+
     def draw_view(self, monster):
         # this is going to get confusing fast... This is everything before saving throws
         if isinstance(monster, Monster35):
@@ -133,7 +138,17 @@ class MonsterViewer(Viewer):
         self.html = html
         self.setHtml(html)
         self.current_view = monster
+        self.updateButtonBar(monster)
 
+    def updateButtonBar(self, monster):
+        for i in reversed(range(self.buttonBarLayout.count())):  # first, clear layout
+            self.buttonBarLayout.itemAt(i).widget().setParent(None)
+        for action in monster.action_list:  # second, repopulate
+            if not hasattr(action, "attack"):
+                continue
+            button = QPushButton(action.name)
+            button.clicked.connect(lambda state, x=action: monster.performAttack(x))
+            self.buttonBarLayout.addWidget(button)
 
 class SpellViewer(Viewer):
     def draw_view(self, spell):

@@ -59,7 +59,8 @@ class DMTool(QMainWindow):
         self.tab_widget = QTabWidget()
 
         # Viewers
-        self.monster_viewer = MonsterViewer()
+        monsterButtonBarLayout = QHBoxLayout()
+        self.monster_viewer = MonsterViewer(monsterButtonBarLayout)
         spell_viewer_layout = QVBoxLayout()
         self.spell_frame = QFrame()
         self.spell_frame.setLayout(spell_viewer_layout)
@@ -158,6 +159,8 @@ class DMTool(QMainWindow):
         self.monster_view_frame.setLayout(monster_view_layout)
         # monster_view_frame.setLayout(monster_view_layout)
         self.monster_viewer_bar = QFrame()
+        monsterButtonBarFrame = QFrame()
+        monsterButtonBarFrame.setLayout(monsterButtonBarLayout)
         layout = QHBoxLayout()
         monster_plaintext_button = QPushButton("Copy plaintext to clipboard")
         monster_plaintext_button.clicked.connect(self.copy_plaintext_monster_to_clipboard)
@@ -165,6 +168,7 @@ class DMTool(QMainWindow):
         self.monster_viewer_bar.setLayout(layout)
 
         monster_view_layout.addWidget(self.monster_viewer)
+        monster_view_layout.addWidget(monsterButtonBarFrame)
         monster_view_layout.addWidget(self.monster_viewer_bar)
         monster_view_layout.setStretch(0, 2)
 
