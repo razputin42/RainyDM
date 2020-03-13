@@ -23,11 +23,14 @@ class Filter:
         self.frame.setLayout(actual_layout)
         self.frame.setHidden(True)
 
-    def add_range(self, name):
+    def add_range(self, name, capitalize=False):
         min_input = QLineEdit()
         max_input = QLineEdit()
-        min_input.setMaximumWidth(30)
-        max_input.setMaximumWidth(30)
+        min_input.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        min_input.setMaximumWidth(50)
+        max_input.setMaximumWidth(50)
+        if capitalize:
+            name = name.capitalize()
         title = QLabel(name)
         dash = QLabel("-")
         frame = QFrame()

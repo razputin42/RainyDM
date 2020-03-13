@@ -53,6 +53,14 @@ class Item:
                     s = s + attr.text + "<br>"
             elif attr.tag == "type" and attr.text in self.type_dict.keys():
                 self.type = self.type_dict[attr.text]
+            elif attr.tag == "name" and " GP - " in attr.text:
+                self.name = attr.text.split(" GP - ")[1]
+            elif attr.tag == "value":
+                conversion = [("cp", 0.01), ("sp", 0.1), ("gp", 1), ("pp", 10), ("ep", 100)]
+                for denoter, factor in conversion:
+                    if denoter in attr.text:
+                        self.value = float(attr.text.strip(denoter)) * factor
+                        break
             else:
                 setattr(self, attr.tag, attr.text)
         self.text = s

@@ -587,6 +587,8 @@ class ItemTableWidget(SearchableTable):
         if version == "5":
             self.filter.add_dropdown("Type", self.unique_attr("type"))
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
+            # self.filter.add_dropdown("Value", self.unique_attr("value"))
+            self.filter.add_range("value", capitalize=True)
         elif version == "3.5":
             self.filter.add_dropdown("Category", self.unique_attr("category"))
 
