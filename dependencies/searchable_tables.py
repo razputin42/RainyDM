@@ -199,6 +199,17 @@ class SearchableTable(QFrame):
 
         return type_return, subtype_dict
 
+    def subset(self, attr_list):
+        output_list = []
+        for entry in self.list:
+            valid = True
+            for attr, value in attr_list:
+                if not hasattr(entry, attr) or getattr(entry, attr) != value:
+                    valid = False
+            if valid:
+                output_list.append(entry)
+        return output_list
+
     # find entry in the instantiated list of whatever is in the table
     def find_entry(self, attr, value):
         attr = attr.lower()

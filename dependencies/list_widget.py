@@ -115,3 +115,8 @@ class ListWidget(QWidget):
                 else:
                     outputList.append(_attr)
         return outputList
+
+    def deselectAll(self):
+        for entry in self.m_widgetList:
+            entry.deselect()
+            entry.redraw()

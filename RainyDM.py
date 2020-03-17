@@ -1,12 +1,14 @@
-from dependencies.signals import sNexus
-from dependencies.monster import Monster, Monster35
-from dependencies.spell import Spell, Spell35
+from dependencies.auxiliaries import roll_function
+from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
+from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.item import Item, Item35
+from dependencies.TreasureHoard import TreasureHoardTab
+from dependencies.monster import Monster, Monster35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
+from dependencies.signals import sNexus
+from dependencies.spell import Spell, Spell35
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
-from dependencies.input_tables import PlayerTable, PlayerFrame
-from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -14,7 +16,6 @@ from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem
 import sys, json, os
 import html2text
 import pyperclip
-from dependencies.auxiliaries import rollFunction
 
 MONSTER_TAB = 0
 SPELL_TAB = 1
@@ -95,10 +96,15 @@ class DMTool(QMainWindow):
 
         self.load_resources()
 
+        # Loot Generator Widget
+        self.lootViewer = ItemViewer()
+        self.lootWidget = TreasureHoardTab(self, self.lootViewer, self.item_table_widget)
+
         # inserting tables into tab
         self.tab_widget.addTab(self.monster_table_widget, "Monster")
         self.tab_widget.addTab(self.spell_table_widget, "Spell")
         self.tab_widget.addTab(self.item_table_widget, "Item")
+        self.tab_widget.addTab(self.lootWidget, "Loot")
 
         # Initiative list
         self.encounterWidget = EncounterWidget(self.monster_viewer)
@@ -461,10 +467,10 @@ class DMTool(QMainWindow):
         comp = attack.split("|")
         s = "{} uses {} -- ".format(monsterName, comp[0])
         if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
-            attack_roll = rollFunction("1d20+"+comp[1])
+            attack_roll = roll_function("1d20+" + comp[1])
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
 
-        damage_roll = rollFunction(comp[2])
+        damage_roll = roll_function(comp[2])
         if type(damage_roll) is list:
             halved = [max(1, int(dr/2)) for dr in damage_roll]
         else:

@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
 from PyQt5.QtGui import QFont, QMouseEvent, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget, colorDict
-from dependencies.auxiliaries import rollFunction
+from dependencies.auxiliaries import roll_function
 from dependencies.signals import sNexus
 import os, json
 
@@ -155,7 +155,7 @@ class MonsterWidget(InitiativeWidget):
         self.layout().addWidget(self.m_initiative)
 
     def rollInitiative(self):
-        self.m_initiative.set(rollFunction("1d20") + self.monster.initiative)
+        self.m_initiative.set(roll_function("1d20") + self.monster.initiative)
 
     def mouseReleaseEvent(self, event):
         if self.viewer is None:
@@ -369,10 +369,6 @@ class EncounterWidget(ListWidget):
         newList[idx], newList[idx+move] = newList[idx+move], newList[idx]
         self.refill(newList)
 
-    def deselectAll(self):
-        for entry in self.m_widgetList:
-            entry.deselect()
-            entry.redraw()
 
     def jsonlify(self):
         return_list = []

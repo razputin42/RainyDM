@@ -1,6 +1,6 @@
 from random import randint
 
-def rollFunction(dice):
+def roll_function(dice):
     output = []
     split = dice.split("+")
     if len(split) is 1 and "d" not in split[0]:  # in the case of X damage, without a roll
