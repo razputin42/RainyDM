@@ -1,5 +1,19 @@
 from random import randint
 
+
+class GlobalParameters:
+    MONSTER_VIEWER_STRETCH = 5
+    SPELL_VIEWER_STRETCH = 5
+    MAIN_TOOL_STRETCH = 6
+
+    MAIN_TOOL_POSITION = 0
+    MONSTER_VIEWER_POSITION = 1
+    SPELL_VIEWER_POSITION = 2
+
+
+# Global = GlobalParameters()
+
+
 def roll_function(dice):
     output = []
     split = dice.split("+")

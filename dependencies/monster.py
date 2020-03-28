@@ -197,6 +197,9 @@ class Monster (QObject):
     def addSpells(self):
         sNexus.addSpellsSignal.emit(self.extract_spellbook())
 
+    def add_to_encounter(self, n=1):
+        sNexus.addMonstersToEncounter.emit(self, n)
+
     def copy(self):
         return copy.deepcopy(self)
 

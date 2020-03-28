@@ -39,6 +39,8 @@ class SearchableTable(QFrame):
     DATABASE_ENTRY_FIELD = 'entry'
     ENTRY_CLASS = None
 
+    prev_entry = None
+
     def __init__(self, parent, viewer):
         self.old_n = None
         self.order = None
@@ -59,6 +61,8 @@ class SearchableTable(QFrame):
         self.table = MyTableWidget(parent)
         self.table.horizontalHeader().sectionClicked.connect(self.sort_columns)
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.table.clicked.connect(self.deselect_check_handle)
+        self.table.selectionModel().selectionChanged.connect(self.selection_change_handle)
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
 
@@ -85,6 +89,18 @@ class SearchableTable(QFrame):
         idx = int(self.table.item(current_row, 1).text())
         entry = self.list[idx]
         return entry
+
+    def selection_change_handle(self, e):
+        current_entry = self.get_current_entry()
+        self.viewer.draw_view(current_entry)
+
+    def deselect_check_handle(self, e):
+        current_entry = self.get_current_entry()
+        if self.prev_entry is current_entry:
+            self.viewer.set_hidden(not self.viewer.isHidden())
+        else:
+            self.prev_entry = current_entry
+            self.viewer.set_hidden(False)
 
     def setup_button_bar(self):
         pass
@@ -199,12 +215,12 @@ class SearchableTable(QFrame):
 
         return type_return, subtype_dict
 
-    def subset(self, attr_list):
+    def subset(self, attr_dict):
         output_list = []
         for entry in self.list:
             valid = True
-            for attr, value in attr_list:
-                if not hasattr(entry, attr) or getattr(entry, attr) != value:
+            for key in attr_dict:
+                if not hasattr(entry, key) or getattr(entry, key) != attr_dict[key]:
                     valid = False
             if valid:
                 output_list.append(entry)
@@ -390,7 +406,7 @@ class MonsterTableWidget(SearchableTable):
         add_x_enc_button.clicked.connect(self.add_monster_to_encounter)
         add_tool_button = QPushButton("Add to toolbox")
         add_tool_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
-        add_tool_button.clicked.connect(self.addMonsterToToolbox)
+        add_tool_button.clicked.connect(self.add_monster_to_toolbox)
         hspacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.button_bar_layout.addWidget(add_enc_button)
         self.button_bar_layout.addWidget(add_x_enc_button)
@@ -458,7 +474,7 @@ class MonsterTableWidget(SearchableTable):
         self.filter.layout.addWidget(new_entry_button)
         self.filter.layout.addWidget(edit_copy_button)
 
-    def getSelectedMonster(self):
+    def get_selected_monster(self):
         current_row = self.table.currentRow()
         if current_row == -1:
             return None
@@ -466,7 +482,7 @@ class MonsterTableWidget(SearchableTable):
         return self.list[monster_idx]
 
     def add_monster_to_encounter(self, number=False):
-        monster = self.getSelectedMonster()
+        monster = self.get_selected_monster()
         if monster is None:
             return
         if number is False:
@@ -475,8 +491,8 @@ class MonsterTableWidget(SearchableTable):
                 return False
         self.parent.encounterWidget.addMonsterToEncounter(monster, number)
 
-    def addMonsterToToolbox(self):
-        monster = self.getSelectedMonster()
+    def add_monster_to_toolbox(self):
+        monster = self.get_selected_monster()
         if monster is None:
             return
         self.parent.addMonsterToToolbox(monster)

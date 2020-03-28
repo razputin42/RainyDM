@@ -200,6 +200,7 @@
 		<action>
 			<name>Slam</name>
 			<text>+8 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) damage plus 28 (8d6) fire damage.</text>
+            <attack>Slam|8|1d8+3+8d6</attack>
 		</action>
 		<action>
 			<name>Blinding Gaze (Recharge 5-6)</name>

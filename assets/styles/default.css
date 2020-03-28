@@ -1,30 +1,7 @@
-QWidget#EncounterWidgetScrollArea {
-    background-color: #E1E1E1;
-    border: 0px solid black;
+EntryWidget[clicked="false"] {
+    background-color: rgb(240, 240, 240);
 }
 
-QWidget#EncounterWidget {
-}
-
-QTextEdit#OutputField {
-    background-color: #FFFFFF;
-
-}
-
-QFrame#InitiativeWidget[clicked=false] {
-}
-
-QFrame#InitiativeWidget[clicked=true] {
-}
-
-EntryWidget#PlayerFrame {
-    background-color: #E1E1E1;
-}
-
-EntryWidget {
-    background-color: rgb(FF, FF, FF);
-}
-
-PlayerFrame {
-
+EntryWidget[clicked="true"] {
+    background-color: rgb(210, 210, 210);
 }
