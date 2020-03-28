@@ -45,6 +45,10 @@ def rod(rarity):
     return dict({"type": "Rod", "rarity": rarity})
 
 
+def ring(rarity):
+    return dict({"type": "Ring", "rarity": rarity})
+
+
 class LootTable:
     excludePotions = False
     excludeScrolls = False
@@ -91,89 +95,89 @@ class LootTableA(LootTable):
 
 class LootTableB(LootTable):
     chances = [
-        (0.5, [("type", "Potion"), ("rarity", "Uncommon")]),
-        (0.27, [("type", "Wondrous"), ("rarity", "Uncommon")]),
-        (0.10, [("type", "Scroll"), ("rarity", "Uncommon")]),
-        (0.05, [("type", "Ammunition"), ("rarity", "Uncommon")]),
-        (0.03, [("name", "Bag of Holding")]),
-        (0.02, [("type", "Armor"), ("rarity", "Uncommon")]),
-        (0.02, [("type", "Wand"), ("rarity", "Uncommon")]),
-        (0.01, [("type", "Ring"), ("rarity", "Uncommon")])
+        (0.5, potion("Uncommon")),
+        (0.27, wondrous("Uncommon")),
+        (0.10, scroll("Uncommon")),
+        (0.05, ammunition("Uncommon")),
+        (0.03, specific_item("Bag of Holding")),
+        (0.02, armor("Uncommon")),
+        (0.02, wand("Uncommon")),
+        (0.01, ring("Uncommon"))
         ]
 
 
 class LootTableC(LootTable):
     chances = [
-        (0.64, [("type", "Potion"), ("rarity", "Rare")]),
-        (0.16, [("type", "Wondrous"), ("rarity", "Rare")]),
-        (0.15, [("type", "Scroll"), ("rarity", "Rare")]),
-        (0.05, [("type", "Ammunition"), ("rarity", "Rare")])
+        (0.64, potion("Rare")),
+        (0.16, wondrous("Rare")),
+        (0.15, scroll("Rare")),
+        (0.05, ammunition("Rare"))
         ]
 
 
 class LootTableD(LootTable):
     chances = [
-        (0.64, [("type", "Potion"), ("rarity", "Very Rare")]),
-        (0.08, [("type", "Wondrous"), ("rarity", "Very Rare")]),
-        (0.23, [("type", "Scroll"), ("rarity", "Very Rare")]),
-        (0.05, [("type", "Ammunition"), ("rarity", "Very Rare")])
+        (0.64, potion("Very Rare")),
+        (0.08, wondrous("Very Rare")),
+        (0.23, scroll("Very Rare")),
+        (0.05, ammunition("Very Rare"))
         ]
 
 
 class LootTableE(LootTable):
     chances = [
-        (0.40, [("type", "Potion"), ("rarity", "Very Rare")]),
-        (0.30, [("type", "Scroll"), ("rarity", "Very Rare")]),
-        (0.15, [("type", "Scroll"), ("rarity", "Legendary")]),
-        (0.10, [("type", "Wondrous"), ("rarity", "Legendary")]),
-        (0.05, [("type", "Ammunition"), ("rarity", "Very Rare")])
+        (0.40, potion("Very Rare")),
+        (0.30, scroll("Very Rare")),
+        (0.15, scroll("Legendary")),
+        (0.10, wondrous("Legendary")),
+        (0.05, ammunition("Very Rare"))
         ]
 
 
 class LootTableF(LootTable):
     chances = [
-        (0.51, [("type", "Wondrous"), ("rarity", "Uncommon")]),
-        (0.24, [("type", "Weapon"), ("rarity", "Uncommon")]),
-        (0.06, [("type", "Wand"), ("rarity", "Uncommon")]),
-        (0.06, [("type", "Shield"), ("rarity", "Uncommon")]),
-        (0.04, [("type", "Staff"), ("rarity", "Uncommon")]),
-        (0.04, [("type", "Ring"), ("rarity", "Uncommon")]),
-        (0.03, [("type", "Armor"), ("rarity", "Uncommon")]),
-        (0.02, [("type", "Rod"), ("rarity", "Uncommon")])
+        (0.51, wondrous("Uncommon")),
+        (0.24, weapon("Uncommon")),
+        (0.06, wand("Uncommon")),
+        (0.06, shield("Uncommon")),
+        (0.04, staff("Uncommon")),
+        (0.04, ring("Uncommon")),
+        (0.03, armor("Uncommon")),
+        (0.02, rod("Uncommon"))
     ]
 
 
 class LootTableG(LootTable):
     chances = [
-        (0.41, [("type", "Wondrous"), ("rarity", "Rare")]),
-        (0.28, [("type", "Weapon"), ("rarity", "Rare")]),
-        (0.11, [("type", "Armor"), ("rarity", "Rare")]),
-        (0.09, [("type", "Ring"), ("rarity", "Rare")]),
-        (0.05, [("type", "Staff"), ("rarity", "Rare")]),
-        (0.03, [("type", "Shield"), ("rarity", "Rare")]),
-        (0.03, [("type", "Rod"), ("rarity", "Rare")])
+        (0.41, wondrous("Rare")),
+        (0.28, weapon("Rare")),
+        (0.11, armor("Rare")),
+        (0.09, ring("Rare")),
+        (0.05, staff("Rare")),
+        (0.03, shield("Rare")),
+        (0.03, rod("Rare"))
     ]
 
 
 class LootTableH(LootTable):
     chances = [
-        (0.34, [("type", "Wondrous"), ("rarity", "Very Rare")]),
-        (0.19, [("type", "Weapon"), ("rarity", "Very Rare")]),
-        (0.15, [("type", "Armor"), ("rarity", "Very Rare")]),
-        (0.10, [("type", "Staff"), ("rarity", "Very Rare")]),
-        (0.08, [("type", "Rod"), ("rarity", "Very Rare")]),
-        (0.08, [("type", "Wand"), ("rarity", "Very Rare")]),
-        (0.06, [("type", "Ring"), ("rarity", "Very Rare")]),
-        (0.04, [("type", "Shield"), ("rarity", "Very Rare")])
+        (0.34, wondrous("Very Rare")),
+        (0.19, weapon("Very Rare")),
+        (0.15, armor("Very Rare")),
+        (0.10, staff("Very Rare")),
+        (0.08, rod("Very Rare")),
+        (0.08, wand("Very Rare")),
+        (0.06, ring("Very Rare")),
+        (0.04, shield("Very Rare"))
     ]
 
 
-class LootTableH(LootTable):
+class LootTableI(LootTable):
     chances = [
-        (0.26, [("type", "Wondrous"), ("rarity", "Legendary")]),
-        (0.26, [("type", "Weapon"), ("rarity", "Legendary")]),
-        (0.24, [("type", "Armor"), ("rarity", "Legendary")]),
-        (0.03, [("type", "Staff"), ("rarity", "Legendary")]),
-        (0.05, [("type", "Rod"), ("rarity", "Legendary")]),
-        (0.14, [("type", "Ring"), ("rarity", "Legendary")])
+        (0.26, wondrous("Legendary")),
+        (0.26, weapon("Legendary")),
+        (0.24, armor("Legendary")),
+        (0.03, staff("Legendary")),
+        (0.05, rod("Legendary")),
+        (0.14, ring("Legendary"))
     ]

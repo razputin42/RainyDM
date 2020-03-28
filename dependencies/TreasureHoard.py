@@ -5,7 +5,7 @@ from dependencies.encounter import NameLabel
 from dependencies.list_widget import ListWidget, EntryWidget, colorDict
 from dependencies.signals import sNexus
 from dependencies.views import ItemViewer
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox
 from PyQt5.QtGui import QFont, QMouseEvent
 
 class TreasureHoard:
@@ -66,40 +66,76 @@ class TreasureHoardMidHigh(TreasureHoard):
 
 
 class TreasureHoardHigh(TreasureHoard):
-    pass
+    table = [(2, None),
+             (12,   [("1d8", LT.LootTableC)]),
+             (32,   [("1d6", LT.LootTableD)]),
+             (22,   [("1d6", LT.LootTableE)]),
+             (4,    [("1d4", LT.LootTableG)]),
+             (8,    [("1d4", LT.LootTableH)]),
+             (20,   [("1d4", LT.LootTableI)])
+    ]
 
 
 class RerollButton(QPushButton):
     def __init__(self):
-        super().__init__("Reroll Type")
+        super().__init__("Reroll")
 
 
 class LootWidget(EntryWidget):
-    def __init__(self, item, item_dict, item_list, viewer):
+    def __init__(self, item, item_list, viewer):
         super().__init__(item, viewer)
         self.setObjectName("LootWidget")
         self.item = item
-        self.item_dict = item_dict
         self.item_list = item_list
         self.viewer = viewer
 
-        self.setLayout(QHBoxLayout())
         self.name_label = NameLabel(item.name)
+
         self.reroll_button = RerollButton()
-        self.reroll_button.clicked.connect(self.reroll_item_from_set)
+        self.reroll_button.clicked.connect(self.reroll_item)
+
+        self.button_bar = QFrame()
+        self.button_bar.setContentsMargins(0, 0, 0, 0)
+        self.button_bar.setLayout(QHBoxLayout())
+
+        self.button_bar.setHidden(True)
+        self.type_dropdown = QComboBox()
+        self.type_dropdown.addItem("Any")
+        self.type_dropdown.addItem("Weapon")
+        self.type_dropdown.addItem("Armor")
+        self.type_dropdown.addItems(self.item_list.unique_attr("type"))
+        if self.item.type in ["Staff", "Melee", "Ranged", "Rod"]:
+            self.type_dropdown.setCurrentText("Weapon")
+        elif self.item.type in ["Light Armor, Medium Armor, Heavy Armor"]:
+            self.type_dropdown.setCurrentText("Armor")
+        else:
+            self.type_dropdown.setCurrentText(self.item.type)
+
+        self.rarity_dropdown = QComboBox()
+        self.rarity_dropdown.addItems(self.item_list.unique_attr("rarity"))
+        self.rarity_dropdown.setCurrentText(self.item.rarity)
+
+
+        self.button_bar.layout().addWidget(self.type_dropdown)
+        self.button_bar.layout().addWidget(self.rarity_dropdown)
+        self.button_bar.layout().addStretch(1)
+        self.button_bar.layout().addWidget(self.reroll_button)
+
+        self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.name_label)
-        self.layout().addStretch(1)
-        self.layout().addWidget(self.reroll_button)
+        self.layout().addWidget(self.button_bar)
         self.setFrameShape(QFrame.Box)
 
-    def reroll_item_from_set(self):
-        subset = self.item_list.subset(self.item_dict)
+    def reroll_item(self):
+        item_dict = dict({"type": self.type_dropdown.currentText(), "rarity": self.rarity_dropdown.currentText()})
+        subset = self.item_list.subset(item_dict)
+        if len(subset) is 0:
+            sNexus.printSignal.emit(
+                "There is no {} {} in the database.".format(item_dict["rarity"], item_dict["type"]))
+            return
         self.item = random.choice(subset)
         self.name_label.setText(self.item.name)
         self.viewer.draw_view(self.item)
-
-    def reroll_item(self):
-        pass
 
     def mousePressEvent(self, a0: QMouseEvent):
         if self.property('clicked'):  # already clicked
@@ -113,9 +149,9 @@ class LootWidget(EntryWidget):
 
 class TreasureHoardWidget(ListWidget):
     challengeRatingLow = "0 - 4"
-    challengeRatingMidLow = "5 - 8"
-    challengeRatingMidHigh = "9 - 12"
-    challengeRatingHigh = "13 - 16"
+    challengeRatingMidLow = "5 - 10"
+    challengeRatingMidHigh = "11 - 16"
+    challengeRatingHigh = "17+"
 
     def __init__(self, item_list, viewer):
         super().__init__()
@@ -128,7 +164,7 @@ class TreasureHoardWidget(ListWidget):
         sNexus.treasureHoardDeselectSignal.connect(self.deselectAll)
 
     def read_challenge_rating(self):
-        return self.challengeRatingLow
+        return self.challengeRatingHigh
 
     def roll_loot(self):
         challenge_rating = self.read_challenge_rating()
@@ -141,8 +177,6 @@ class TreasureHoardWidget(ListWidget):
         elif challenge_rating is self.challengeRatingHigh:
             items_dict = TreasureHoardHigh().roll()
 
-        print(items_dict)
-
         if items_dict is None:
             self.set_no_loot()
         else:
@@ -150,7 +184,7 @@ class TreasureHoardWidget(ListWidget):
             self.set_loot(loot)
 
     def set_no_loot(self):
-        pass
+        self.clear()
 
     def clear_loot_valuables(self):
         pass
@@ -159,13 +193,13 @@ class TreasureHoardWidget(ListWidget):
         output_list = []
         for item_dict in items_dict:
             subset = self.item_list.subset(item_dict)
-            output_list.append((random.choice(subset), item_dict))
+            output_list.append(random.choice(subset))
         return output_list
 
     def set_loot(self, loot):
         self.clear()
-        for item, item_dict in loot:
-            frame = LootWidget(item, item_dict, self.item_list, self.viewer)
+        for item in loot:
+            frame = LootWidget(item, self.item_list, self.viewer)
             self.add(frame)
 
 

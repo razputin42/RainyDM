@@ -40,22 +40,17 @@ class EntryWidget(QFrame):
                 self.viewer.draw_view(self.entry)
         self.redraw()
 
-
     def select(self):
         self.hide_viewer(False)
         self.setProperty('clicked', True)
-        # self.set_select_stylesheet()
+        if hasattr(self, "button_bar"):
+            self.button_bar.setHidden(False)
 
     def deselect(self):
         self.hide_viewer(True)
         self.setProperty('clicked', False)
-        # self.set_deselect_stylesheet()
-
-    # def set_select_stylesheet(self):
-        # self.setStyleSheet("background-color: #{:02X}{:02X}{:02X};".format(*self.select_color))
-
-    # def set_deselect_stylesheet(self):
-        # self.setStyleSheet("background-color: #{:02X}{:02X}{:02X};".format(*self.color))
+        if hasattr(self, "button_bar"):
+            self.button_bar.setHidden(True)
 
 
 class ListWidget(QWidget):

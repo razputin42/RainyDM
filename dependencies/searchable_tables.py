@@ -613,11 +613,26 @@ class ItemTableWidget(SearchableTable):
     def define_filters(self, version):
         if version == "5":
             self.filter.add_dropdown("Type", self.unique_attr("type"))
+            self.filter.add_dropdown("Rarity", self.unique_attr("rarity"))
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
-            # self.filter.add_dropdown("Value", self.unique_attr("value"))
             self.filter.add_range("value", capitalize=True)
         elif version == "3.5":
             self.filter.add_dropdown("Category", self.unique_attr("category"))
+
+    def subset(self, attr_dict):
+        output_list = []
+        for entry in self.list:
+            valid = True
+            for key in attr_dict:
+                if key == "type" and attr_dict[key] == "Armor":
+                    valid = valid and entry.type in ["Heavy Armor", "Medium Armor", "Light Armor"]
+                elif key == "type" and attr_dict[key] == "Weapon":
+                    valid = valid and entry.type in ["Melee", "Ranged", "Rod", "Staff"]
+                elif not hasattr(entry, key) or getattr(entry, key) != attr_dict[key]:
+                    valid = False
+            if valid:
+                output_list.append(entry)
+        return output_list
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
