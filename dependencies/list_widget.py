@@ -124,15 +124,6 @@ class ListWidget(QWidget):
         except ValueError:
             pass
 
-    def removeCharacter(self, character):
-        for entry in self.m_widgetList:
-            if entry.getName() == character.getCharName():
-                entry.setParent(None)
-        try:
-            self.m_widgetList.remove(entry)
-        except ValueError:
-            pass
-
     def find(self, target):
         for idx, entry in enumerate(self.m_widgetList):
             if entry is target:
