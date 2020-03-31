@@ -205,13 +205,20 @@ class MonsterWidget(InitiativeWidget):
 
 class PlayerWidget(InitiativeWidget):
     def __init__(self, parentList, character):
-        super().__init__()
+        super().__init__(character)
         self.m_initiative = InitiativeFrame(str(character.getInit()))
         self.m_character = character
-        self.layout().addWidget(NameLabel(character.getCharName()))
+        self.name = NameLabel(character.getCharName())
+        self.layout().addWidget(self.name)
         self.layout().addStretch(1)
         self.layout().addWidget(self.m_initiative)
         self.parent = parentList
+
+    def set_name(self, name):
+        self.name.setText(name)
+
+    def set_initiative(self, initiative):
+        self.m_initiative.set(initiative)
 
     def getName(self):
         return self.m_character.getCharName()
@@ -277,7 +284,7 @@ class EncounterWidget(ListWidget):
 
         self.sort_init_button = QPushButton("Sort Initiative")
         self.roll_init_button = QPushButton("Roll Initiative")
-        self.add_players_button = QPushButton("Add Players")
+        self.add_players_button = QPushButton("Update Players")
         self.clear_encounter_button = QPushButton("Clear Encounter")
         button_layout.addWidget(self.sort_init_button)
         button_layout.addWidget(self.roll_init_button)
@@ -349,6 +356,24 @@ class EncounterWidget(ListWidget):
 
     def addPlayerToEncounter(self, character):
         self.add(PlayerWidget(self, character))
+
+    def find_PC(self, character):
+        for entry in self.m_widgetList:
+            if entry.getName() == character.getCharName():
+                return entry
+
+    def remove_character(self, character):
+        entry = self.find_PC(character)
+        if entry is None:
+            return
+        self.remove(entry)
+
+    def update_character(self, character):
+        entry = self.find_PC(character)
+        if entry is None:
+            return
+        entry.set_name(character.getCharName())
+        entry.set_initiative(character.getInit())
 
     def moveEntry(self, entry, move):
         newList = self.m_widgetList
