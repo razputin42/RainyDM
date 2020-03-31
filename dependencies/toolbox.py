@@ -1,16 +1,19 @@
 from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
-    QHBoxLayout, QLineEdit, QSizePolicy, QMenu, QTabWidget, QFrame, QPushButton
-
+    QHBoxLayout, QLineEdit, QSizePolicy, QMenu, QTabWidget, QFrame, QPushButton, QTableWidgetItem
+import dependencies.auxiliaries as aux
+from dependencies.signals import sNexus
 
 class LinkedTableWidget(QTableWidget):
     _NAME_COLUMN = 0
     _INDEX_COLUMN = 1
+    prev_entry = None
 
-    def __init__(self, linked_table, parent):
+    def __init__(self, table, viewer):
         QTableWidget.__init__(self)
-        self.parent = parent
-        self.linked_table = linked_table
+        self.table = table
+        self.viewer = viewer
         self.format()
+        self.clicked.connect(self.selection_change_handle)
 
     def format(self):
         columns = 2
@@ -41,34 +44,56 @@ class LinkedTableWidget(QTableWidget):
         for item in items:
             self.removeRow(item.row())
 
+    def selection_change_handle(self):
+        current_entry = self.get_current_selection()
+        if self.prev_entry is current_entry:
+            self.set_hidden(not self.viewer.isHidden())
+        else:
+            self.prev_entry = current_entry
+            self.set_hidden(False)
+            self.viewer.draw_view(current_entry)
+
+    def get_current_selection(self):
+        current_row = self.currentRow()
+        entry_idx = int(self.item(current_row, 1).text())
+        return self.table.list[entry_idx]
+
+    def set_hidden(self, condition):
+        self.viewer.set_hidden(condition)
+
 
 class LinkedMonsterTable(LinkedTableWidget):
     def contextMenuEvent(self, event):
+        entry = self.get_current_selection()
+
         menu = QMenu(self)
         add_action = menu.addAction("Add to initiative")
         add_x_action = menu.addAction("Add X to initiative")
-        menu.addSeparator()
-        add_spellbook = menu.addAction("Add monster's spells to toolbox")
+        if hasattr(entry, "spells"):
+            menu.addSeparator()
+            add_spellbook = menu.addAction("Add monster's spells to toolbox")
+        else:
+            add_spellbook = None
         menu.addSeparator()
         remove = menu.addAction("Remove from Toolbox")
-
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        current_row = self.currentRow()
-        entry_idx = int(self.item(current_row, 1).text())
-        entry = self.linked_table.list[entry_idx]
         if action == add_action:
-            self.parent.encounter_table.addMonsterToEncounter(entry, 1)
+            entry.add_to_encounter()
         if action == add_x_action:
-            X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
+            x, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok:
-                self.parent.encounter_table.addMonsterToEncounter(entry, X)
+                entry.add_to_encounter(x)
         elif action == remove:
             self.remove_rows()
         elif action == add_spellbook:
-            self.parent.extract_and_add_spellbook(entry)
+            entry.addSpells()
+
+    def set_hidden(self, condition):
+        self.viewer.set_hidden(condition)
+        self.viewer.button_bar.setHidden(condition)
 
 
 class LinkedSpellTable(LinkedTableWidget):
@@ -92,9 +117,6 @@ class LinkedSpellTable(LinkedTableWidget):
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        current_row = self.currentRow()
-        entry_idx = int(self.item(current_row, 1).text())
-        entry = self.linked_table.list[entry_idx]
         if action == remove_toolbox:
             self.remove_rows()
 
@@ -103,9 +125,12 @@ class ToolboxWidget(QFrame):
     SPELL_TAB = 0
     DICE_TAB = 1
 
-    def __init__(self, parent):
+    def __init__(self, monster_table, monster_viewer, spell_table, spell_viewer):
         super().__init__()
-        self.parent = parent
+        self.monster_table = monster_table
+        self.spell_table = spell_table
+        self.monster_viewer = monster_viewer
+        self.spell_viewer = spell_viewer
         self.toolbox_frame = QFrame()
         self.toolbox_frame.setMaximumHeight(300)
         self.button_bar = QFrame()
@@ -115,8 +140,8 @@ class ToolboxWidget(QFrame):
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum))
 
-        self.spell_toolbox = LinkedSpellTable(self.parent.spell_table_widget, self.parent)
-        self.monster_toolbox = LinkedMonsterTable(self.parent.monster_table_widget, self.parent)
+        self.spell_toolbox = LinkedSpellTable(self.spell_table, self.spell_viewer)
+        self.monster_toolbox = LinkedMonsterTable(self.monster_table, self.monster_viewer)
         self.monster_tabWidget = QTabWidget()
         self.monster_tabWidget.addTab(self.monster_toolbox, "Monster")
 
@@ -126,7 +151,7 @@ class ToolboxWidget(QFrame):
         self.dice_toolbox = QFrame()
         dice_layout = QVBoxLayout()
         for i in range(5):
-            dice_layout.addWidget(DiceBox(parent).frame)
+            dice_layout.addWidget(DiceBox().frame)
         dice_help_button = QPushButton("Help")
         dice_help_button.clicked.connect(self.dice_instructions)
         dice_layout.addWidget(dice_help_button)
@@ -149,19 +174,15 @@ class ToolboxWidget(QFrame):
         self.hidden = False
 
     def dice_instructions(self):
-        self.parent.text_box.append("\nEither input diceroll in format xdy+z, AttackBonus|DamageRoll, or"
+        sNexus.printSignal.emit("\nEither input diceroll in format xdy+z, AttackBonus|DamageRoll, or"
                                     " AttackBonus, DamageRoll\nExample: 1d20+6\n5|2d6+3\n5, 2d6+3\n")
     def toggle_hide(self):
         self.hidden = not self.hidden
         self.toolbox_frame.setHidden(self.hidden)
-    # @staticmethod
-    # def remove_from_toolbox(table, row):
-    #     table.remove_row(row)
 
 
 class DiceBox:
-    def __init__(self, parent):
-        self.parent = parent
+    def __init__(self):
         self.frame = QFrame()
         layout = QHBoxLayout()
         self.button = QPushButton()
@@ -177,13 +198,14 @@ class DiceBox:
                 if "," in roll:
                     roll = roll.replace(",", "|")
                 if "|" in roll:
-                    self.parent.print_attack(None, "|" + roll)
+                    print(roll)
+                    bonus, dmg_dice = roll.split("|")
+                    dmg = aux.roll_function(dmg_dice)
+                    atk = aux.roll_function("1d20 + {}".format(bonus))
+                    sNexus.printSignal.emit("Dice rolls ({}): {}, {} damage".format(roll, atk, dmg))
                 else:
-                    result = self.parent.roll(roll)
-                    s = ">> Result of ({}): {}".format(roll, result)
-                    if type(result) is list:
-                        s = s + "({})".format(sum(result))
-                    self.parent.text_box.append(s)
+                    result = aux.roll_function(roll)
+                    sNexus.printSignal.emit("Dice rolls ({}): {}".format(roll, result))
             except:
-                self.parent.text_box.append("Invalid dice format\nPress help for info")
+                sNexus.printSignal.emit("Invalid dice format\nPress help for info")
         self.button.clicked.connect(lambda: perform_roll(self))

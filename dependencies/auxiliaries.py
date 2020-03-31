@@ -1,6 +1,28 @@
 from random import randint
 
-def rollFunction(dice):
+
+RarityList = ["Common",
+              "Uncommon",
+              "Rare",
+              "Very Rare",
+              "Legendary",
+              "Artifact"]
+
+
+class GlobalParameters:
+    MAIN_TOOL_STRETCH = 6
+    MIDDLE_FRAME_STRETCH = 5
+    RIGHT_FRAME_STRETCH = 5
+
+    MAIN_TOOL_POSITION = 0
+    MIDDLE_FRAME_POSITION = 1
+    RIGHT_FRAME_POSITION = 2
+
+
+# Global = GlobalParameters()
+
+
+def roll_function(dice):
     output = []
     split = dice.split("+")
     if len(split) is 1 and "d" not in split[0]:  # in the case of X damage, without a roll

@@ -1,0 +1,37 @@
+Viewer {
+    border-image: url(assets/viewer_background.jpg);
+}
+
+/*LootWidget {
+    border-image: url(assets/frames/Plank_07.png);
+}*/
+
+QTableWidget#SearchableTable_table {
+    alternate-background-color: white;
+    background-color: rgb(230, 230, 230);
+}
+
+QFrame#Filter_frame {
+    background-color: rgb(210, 210, 210);
+}
+
+NameLabel#LootWidget_name {
+    font-weight: bold;
+    font-size: 18px;
+    color: rgb(100, 0, 0);
+    /*border-image: url(assets/icons/name_icon.png) 0 0 0 0 stretch stretch;*/
+}
+
+EntryWidget[clicked="false"] {
+    background-color: rgb(240, 240, 240);
+}
+
+EntryWidget[clicked="true"] {
+    background-color: rgb(210, 210, 210);
+}
+
+RerollButton {
+    border-image: url(assets/icons/dice_icon.png);
+    height: 30px;
+    width: 30px;
+}

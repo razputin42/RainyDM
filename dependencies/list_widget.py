@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QScrollArea, \
     QWidget, QFormLayout, QGroupBox
+from PyQt5.Qt import QMouseEvent
 from PyQt5.QtCore import Qt
 
 colorDict = dict(
@@ -11,13 +12,46 @@ colorDict = dict(
 
 
 class EntryWidget(QFrame):
-    def __init__(self):
+    deselect_signal = None
+
+    def __init__(self, entry=None, viewer=None):
         super().__init__()
-        # self.setStyleSheet("background-color: rgb(240, 240, 240);")
+        self.entry = entry
         self.setFrameShape(QFrame.Box)
+        self.setFrameStyle(QFrame.StyledPanel)
+        self.viewer = viewer
 
     def redraw(self):
         self.setStyle(self.style())
+
+    def hide_viewer(self, condition):
+        if self.viewer is not None:
+            self.viewer.set_hidden(condition)
+            return True
+        return False
+
+    def mousePressEvent(self, a0: QMouseEvent):
+        if self.property('clicked'):  # already clicked
+            self.deselect()
+        else:
+            if self.deselect_signal is not None:
+                self.deselect_signal.emit()
+            self.select()
+            if self.viewer is not None:
+                self.viewer.draw_view(self.entry)
+        self.redraw()
+
+    def select(self):
+        self.hide_viewer(False)
+        self.setProperty('clicked', True)
+        if hasattr(self, "button_bar"):
+            self.button_bar.setHidden(False)
+
+    def deselect(self):
+        self.hide_viewer(True)
+        self.setProperty('clicked', False)
+        if hasattr(self, "button_bar"):
+            self.button_bar.setHidden(True)
 
 
 class ListWidget(QWidget):
@@ -115,3 +149,8 @@ class ListWidget(QWidget):
                 else:
                     outputList.append(_attr)
         return outputList
+
+    def deselectAll(self):
+        for entry in self.m_widgetList:
+            entry.deselect()
+            entry.redraw()
