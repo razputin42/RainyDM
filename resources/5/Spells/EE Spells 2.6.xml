@@ -27,7 +27,7 @@
         <school>A</school>
         <time>1 reaction, which you take when you take acid, cold, fire, lightning, or thunder damage</time>
         <range>Self</range>
-		
+
         <components>S</components>
         <duration>1 round</duration>
         <classes>Druid, Ranger, Wizard, Fighter (Eldritch Knight)</classes>

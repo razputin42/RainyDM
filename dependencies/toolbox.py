@@ -59,7 +59,7 @@ class LinkedTableWidget(QTableWidget):
         return self.table.list[entry_idx]
 
     def set_hidden(self, condition):
-        self.viewer.setHidden(condition)
+        self.viewer.set_hidden(condition)
 
 
 class LinkedMonsterTable(LinkedTableWidget):

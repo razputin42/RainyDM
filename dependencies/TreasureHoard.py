@@ -5,8 +5,9 @@ from dependencies.encounter import NameLabel
 from dependencies.list_widget import ListWidget, EntryWidget, colorDict
 from dependencies.signals import sNexus
 from dependencies.views import ItemViewer
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox, QSpacerItem
 from PyQt5.QtGui import QFont, QMouseEvent
+import os
 
 class TreasureHoard:
     @property
@@ -78,7 +79,7 @@ class TreasureHoardHigh(TreasureHoard):
 
 class RerollButton(QPushButton):
     def __init__(self):
-        super().__init__("Reroll")
+        super().__init__("")
 
 
 class LootWidget(EntryWidget):
@@ -89,7 +90,13 @@ class LootWidget(EntryWidget):
         self.item_list = item_list
         self.viewer = viewer
 
+        name_frame = QFrame()
+        name_frame.setContentsMargins(0, 0, 0, 0)
+        name_frame.setLayout(QHBoxLayout())
         self.name_label = NameLabel(item.name)
+        self.name_label.setObjectName("LootWidget_name")
+        name_frame.layout().addWidget(self.name_label)
+        name_frame.layout().addStretch(1)
 
         self.reroll_button = RerollButton()
         self.reroll_button.clicked.connect(self.reroll_item)
@@ -115,14 +122,15 @@ class LootWidget(EntryWidget):
         self.rarity_dropdown.addItems(self.item_list.unique_attr("rarity"))
         self.rarity_dropdown.setCurrentText(self.item.rarity)
 
-
         self.button_bar.layout().addWidget(self.type_dropdown)
         self.button_bar.layout().addWidget(self.rarity_dropdown)
         self.button_bar.layout().addStretch(1)
         self.button_bar.layout().addWidget(self.reroll_button)
 
         self.setLayout(QVBoxLayout())
-        self.layout().addWidget(self.name_label)
+        QSpacerItem(50, 10)
+        self.layout().setContentsMargins(20, 5, 10, 10)
+        self.layout().addWidget(name_frame)
         self.layout().addWidget(self.button_bar)
         self.setFrameShape(QFrame.Box)
 
@@ -154,27 +162,37 @@ class TreasureHoardWidget(ListWidget):
     challengeRatingHigh = "17+"
 
     def __init__(self, item_list, viewer):
+        self.challenge_rating_combo_box = QComboBox()
+        self.challenge_rating_combo_box.addItems([
+            self.challengeRatingLow,
+            self.challengeRatingMidLow,
+            self.challengeRatingMidHigh,
+            self.challengeRatingHigh])
         super().__init__()
         self.viewer = viewer
-        # self.setLayout(QHBoxLayout())
         rollButton = QPushButton("Roll")
         rollButton.clicked.connect(self.roll_loot)
-        self.layout().addWidget(rollButton)
+        bottom_bar = QFrame()
+        bottom_bar.setLayout(QHBoxLayout())
+        bottom_bar.layout().addStretch(1)
+        bottom_bar.layout().addWidget(self.challenge_rating_combo_box)
+        bottom_bar.layout().addWidget(rollButton)
+        self.layout().addWidget(bottom_bar)
         self.item_list = item_list
         sNexus.treasureHoardDeselectSignal.connect(self.deselectAll)
 
     def read_challenge_rating(self):
-        return self.challengeRatingHigh
+        return self.challenge_rating_combo_box.currentText()
 
     def roll_loot(self):
         challenge_rating = self.read_challenge_rating()
-        if challenge_rating is self.challengeRatingLow:
+        if challenge_rating == self.challengeRatingLow:
             items_dict = TreasureHoardLow().roll()
-        elif challenge_rating is self.challengeRatingMidLow:
+        elif challenge_rating == self.challengeRatingMidLow:
             items_dict = TreasureHoardMidLow().roll()
-        elif challenge_rating is self.challengeRatingMidHigh:
+        elif challenge_rating == self.challengeRatingMidHigh:
             items_dict = TreasureHoardMidHigh().roll()
-        elif challenge_rating is self.challengeRatingHigh:
+        elif challenge_rating == self.challengeRatingHigh:
             items_dict = TreasureHoardHigh().roll()
 
         if items_dict is None:
@@ -185,6 +203,7 @@ class TreasureHoardWidget(ListWidget):
 
     def set_no_loot(self):
         self.clear()
+        sNexus.printSignal.emit("Treasure hoard yielded no loot")
 
     def clear_loot_valuables(self):
         pass

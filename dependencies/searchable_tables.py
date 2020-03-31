@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ElementTree
 from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
-import time
+from dependencies.auxiliaries import RarityList
 from .monster import Monster
 from .spell import Spell
 from .item import Item
@@ -20,6 +20,8 @@ class MyTableWidget(QTableWidget):
     def __init__(self, parent):
         QTableWidget.__init__(self)
         self.parent = parent
+        self.setObjectName("SearchableTable_table")
+        self.setAlternatingRowColors(True)
         self.format()
 
     def format(self):
@@ -613,7 +615,7 @@ class ItemTableWidget(SearchableTable):
     def define_filters(self, version):
         if version == "5":
             self.filter.add_dropdown("Type", self.unique_attr("type"))
-            self.filter.add_dropdown("Rarity", self.unique_attr("rarity"))
+            self.filter.add_dropdown("Rarity", RarityList, alphabetical=False)
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
             self.filter.add_range("value", capitalize=True)
         elif version == "3.5":

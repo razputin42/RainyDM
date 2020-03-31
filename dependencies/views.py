@@ -18,7 +18,7 @@ class Viewer(QTextBrowser):
     def __init__(self):
         QTextBrowser.__init__(self)
         self.horizontalScrollBar().setHidden(True)
-        self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
+        # self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
         self.aux_format()
         self.setHidden(True)
 
@@ -160,10 +160,6 @@ class MonsterViewer(Viewer):
     def set_hidden(self, condition):
         self.setHidden(condition)
         self.button_bar.setHidden(condition)
-        if condition is True:
-            sNexus.setWidgetStretch.emit(GlobalParameters.MONSTER_VIEWER_POSITION, 0)
-        else:
-            sNexus.setWidgetStretch.emit(GlobalParameters.MONSTER_VIEWER_POSITION, GlobalParameters.MONSTER_VIEWER_STRETCH)
 
 
 class SpellViewer(Viewer):
@@ -192,6 +188,13 @@ class SpellViewer(Viewer):
         if n == 0:
             return "Cantrip"
         return "{}{}-level".format(n, "tsnrhtdd"[(n / 10 % 10 != 1) * (n % 10 < 4) * n % 10::4])
+
+    def set_hidden(self, condition):
+        super().set_hidden(condition)
+        if condition is True:
+            sNexus.setWidgetStretch.emit(GlobalParameters.MIDDLE_FRAME_POSITION, 0)
+        else:
+            sNexus.setWidgetStretch.emit(GlobalParameters.MIDDLE_FRAME_POSITION, GlobalParameters.MIDDLE_FRAME_STRETCH)
 
 
 class ItemViewer(Viewer):

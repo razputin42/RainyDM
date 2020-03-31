@@ -64,6 +64,7 @@ class LootTable:
             percent_sum = percent + percent_sum
             if dice_roll <= percent_sum:
                 return attr
+        raise ValueError("Reached end of roll single, {}".format(type(self)))
 
     def roll(self, amount):
         output_list = []
@@ -82,15 +83,6 @@ class LootTableA(LootTable):
         (0.01, specific_item("Bag of Holding")),
         (0.01, wondrous("Uncommon"))
         ]
-
-    # chances = [
-    #     (0.6, [("type", "Potion"), ("rarity", "Common")]),
-    #     (0.3, [("type", "Scroll"), ("rarity", "Common")]),
-    #     (0.04, [("type", "Scroll"), ("rarity", "Uncommon")]),
-    #     (0.04, [("type", "Potion"), ("rarity", "Uncommon")]),
-    #     (0.01, [("name", "Bag of Holding")]),
-    #     (0.01, [("type", "Wondrous"), ("rarity", "Uncommon")])
-    #     ]
 
 
 class LootTableB(LootTable):
@@ -177,7 +169,7 @@ class LootTableI(LootTable):
         (0.26, wondrous("Legendary")),
         (0.26, weapon("Legendary")),
         (0.24, armor("Legendary")),
-        (0.03, staff("Legendary")),
+        (0.05, staff("Legendary")),
         (0.05, rod("Legendary")),
         (0.14, ring("Legendary"))
     ]

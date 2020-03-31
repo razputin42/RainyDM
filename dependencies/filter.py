@@ -11,6 +11,7 @@ class Filter:
         self.filter_content = filter_content
         self.filter = dict()
         self.frame = QFrame()
+        self.frame.setObjectName("Filter_frame")
         self.frame.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         actual_layout = QVBoxLayout()
         widget_frame = QFrame()
@@ -64,10 +65,10 @@ class Filter:
             self.filter[name] = [minimum, maximum]
         self.filter_content()
 
-    def add_dropdown(self, name, options, suboptions=None, default=None):
+    def add_dropdown(self, name, options, suboptions=None, default=None, alphabetical=True):
         options = [option.capitalize() for option in options]
-        options = list(set(options))
-        options.sort()
+        if alphabetical:
+            options.sort()
         combo_box = QComboBox()
         combo_box.addItem("Any")
         combo_box.addItems(options)

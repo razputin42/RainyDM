@@ -1,14 +1,22 @@
 from random import randint
 
 
+RarityList = ["Common",
+              "Uncommon",
+              "Rare",
+              "Very Rare",
+              "Legendary",
+              "Artifact"]
+
+
 class GlobalParameters:
-    MONSTER_VIEWER_STRETCH = 5
-    SPELL_VIEWER_STRETCH = 5
     MAIN_TOOL_STRETCH = 6
+    MIDDLE_FRAME_STRETCH = 5
+    RIGHT_FRAME_STRETCH = 5
 
     MAIN_TOOL_POSITION = 0
-    MONSTER_VIEWER_POSITION = 1
-    SPELL_VIEWER_POSITION = 2
+    MIDDLE_FRAME_POSITION = 1
+    RIGHT_FRAME_POSITION = 2
 
 
 # Global = GlobalParameters()

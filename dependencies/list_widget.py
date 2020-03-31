@@ -18,6 +18,7 @@ class EntryWidget(QFrame):
         super().__init__()
         self.entry = entry
         self.setFrameShape(QFrame.Box)
+        self.setFrameStyle(QFrame.StyledPanel)
         self.viewer = viewer
 
     def redraw(self):
