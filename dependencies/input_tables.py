@@ -371,6 +371,11 @@ class PlayerFrame(EntryWidget):
         )
         return json.dumps(output)
 
+    def select(self):
+        pass
+
+    def deselect(self):
+        pass
 
 class PlayerTable(ListWidget):
     def __init__(self):

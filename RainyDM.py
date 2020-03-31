@@ -1,20 +1,21 @@
-from dependencies.signals import sNexus
-from dependencies.monster import Monster, Monster35
-from dependencies.spell import Spell, Spell35
+from dependencies.auxiliaries import roll_function, GlobalParameters
+from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
+from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.item import Item, Item35
+from dependencies.TreasureHoard import TreasureHoardTab
+from dependencies.monster import Monster, Monster35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
+from dependencies.signals import sNexus
+from dependencies.spell import Spell, Spell35
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
-from dependencies.input_tables import PlayerTable, PlayerFrame
-from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QLabel, QMessageBox, QSpacerItem
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
 import sys, json, os
 import html2text
 import pyperclip
-from dependencies.auxiliaries import rollFunction
 
 MONSTER_TAB = 0
 SPELL_TAB = 1
@@ -49,7 +50,7 @@ class DMTool(QMainWindow):
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
         """
-        self.setStyleSheet(open(os.path.join("assets", "styles", "default.qss")).read())
+        self.setStyleSheet(open(os.path.join("assets", "styles", "default.css")).read())
         self.setWindowIcon(QIcon(os.path.join('assets', 'tear.png')))
         self.setWindowTitle("RainyDM")
         self.setGeometry(100, 100, 1280, 720)
@@ -59,13 +60,15 @@ class DMTool(QMainWindow):
         self.tab_widget = QTabWidget()
 
         # Viewers
-        monsterButtonBarLayout = QHBoxLayout()
-        self.monster_viewer = MonsterViewer(monsterButtonBarLayout)
-        spell_viewer_layout = QVBoxLayout()
-        self.spell_frame = QFrame()
-        self.spell_frame.setLayout(spell_viewer_layout)
-        self.spell_frame.setContentsMargins(0, 0, 0, 0)
-        self.spell_frame.setFrameStyle(0)
+        monster_button_bar = QFrame()
+        monster_button_bar_layout = QHBoxLayout()
+        monster_button_bar.setLayout(monster_button_bar_layout)
+        self.monster_viewer = MonsterViewer(monster_button_bar)
+        right_frame_layout = QVBoxLayout()
+        self.right_frame = QFrame()
+        self.right_frame.setLayout(right_frame_layout)
+        self.right_frame.setContentsMargins(0, 0, 0, 0)
+        self.right_frame.setFrameStyle(0)
         self.spell_viewer = SpellViewer()
         self.item_viewer = ItemViewer()
 
@@ -74,13 +77,6 @@ class DMTool(QMainWindow):
         self.text_box.setObjectName("OutputField")
         self.text_box.setReadOnly(True)
         self.text_box.setFontPointSize(10)
-        # self.text_box.setMaximumWidth(530)
-        # self.text_box.setMaximumHeight(250)
-        spell_viewer_layout.addWidget(self.spell_viewer)
-        spell_viewer_layout.addWidget(self.text_box)
-        spell_viewer_layout.setStretch(1, 1)
-        spell_viewer_layout.setStretch(0, 2)
-
 
         ## Tables
         # Spell Table
@@ -95,6 +91,10 @@ class DMTool(QMainWindow):
 
         self.load_resources()
 
+        # Loot Generator Widget
+        self.lootViewer = ItemViewer()
+        self.lootWidget = TreasureHoardTab(self, self.lootViewer, self.item_table_widget)
+
         # inserting tables into tab
         self.tab_widget.addTab(self.monster_table_widget, "Monster")
         self.tab_widget.addTab(self.spell_table_widget, "Spell")
@@ -102,23 +102,6 @@ class DMTool(QMainWindow):
 
         # Initiative list
         self.encounterWidget = EncounterWidget(self.monster_viewer)
-
-        # encounter buttons - maybe move these to the subclass?
-        # encounter_button_layout = QHBoxLayout()
-        # top_button_layout = QHBoxLayout()
-        # self.sort_init_button = QPushButton("Sort Initiative")
-        # self.roll_init_button = QPushButton("Roll Initiative")
-        # # self.add_players_button = QPushButton("Add Players")
-        # self.clear_encounter_button = QPushButton("Clear Encounter")
-        # self.save_encounter_button = QPushButton("Save Encounter")
-        # self.load_encounter_button = QPushButton("Load Encounter")
-        # encounter_button_layout.addWidget(self.sort_init_button)
-        # encounter_button_layout.addWidget(self.roll_init_button)
-        # top_button_layout.addWidget(self.save_encounter_button)
-        # top_button_layout.addWidget(self.load_encounter_button)
-        # # button_layout.addWidget(self.add_players_button)
-        # encounter_button_layout.addWidget(self.clear_encounter_button)
-        # top_button_layout.addStretch(0)
 
         # Toolbox buttons
         toolbox_button_layout = QHBoxLayout()
@@ -128,16 +111,18 @@ class DMTool(QMainWindow):
         toolbox_button_layout.addWidget(self.toggle_toolbox_button)
 
         # toolbox
-        self.toolbox_widget = ToolboxWidget(self)
+        self.toolbox_widget = ToolboxWidget(self.monster_table_widget,
+                                            self.monster_viewer,
+                                            self.spell_table_widget,
+                                            self.spell_viewer)
 
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
-        # encounter_layout.addLayout(top_button_layout)
         encounter_layout.addWidget(self.encounterWidget)
-        # encounter_layout.addLayout(encounter_button_layout)
         encounter_layout.addWidget(self.toolbox_widget)
         encounter_frame.setLayout(encounter_layout)
         self.tab_widget.addTab(encounter_frame, "Encounter")
+        self.tab_widget.addTab(self.lootWidget, "Loot")
 
         # player tab
         player_table_frame = QFrame()
@@ -153,31 +138,38 @@ class DMTool(QMainWindow):
         player_table_frame.setLayout(player_table_layout)
         self.tab_widget.addTab(player_table_frame, "Players")
 
-        # monster_view_frame = QFrame()
-        monster_view_layout = QVBoxLayout()
-        self.monster_view_frame = QFrame()
-        self.monster_view_frame.setLayout(monster_view_layout)
-        # monster_view_frame.setLayout(monster_view_layout)
         self.monster_viewer_bar = QFrame()
-        monsterButtonBarFrame = QFrame()
-        monsterButtonBarFrame.setLayout(monsterButtonBarLayout)
+        self.monster_viewer_bar.setContentsMargins(0, 0, 0, 0)
+
+        right_frame_layout.addWidget(self.monster_viewer)
+        right_frame_layout.addWidget(monster_button_bar)
+        right_frame_layout.addWidget(self.monster_viewer_bar)
+        right_frame_layout.addWidget(self.text_box)
+        right_frame_layout.setStretch(3, 1)
+        right_frame_layout.setStretch(0, 2)
+
+        # monster_view_frame = QFrame()
+        middle_frame_layout = QVBoxLayout()
+        self.middle_frame = QFrame()
+        self.middle_frame.setLayout(middle_frame_layout)
+        self.middle_frame.setContentsMargins(0, 0, 0, 0)
+
         layout = QHBoxLayout()
         monster_plaintext_button = QPushButton("Copy plaintext to clipboard")
         monster_plaintext_button.clicked.connect(self.copy_plaintext_monster_to_clipboard)
         layout.addWidget(monster_plaintext_button)
         self.monster_viewer_bar.setLayout(layout)
 
-        monster_view_layout.addWidget(self.monster_viewer)
-        monster_view_layout.addWidget(monsterButtonBarFrame)
-        monster_view_layout.addWidget(self.monster_viewer_bar)
-        monster_view_layout.setStretch(0, 2)
+        middle_frame_layout.addWidget(self.spell_viewer)
+        middle_frame_layout.setStretch(0, 2)
+        middle_frame_layout.setContentsMargins(0, 0, 0, 0)
 
         self.window_layout.addWidget(self.tab_widget)
-        self.window_layout.addWidget(self.monster_view_frame)
-        self.window_layout.addWidget(self.spell_frame)
-        self.window_layout.setStretch(0, 6)
-        self.window_layout.setStretch(1, 5)
-        self.window_layout.setStretch(2, 5)
+        self.window_layout.addWidget(self.middle_frame)
+        self.window_layout.addWidget(self.right_frame)
+        self._set_widget_stretch(GlobalParameters.MAIN_TOOL_POSITION, GlobalParameters.MAIN_TOOL_STRETCH)
+        self._set_widget_stretch(GlobalParameters.MIDDLE_FRAME_POSITION, 0)
+        self._set_widget_stretch(GlobalParameters.RIGHT_FRAME_POSITION, GlobalParameters.RIGHT_FRAME_STRETCH)
 
         self.monster_viewer_bar.setHidden(True)
 
@@ -211,13 +203,13 @@ class DMTool(QMainWindow):
         experimental.addAction(button_plain_text)
         experimental.addAction(self.edit_entries_action)
 
-        tools = menu.addMenu("Tools")
-        self.button_hide_spells = QAction("Spells", tools, checkable=True)
-        self.button_hide_spells.setChecked(True)
-        self.button_hide_spells.setStatusTip("Spells")
-        self.button_hide_spells.triggered.connect(self.toggle_spells)
+        # tools = menu.addMenu("Tools")
+        # self.button_hide_spells = QAction("Spells", tools, checkable=True)
+        # self.button_hide_spells.setChecked(True)
+        # self.button_hide_spells.setStatusTip("Spells")
+        # self.button_hide_spells.triggered.connect(self.toggle_spells)
 
-        tools.addAction(self.button_hide_spells)
+        # tools.addAction(self.button_hide_spells)
 
         self.window_frame.setLayout(self.window_layout)
 
@@ -228,20 +220,20 @@ class DMTool(QMainWindow):
         self.item_table_widget.EDITABLE = cond
 
     def bind_signals(self):
-        self.spell_table_widget.table.selectionModel().selectionChanged.connect(
-            lambda: self.spell_clicked_handle(self.spell_table_widget.table))
+        # self.spell_table_widget.table.selectionModel().selectionChanged.connect(
+        #     lambda: self.spell_clicked_handle(self.spell_table_widget.table))
+        #
+        # self.toolbox_widget.spell_toolbox.selectionModel().selectionChanged.connect(
+        #     lambda: self.spell_clicked_handle(self.toolbox_widget.spell_toolbox))
 
-        self.toolbox_widget.spell_toolbox.selectionModel().selectionChanged.connect(
-            lambda: self.spell_clicked_handle(self.toolbox_widget.spell_toolbox))
+        # self.monster_table_widget.table.selectionModel().selectionChanged.connect(
+        #     lambda: self.monster_clicked_handle(self.monster_table_widget.table))
 
-        self.monster_table_widget.table.selectionModel().selectionChanged.connect(
-            lambda: self.monster_clicked_handle(self.monster_table_widget.table))
-
-        self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
-            lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
-
-        self.item_table_widget.table.selectionModel().selectionChanged.connect(
-            lambda: self.item_clicked_handle(self.item_table_widget.table))
+        # self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
+        #     lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
+        #
+        # self.item_table_widget.table.selectionModel().selectionChanged.connect(
+        #     lambda: self.item_clicked_handle(self.item_table_widget.table))
 
         self.encounterWidget.add_players_button.clicked.connect(self.addPlayersToCombat)
         self.encounterWidget.sort_init_button.clicked.connect(self.sort_init_handle)
@@ -256,9 +248,14 @@ class DMTool(QMainWindow):
         sNexus.attackSignal.connect(self.attackSlot)
         sNexus.addSpellsSignal.connect(self.addSpellsToToolboox)
         sNexus.printSignal.connect(self.print)
+        sNexus.addMonstersToEncounter.connect(self.encounterWidget.addMonsterToEncounter)
+        sNexus.setWidgetStretch.connect(self._set_widget_stretch)
 
     def _display_ui(self):
         self.setCentralWidget(self.window_frame)
+
+    def _set_widget_stretch(self, widget, stretch):
+        self.window_layout.setStretch(widget, stretch)
 
     def toggle_monster_bar(self):
         if self.monster_viewer_bar.isHidden():
@@ -266,22 +263,22 @@ class DMTool(QMainWindow):
         else:
             self.monster_viewer_bar.setHidden(True)
 
-    def toggle_spells(self):
-        if self.button_hide_spells.isChecked():
-            cond = True
-        else:
-            cond = False
-        self.spell_frame.setHidden(not cond)
-        self.tab_widget.setTabEnabled(SPELL_TAB, cond)
-        self.toolbox_widget.spell_tabWidget.setTabEnabled(self.toolbox_widget.SPELL_TAB, cond)
-        self.text_box.setLayout = None
-        if not cond:
-            self.monster_view_frame.layout().addWidget(self.text_box)
-            self.window_layout.setStretch(0, 4)
-        else:
-            self.spell_frame.layout().addWidget(self.text_box)
-            self.window_layout.setStretch(0, 6)
-        self.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
+    # def toggle_spells(self):
+    #     if self.button_hide_spells.isChecked():
+    #         cond = True
+    #     else:
+    #         cond = False
+    #     self.spell_frame.setHidden(not cond)
+    #     self.tab_widget.setTabEnabled(SPELL_TAB, cond)
+    #     self.toolbox_widget.spell_tabWidget.setTabEnabled(self.toolbox_widget.SPELL_TAB, cond)
+    #     self.text_box.setLayout = None
+    #     if not cond:
+    #         self.monster_view_frame.layout().addWidget(self.text_box)
+    #         self.window_layout.setStretch(0, 4)
+    #     else:
+    #         self.spell_frame.layout().addWidget(self.text_box)
+    #         self.window_layout.setStretch(0, 6)
+    #     # self.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
 
     def copy_plaintext_monster_to_clipboard(self):
         # print(self.monster_viewer.toPlainText())
@@ -302,34 +299,34 @@ class DMTool(QMainWindow):
 
         self.load_resources()
 
-    def spell_clicked_handle(self, table):
-        current_row = table.currentRow()
-        if current_row is -1:
-            return
-        itext = table.item(current_row, 1)
-        if itext is None or itext.text() == '':
-            return
-        spell_idx = int(itext.text())
-        spell = self.spell_table_widget.list[spell_idx]
-        self.spell_viewer.draw_view(spell)
+    # def spell_clicked_handle(self, table):
+    #     current_row = table.currentRow()
+    #     if current_row is -1:
+    #         return
+    #     itext = table.item(current_row, 1)
+    #     if itext is None or itext.text() == '':
+    #         return
+    #     spell_idx = int(itext.text())
+    #     spell = self.spell_table_widget.list[spell_idx]
+    #     self.spell_viewer.draw_view(spell)
 
-    def monster_clicked_handle(self, table):
-        current_row = table.currentRow()
-        if current_row is -1:
-            return
-        monster_idx = int(table.item(current_row, 1).text())
-        if monster_idx == -1:  # monster is a player character
-            return
-        monster = self.monster_table_widget.list[monster_idx]
-        self.monster_viewer.draw_view(monster)
+    # def monster_clicked_handle(self, table):
+    #     current_row = table.currentRow()
+    #     if current_row is -1:
+    #         return
+    #     monster_idx = int(table.item(current_row, 1).text())
+    #     if monster_idx == -1:  # monster is a player character
+    #         return
+    #     monster = self.monster_table_widget.list[monster_idx]
+    #     self.monster_viewer.draw_view(monster)
 
-    def item_clicked_handle(self, table):
-        current_row = table.currentRow()
-        if current_row is -1:
-            return
-        item_idx = int(table.item(current_row, 1).text())
-        item = self.item_table_widget.list[item_idx]
-        self.item_viewer.draw_view(item)
+    # def item_clicked_handle(self, table):
+    #     current_row = table.currentRow()
+    #     if current_row is -1:
+    #         return
+    #     item_idx = int(table.item(current_row, 1).text())
+    #     item = self.item_table_widget.list[item_idx]
+    #     self.item_viewer.draw_view(item)
 
     # def spell_search_handle(self):
     #     self.spell_viewer.draw_view()
@@ -461,10 +458,10 @@ class DMTool(QMainWindow):
         comp = attack.split("|")
         s = "{} uses {} -- ".format(monsterName, comp[0])
         if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
-            attack_roll = rollFunction("1d20+"+comp[1])
+            attack_roll = roll_function("1d20+" + comp[1])
             s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
 
-        damage_roll = rollFunction(comp[2])
+        damage_roll = roll_function(comp[2])
         if type(damage_roll) is list:
             halved = [max(1, int(dr/2)) for dr in damage_roll]
         else:

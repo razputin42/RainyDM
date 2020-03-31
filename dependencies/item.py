@@ -19,7 +19,7 @@ class Item:
         "LA": "Light Armor",
         "M": "Melee",
         "MA": "Medium Armor",
-        "P": "Potions",
+        "P": "Potion",
         "R": "Ranged",
         "RD": "Rod",
         "RG": "Ring",

@@ -1,7 +1,8 @@
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
-    QHBoxLayout, QLineEdit, QTextBrowser, QMenu, QTabWidget, QFrame, QPushButton
-from dependencies.html_format import monster_dict, spell_dict, item_dict, general_desc, general_head, general_foot
+from PyQt5 import QtGui
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QTextBrowser, QPushButton
+from dependencies.html_format import monster_dict, spell_dict, item_dict, general_head, general_foot
+from dependencies.auxiliaries import GlobalParameters
 from string import Template
 from .monster import Monster35
 from .spell import Spell35
@@ -17,11 +18,9 @@ class Viewer(QTextBrowser):
     def __init__(self):
         QTextBrowser.__init__(self)
         self.horizontalScrollBar().setHidden(True)
-        self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
-        # self.setStyleSheet("border-image: url(assets/unused/guimegapack/SpaceDepotUI/SpaceDepotUI_png/plank_01_02.png);")
-        # self.setMaximumWidth(530)
-        # self.setMinimumWidth(530)
+        # self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
         self.aux_format()
+        self.setHidden(True)
 
     def aux_format(self):
         pass
@@ -36,11 +35,18 @@ class Viewer(QTextBrowser):
     def redraw_view(self):
         self.draw_view(self.current_view)
 
+    def set_hidden(self, condition):
+        self.setHidden(condition)
+
+    def is_hidden(self):
+        return self.isHidden()
+
 
 class MonsterViewer(Viewer):
-    def __init__(self, buttonBarLayout):
+    def __init__(self, button_bar):
         super().__init__()
-        self.buttonBarLayout = buttonBarLayout
+        self.button_bar = button_bar
+        self.button_bar.setContentsMargins(0, 0, 0, 0)
 
     def draw_view(self, monster):
         # this is going to get confusing fast... This is everything before saving throws
@@ -138,17 +144,23 @@ class MonsterViewer(Viewer):
         self.html = html
         self.setHtml(html)
         self.current_view = monster
-        self.updateButtonBar(monster)
+        self.update_button_bar(monster)
 
-    def updateButtonBar(self, monster):
-        for i in reversed(range(self.buttonBarLayout.count())):  # first, clear layout
-            self.buttonBarLayout.itemAt(i).widget().setParent(None)
+    def update_button_bar(self, monster):
+        button_bar_layout = self.button_bar.layout()
+        for i in reversed(range(button_bar_layout.count())):  # first, clear layout
+            button_bar_layout.itemAt(i).widget().setParent(None)
         for action in monster.action_list:  # second, repopulate
             if not hasattr(action, "attack"):
                 continue
             button = QPushButton(action.name)
             button.clicked.connect(lambda state, x=action: monster.performAttack(x))
-            self.buttonBarLayout.addWidget(button)
+            button_bar_layout.addWidget(button)
+
+    def set_hidden(self, condition):
+        self.setHidden(condition)
+        self.button_bar.setHidden(condition)
+
 
 class SpellViewer(Viewer):
     def draw_view(self, spell):
@@ -176,6 +188,13 @@ class SpellViewer(Viewer):
         if n == 0:
             return "Cantrip"
         return "{}{}-level".format(n, "tsnrhtdd"[(n / 10 % 10 != 1) * (n % 10 < 4) * n % 10::4])
+
+    def set_hidden(self, condition):
+        super().set_hidden(condition)
+        if condition is True:
+            sNexus.setWidgetStretch.emit(GlobalParameters.MIDDLE_FRAME_POSITION, 0)
+        else:
+            sNexus.setWidgetStretch.emit(GlobalParameters.MIDDLE_FRAME_POSITION, GlobalParameters.MIDDLE_FRAME_STRETCH)
 
 
 class ItemViewer(Viewer):
