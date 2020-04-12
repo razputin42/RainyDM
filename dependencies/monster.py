@@ -2,6 +2,7 @@ import re
 import copy
 from PyQt5.QtCore import pyqtSignal, QObject
 from dependencies.signals import sNexus
+import math
 
 xp_dict = {
     "00": 0,
@@ -167,7 +168,7 @@ class Monster (QObject):
         if score is None:
             return 0
         score = int(score)
-        mod = int((score-10)/2)
+        mod = math.floor((score-10)/2)
         if sign:
             if mod > 0:
                 return "+" + str(mod)
