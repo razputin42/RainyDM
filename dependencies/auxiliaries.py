@@ -24,9 +24,17 @@ class GlobalParameters:
 
 def roll_function(dice):
     output = []
-    split = dice.split("+")
-    if len(split) is 1 and "d" not in split[0]:  # in the case of X damage, without a roll
-        return int(split[0])
+    modifier = 1
+    if "-" in dice:
+        modifier = -1
+        split = dice.split("-")
+    elif "+" in dice:
+        split = dice.split("+")
+    elif "d" in dice:
+        split = [dice]
+    else:
+        return int(dice)
+
     for itt, each in enumerate(split):
         if "d" in each:
             amount, size = each.split("d")
@@ -39,7 +47,7 @@ def roll_function(dice):
             if itt is 0:
                 output[0] = int(each)
             else:
-                output[itt - 1] = output[itt - 1] + int(each)
+                output[itt - 1] = output[itt - 1] + int(each) * modifier
     if len(output) == 1:
         return output[0]
     return output

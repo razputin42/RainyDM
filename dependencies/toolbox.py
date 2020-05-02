@@ -198,11 +198,11 @@ class DiceBox:
                 if "," in roll:
                     roll = roll.replace(",", "|")
                 if "|" in roll:
-                    print(roll)
                     bonus, dmg_dice = roll.split("|")
                     dmg = aux.roll_function(dmg_dice)
-                    atk = aux.roll_function("1d20 + {}".format(bonus))
-                    sNexus.printSignal.emit("Dice rolls ({}): {}, {} damage".format(roll, atk, dmg))
+                    atk_roll = aux.roll_function("1d20")
+                    atk = atk_roll + int(bonus)
+                    sNexus.printSignal.emit("Dice rolls ({}): {}[{}], {} damage".format(roll, atk, atk_roll, dmg))
                 else:
                     result = aux.roll_function(roll)
                     sNexus.printSignal.emit("Dice rolls ({}): {}".format(roll, result))
