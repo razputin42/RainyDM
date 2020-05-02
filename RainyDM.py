@@ -24,11 +24,11 @@ SPELL_TAB = 1
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
-    def __init__(self):
+    def __init__(self, db_path):
         super().__init__()
 
         self.load_meta()
-        self._setup_ui()
+        self._setup_ui(db_path)
         self._setup_menu()
         self.bind_signals()
         self.load_session()
@@ -45,7 +45,7 @@ class DMTool(QMainWindow):
         #     print(spell.index)
         #     self.spell_viewer.draw_view(spell)
 
-    def _setup_ui(self):
+    def _setup_ui(self, db_path):
         """
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
@@ -89,7 +89,7 @@ class DMTool(QMainWindow):
         self.item_table_widget = ItemTableWidget(self, self.item_viewer)
         self.item_table_widget.layout().addWidget(self.item_viewer)
 
-        self.load_resources()
+        self.load_resources(db_path)
 
         # Loot Generator Widget
         self.lootViewer = ItemViewer()
@@ -148,7 +148,6 @@ class DMTool(QMainWindow):
         right_frame_layout.setStretch(3, 1)
         right_frame_layout.setStretch(0, 2)
 
-        # monster_view_frame = QFrame()
         middle_frame_layout = QVBoxLayout()
         self.middle_frame = QFrame()
         self.middle_frame.setLayout(middle_frame_layout)
@@ -220,21 +219,6 @@ class DMTool(QMainWindow):
         self.item_table_widget.EDITABLE = cond
 
     def bind_signals(self):
-        # self.spell_table_widget.table.selectionModel().selectionChanged.connect(
-        #     lambda: self.spell_clicked_handle(self.spell_table_widget.table))
-        #
-        # self.toolbox_widget.spell_toolbox.selectionModel().selectionChanged.connect(
-        #     lambda: self.spell_clicked_handle(self.toolbox_widget.spell_toolbox))
-
-        # self.monster_table_widget.table.selectionModel().selectionChanged.connect(
-        #     lambda: self.monster_clicked_handle(self.monster_table_widget.table))
-
-        # self.toolbox_widget.monster_toolbox.selectionModel().selectionChanged.connect(
-        #     lambda: self.monster_clicked_handle(self.toolbox_widget.monster_toolbox))
-        #
-        # self.item_table_widget.table.selectionModel().selectionChanged.connect(
-        #     lambda: self.item_clicked_handle(self.item_table_widget.table))
-
         self.encounterWidget.add_players_button.clicked.connect(self.addPlayersToCombat)
         self.encounterWidget.sort_init_button.clicked.connect(self.sort_init_handle)
         self.encounterWidget.roll_init_button.clicked.connect(self.roll_init_handle)
@@ -263,25 +247,7 @@ class DMTool(QMainWindow):
         else:
             self.monster_viewer_bar.setHidden(True)
 
-    # def toggle_spells(self):
-    #     if self.button_hide_spells.isChecked():
-    #         cond = True
-    #     else:
-    #         cond = False
-    #     self.spell_frame.setHidden(not cond)
-    #     self.tab_widget.setTabEnabled(SPELL_TAB, cond)
-    #     self.toolbox_widget.spell_tabWidget.setTabEnabled(self.toolbox_widget.SPELL_TAB, cond)
-    #     self.text_box.setLayout = None
-    #     if not cond:
-    #         self.monster_view_frame.layout().addWidget(self.text_box)
-    #         self.window_layout.setStretch(0, 4)
-    #     else:
-    #         self.spell_frame.layout().addWidget(self.text_box)
-    #         self.window_layout.setStretch(0, 6)
-    #     # self.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} ")
-
     def copy_plaintext_monster_to_clipboard(self):
-        # print(self.monster_viewer.toPlainText())
         pyperclip.copy(html2text.html2text(self.monster_viewer.html))
 
     def change_version(self, version):
@@ -298,38 +264,6 @@ class DMTool(QMainWindow):
         self.monster_table_widget.filter.clear_filters()
 
         self.load_resources()
-
-    # def spell_clicked_handle(self, table):
-    #     current_row = table.currentRow()
-    #     if current_row is -1:
-    #         return
-    #     itext = table.item(current_row, 1)
-    #     if itext is None or itext.text() == '':
-    #         return
-    #     spell_idx = int(itext.text())
-    #     spell = self.spell_table_widget.list[spell_idx]
-    #     self.spell_viewer.draw_view(spell)
-
-    # def monster_clicked_handle(self, table):
-    #     current_row = table.currentRow()
-    #     if current_row is -1:
-    #         return
-    #     monster_idx = int(table.item(current_row, 1).text())
-    #     if monster_idx == -1:  # monster is a player character
-    #         return
-    #     monster = self.monster_table_widget.list[monster_idx]
-    #     self.monster_viewer.draw_view(monster)
-
-    # def item_clicked_handle(self, table):
-    #     current_row = table.currentRow()
-    #     if current_row is -1:
-    #         return
-    #     item_idx = int(table.item(current_row, 1).text())
-    #     item = self.item_table_widget.list[item_idx]
-    #     self.item_viewer.draw_view(item)
-
-    # def spell_search_handle(self):
-    #     self.spell_viewer.draw_view()
 
     def _fill_monster_table(self, monster_list):
         self.monster_table_widget.table_widget.clear()
@@ -364,7 +298,7 @@ class DMTool(QMainWindow):
             self.toolbox_widget.spell_toolbox.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
             self.toolbox_widget.spell_toolbox.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
-    def load_resources(self):
+    def load_resources(self, resource_path):
         if self.version == "5":
             item_cls = Item
             monster_cls = Monster
@@ -373,13 +307,13 @@ class DMTool(QMainWindow):
             item_cls = Item35
             monster_cls = Monster35
             spell_cls = Spell35
-        self.item_table_widget.load_all("./item", "resources/{}/Items/".format(self.version), item_cls)
+        self.item_table_widget.load_all("./item", "{}/{}/Items/".format(resource_path, self.version), item_cls)
         self.item_table_widget.fill_table()
         self.item_table_widget.define_filters(self.version)
-        self.monster_table_widget.load_all("./monster", "resources/{}/Bestiary/".format(self.version), monster_cls)
+        self.monster_table_widget.load_all("./monster", "{}/{}/Bestiary/".format(resource_path, self.version), monster_cls)
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters(self.version)
-        self.spell_table_widget.load_all("./spell", "resources/{}/Spells/".format(self.version), spell_cls)
+        self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
         self.spell_table_widget.fill_table()
         self.spell_table_widget.define_filters(self.version)
 
@@ -412,27 +346,6 @@ class DMTool(QMainWindow):
             # character not in encounter, and shouldn't be
             else:
                 pass
-
-        # for itt in range(player_rows):
-        #     item = playerWidget.item(itt, playerWidget.NAME_COLUMN)
-        #     if item is None or item.text() == "":
-        #         continue
-        #     name = item.text()
-        #     init = playerWidget.item(itt, playerWidget.INITIATIVE_COLUMN)
-        #     if init is None or init.text() == "":
-        #         continue
-        #     if name in character_names:
-        #         idx = character_names.index(name)
-        #         self.encounterWidget.setItem(idx, self.encounterWidget.INIT_COLUMN,
-        #                                      QTableWidgetItem(init.text()))
-        #         continue
-        #     else:
-        #         init = playerWidget.item(itt, playerWidget.INITIATIVE_COLUMN)
-        #         if init is None:
-        #             init = ""
-        #         else:
-        #             init = init.text()
-        #         self.encounterWidget.addToEncounter([name, -1, init, "", "", ""])
 
     def sort_init_handle(self):
         self.encounterWidget.sortInitiative()
@@ -557,8 +470,7 @@ class DMTool(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    # app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    form = DMTool()  # We set the form to be our ExampleApp (design)
+    form = DMTool(os.path.join(os.getcwd(), "RainyDB"))  # We set the form to be our ExampleApp (design)
 
     form.show()  # Show the form
     sys.exit(app.exec_())  # and execute the app
