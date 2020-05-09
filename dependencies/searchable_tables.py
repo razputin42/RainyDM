@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
-    QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem, QLabel
+    QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem
 from PyQt5.QtCore import Qt
 from .filter import Filter
 import xml.etree.ElementTree as ElementTree
@@ -7,9 +7,9 @@ from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
 from dependencies.auxiliaries import RarityList
-from .monster import Monster
-from .spell import Spell
-from .item import Item
+from RainyDM.RainyCore.monster import Monster
+from RainyDM.RainyCore.spell import Spell
+from RainyDM.RainyCore.item import Item
 
 
 class MyTableWidget(QTableWidget):

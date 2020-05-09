@@ -1,14 +1,14 @@
 from dependencies.auxiliaries import roll_function, GlobalParameters
 from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
-from dependencies.item import Item, Item35
 from dependencies.TreasureHoard import TreasureHoardTab
-from dependencies.monster import Monster, Monster35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
 from dependencies.signals import sNexus
-from dependencies.spell import Spell, Spell35
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
+from RainyCore.item import Item, Item35
+from RainyCore.monster import Monster, Monster35
+from RainyCore.spell import Spell, Spell35
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -264,13 +264,6 @@ class DMTool(QMainWindow):
         self.monster_table_widget.filter.clear_filters()
 
         self.load_resources()
-
-    def _fill_monster_table(self, monster_list):
-        self.monster_table_widget.table_widget.clear()
-        self.monster_table_widget.table_widget.setRowCount(len(monster_list))
-        for itt, monster in enumerate(monster_list):
-            self.monster_table_widget.table_widget.setItem(itt, 0, QTableWidgetItem(str(monster.name)))
-            self.monster_table_widget.table_widget.setItem(itt, 1, QTableWidgetItem(str(monster.index)))
 
     def addMonsterToToolbox(self, monster):
         row_position = self.toolbox_widget.monster_toolbox.rowCount()
