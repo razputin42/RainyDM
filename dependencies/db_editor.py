@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QLineEdit, QLabel, QPushButton, QShortcut, QTextEdit
 from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5.QtCore import Qt
 import os
-from RainyDM.RainyCore.monster import Monster
+from RainyCore.monster import Monster
 
 
 class ResizeableTextEditor(QPlainTextEdit):

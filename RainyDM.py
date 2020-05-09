@@ -3,7 +3,7 @@ from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.TreasureHoard import TreasureHoardTab
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from RainyCore.item import Item, Item35

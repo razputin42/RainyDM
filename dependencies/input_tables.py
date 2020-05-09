@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIntValidator, QFont
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
 from dependencies.player import Character
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 from dependencies.encounter import InitiativeFrame
 import json
 

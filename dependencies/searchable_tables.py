@@ -7,9 +7,9 @@ from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
 from dependencies.auxiliaries import RarityList
-from RainyDM.RainyCore.monster import Monster
-from RainyDM.RainyCore.spell import Spell
-from RainyDM.RainyCore.item import Item
+from RainyCore.monster import Monster
+from RainyCore.spell import Spell
+from RainyCore.item import Item
 
 
 class MyTableWidget(QTableWidget):

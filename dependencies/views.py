@@ -3,10 +3,10 @@ from PyQt5.QtWidgets import QTextBrowser, QPushButton
 from dependencies.html_format import monster_dict, spell_dict, item_dict, general_head, general_foot
 from dependencies.auxiliaries import GlobalParameters
 from string import Template
-from RainyDM.RainyCore.monster import Monster35
-from RainyDM.RainyCore.spell import Spell35
-from RainyDM.RainyCore.item import Item35
-from dependencies.signals import sNexus
+from RainyCore.monster import Monster35
+from RainyCore.spell import Spell35
+from RainyCore.item import Item35
+from RainyCore.signals import sNexus
 from abc import abstractmethod as abstract
 
 

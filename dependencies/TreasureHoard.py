@@ -3,7 +3,7 @@ import random
 from dependencies.auxiliaries import roll_function
 from dependencies.encounter import NameLabel
 from dependencies.list_widget import ListWidget, EntryWidget, colorDict
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 from dependencies.views import ItemViewer
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox, QSpacerItem
 from PyQt5.QtGui import QFont, QMouseEvent
