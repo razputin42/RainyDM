@@ -322,18 +322,18 @@ class DMTool(QMainWindow):
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, and should be
             if entry.getCharacter().getCharName() in characterNames and entry.isEnabled():
-                print("Character in encounter, and should be")
+                # print("Character in encounter, and should be")
                 encounterWidget.update_character(entry.getCharacter())
 
             # character in encounter, but shouldn't be
             elif entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
-                print("Character in enocunter, shouldn't be")
-                print(entry.getCharacter().getCharName(), entry.isEnabled())
+                # print("Character in enocunter, shouldn't be")
+                # print(entry.getCharacter().getCharName(), entry.isEnabled())
                 encounterWidget.remove_character(entry.getCharacter())
 
             # character not in encounter, but should be
             elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
-                print("Character not in encounter, should be")
+                # print("Character not in encounter, should be")
                 encounterWidget.addPlayerToEncounter(entry.getCharacter())
 
             # character not in encounter, and shouldn't be
