@@ -35,7 +35,6 @@ class MyTableWidget(QTableWidget):
 
 class SearchableTable(QFrame):
     NAME_COLUMN = 0
-    INDEX_COLUMN = 1
     HEADERS = ['Name', 'REFERENCE']
     EDITABLE = False
     DATABASE_ENTRY_FIELD = 'entry'
@@ -48,13 +47,12 @@ class SearchableTable(QFrame):
         self.order = None
         self.COLUMNS = len(self.HEADERS)
         self.viewer = viewer
+        self.idx_dict = dict()
 
         QFrame.__init__(self)
         self.filter = Filter(self.search_handle)
 
         self.parent = parent
-        self.list = []
-        self.list_dict = dict()
         self.search_box = QLineEdit()
         self.search_box.setMaximumWidth(parent.SEARCH_BOX_WIDTH)
         self.filter_button = QPushButton("Filters")
@@ -84,12 +82,16 @@ class SearchableTable(QFrame):
         self.setup_button_bar()
         self.format()
 
+    def set_database(self, db):
+        self.full_database = db
+        self.database = db[self.ENTRY_CLASS]
+
     def get_current_entry(self):
         current_row = self.table.currentRow()
         if current_row == -1:
             return None
-        idx = int(self.table.item(current_row, 1).text())
-        entry = self.list[idx]
+        name = self.table.item(current_row, 0).text()
+        entry = self.database[name]
         return entry
 
     def selection_change_handle(self, e):
@@ -122,42 +124,45 @@ class SearchableTable(QFrame):
             self.order = Qt.AscendingOrder
 
         self.table.sortByColumn(n, self.order)
+        for itt in range(self.table.rowCount()):
+            name = str(self.table.item(itt, self.NAME_COLUMN))
+            self.idx_dict[name] = itt
         self.old_n = n
 
     def define_filters(self):
         pass
 
-    def load_all(self, s, dir, Class):
-        self.dir = dir
-        self.list = []
-        for resource in os.listdir(dir):
-            self.load_list(s, dir + resource, Class)
-        self.list.sort(key=lambda x: x.name)
-        for itt, entry in enumerate(self.list):
-            entry.index = itt
+    # def load_all(self, s, dir, Class):
+    #     self.dir = dir
+    #     self.list = []
+    #     for resource in os.listdir(dir):
+    #         self.load_list(s, dir + resource, Class)
 
-    def load_list(self, s, resource, Class):
-        xml = ElementTree.parse(resource)
-        root = xml.getroot()
-        for itt, entry in enumerate(root.findall(s)):
-            self.list.append(Class(entry, itt))
-        self.list_dict[str(Class)] = self.list
+
+    # def load_list(self, s, resource, Class):
+    #     xml = ElementTree.parse(resource)
+    #     root = xml.getroot()
+    #     for itt, entry in enumerate(root.findall(s)):
+    #         self.list.append(Class(entry, itt))
+    #     self.list_dict[str(Class)] = self.list
 
     def fill_table(self):
         self.table.clear()
-        self.table.setRowCount(len(self.list))
-        for itt, entry in enumerate(self.list):
+        self.table.setRowCount(len(self.database))
+        for itt, entry in enumerate(self.database.values()):
             self.update_entry(itt, entry)
-
+            self.idx_dict[entry.name] = itt
         self.table.setHorizontalHeaderLabels(self.HEADERS)
+        # self.sort_columns(self.NAME_COLUMN, Qt.AscendingOrder)
 
     def update_entry(self, row, entry):
-        self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
-        self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+        item = QTableWidgetItem(entry.name)
+        self.table.setItem(row, self.NAME_COLUMN, item)
+        # self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
 
     def unique_attr(self, attr):
         result = []
-        for entry in self.list:
+        for entry in self.database.values():
             if hasattr(entry, attr):
                 entry_attr = getattr(entry, attr)
                 if entry_attr is None:
@@ -175,18 +180,18 @@ class SearchableTable(QFrame):
     def search_handle(self):
         s = self.search_box.text()
         p = re.compile('.*{}.*'.format(s), re.IGNORECASE)
-        result = []
+        result = dict()
 
-        for entry in self.list:
+        for entry in self.database.values():
             total_cond = True if p.match(entry.name) else False
             total_cond = total_cond and self.filter.evaluate_filter(entry)
-            result.append(total_cond)
+            result[entry.name] = total_cond
         self._toggle_table(result)
 
     def _toggle_table(self, result):
-        for itt, cond in enumerate(result):
-            idx = int(self.table.item(itt, self.table.INDEX_COLUMN).text())
-            self.table.setRowHidden(itt, not result[idx])
+        for name, cond in result.items():
+            idx = self.idx_dict[name]
+            self.table.setRowHidden(idx, not cond)
 
     def extract_subtypes(self, options):
         subtype_dict = dict()
@@ -383,11 +388,10 @@ class SearchableTable(QFrame):
 
 class MonsterTableWidget(SearchableTable):
     NAME_COLUMN = 0
-    INDEX_COLUMN = 1
-    TYPE_COLUMN = 2
-    CR_DISPLAY_COLUMN = 3
-    CR_COLUMN = 4
-    HEADERS = ['Name', 'REFERENCE', 'Type', 'CR', 'FLOAT CR']
+    TYPE_COLUMN = 1
+    CR_DISPLAY_COLUMN = 2
+    CR_COLUMN = 3
+    HEADERS = ['Name', 'Type', 'CR', 'FLOAT CR']
     DATABASE_ENTRY_FIELD = 'monster'
     ENTRY_CLASS = Monster
 
@@ -425,15 +429,17 @@ class MonsterTableWidget(SearchableTable):
         for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_DISPLAY_COLUMN], [stretch, resize, resize]):
             h.setSectionResizeMode(column, policy)
         t.setShowGrid(False)
-        t.setColumnHidden(self.INDEX_COLUMN, True)
+        # t.setColumnHidden(self.INDEX_COLUMN, True)
         t.setColumnHidden(self.TYPE_COLUMN, True)
         t.setColumnHidden(self.CR_COLUMN, True)
         self.sort_columns(self.NAME_COLUMN)
 
     def update_entry(self, row, entry):
-        self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
-        self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
-        self.table.setItem(row, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
+        name_item = QTableWidgetItem(entry.name)
+        # name_item.setFlags(Qt.TextEditable)
+        self.table.setItem(row, self.NAME_COLUMN, name_item)
+        # self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
+        # self.table.setItem(row, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
         if hasattr(entry, "cr"):
             if entry.cr == "00" or entry.cr is None:
                 shown_cr = "-"
@@ -441,10 +447,13 @@ class MonsterTableWidget(SearchableTable):
             else:
                 shown_cr = str(entry.cr)
                 true_cr = eval("float({})".format(entry.cr))
-            self.table.setItem(row, self.CR_DISPLAY_COLUMN, QTableWidgetItem(shown_cr))
+            cr_item = QTableWidgetItem(shown_cr)
+            # cr_item.setFlags(Qt.ItemIsEditable)
+            self.table.setItem(row, self.CR_DISPLAY_COLUMN, cr_item)
             cr_item = QTableWidgetItem()
             cr_item.setData(Qt.DisplayRole, true_cr)
             self.table.setItem(row, self.CR_COLUMN, cr_item)
+        self.idx_dict[entry.name] = row
 
     def define_filters(self, version):
         if version == "5":

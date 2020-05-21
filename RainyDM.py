@@ -9,6 +9,7 @@ from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from RainyCore.item import Item, Item35
 from RainyCore.monster import Monster, Monster35
 from RainyCore.spell import Spell, Spell35
+from RainyDB.RainyDatabase import RainyDatabase
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -300,15 +301,18 @@ class DMTool(QMainWindow):
             item_cls = Item35
             monster_cls = Monster35
             spell_cls = Spell35
-        self.item_table_widget.load_all("./item", "{}/{}/Items/".format(resource_path, self.version), item_cls)
-        self.item_table_widget.fill_table()
-        self.item_table_widget.define_filters(self.version)
-        self.monster_table_widget.load_all("./monster", "{}/{}/Bestiary/".format(resource_path, self.version), monster_cls)
+        self.db = RainyDatabase(resource_path)
+        # self.item_table_widget.load_all("./item", "{}/{}/Items/".format(resource_path, self.version), item_cls)
+        # self.item_table_widget.set_database(self.db)
+        # self.item_table_widget.fill_table()
+        # self.item_table_widget.define_filters(self.version)
+        # self.monster_table_widget.load_all("./monster", "{}/{}/Bestiary/".format(resource_path, self.version), monster_cls)
+        self.monster_table_widget.set_database(self.db)
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters(self.version)
-        self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
-        self.spell_table_widget.fill_table()
-        self.spell_table_widget.define_filters(self.version)
+        # self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
+        # self.spell_table_widget.fill_table()
+        # self.spell_table_widget.define_filters(self.version)
 
     def add_player(self, player=None):
         self.playerWidget.add(PlayerFrame(self.playerWidget))
