@@ -4,7 +4,7 @@ from PyQt5.QtGui import QFont, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget, colorDict
 from dependencies.auxiliaries import roll_function
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 import os, json
 
 

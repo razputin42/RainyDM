@@ -1,32 +1,34 @@
 from dependencies.auxiliaries import roll_function, GlobalParameters
 from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
-from dependencies.item import Item, Item35
 from dependencies.TreasureHoard import TreasureHoardTab
-from dependencies.monster import Monster, Monster35
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
-from dependencies.signals import sNexus
-from dependencies.spell import Spell, Spell35
+from RainyCore.signals import sNexus
 from dependencies.toolbox import ToolboxWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
-from PyQt5.QtCore import pyqtSlot
+from RainyCore.item import Item, Item35
+from RainyCore.monster import Monster, Monster35
+from RainyCore.spell import Spell, Spell35
+from RainyDB.RainyDatabase import RainyDatabase
+from PyQt5.QtCore import pyqtSlot, QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow
-import sys, json, os
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QMessageBox
+import sys, json, os, traceback
 import html2text
 import pyperclip
 
 MONSTER_TAB = 0
 SPELL_TAB = 1
 
+old_excepthook = sys.excepthook
 
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
     def __init__(self, db_path):
         super().__init__()
-
+        sys.excepthook = self.excepthook
         self.load_meta()
         self._setup_ui(db_path)
         self._setup_menu()
@@ -191,6 +193,9 @@ class DMTool(QMainWindow):
         button_plain_text = QAction("Plain text monsters", self, checkable=True)
         button_plain_text.setStatusTip("Plain text monsters")
         button_plain_text.triggered.connect(self.toggle_monster_bar)
+        raise_exception = QAction("Raise Exception", self)
+        raise_exception.setStatusTip("Raise an Exception")
+        raise_exception.triggered.connect(self.raise_exception)
         self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
         self.edit_entries_action.setStatusTip("Enable edit data entries")
         # development
@@ -201,6 +206,7 @@ class DMTool(QMainWindow):
 
         experimental.addAction(button_plain_text)
         experimental.addAction(self.edit_entries_action)
+        experimental.addAction(raise_exception)
 
         # tools = menu.addMenu("Tools")
         # self.button_hide_spells = QAction("Spells", tools, checkable=True)
@@ -265,13 +271,6 @@ class DMTool(QMainWindow):
 
         self.load_resources()
 
-    def _fill_monster_table(self, monster_list):
-        self.monster_table_widget.table_widget.clear()
-        self.monster_table_widget.table_widget.setRowCount(len(monster_list))
-        for itt, monster in enumerate(monster_list):
-            self.monster_table_widget.table_widget.setItem(itt, 0, QTableWidgetItem(str(monster.name)))
-            self.monster_table_widget.table_widget.setItem(itt, 1, QTableWidgetItem(str(monster.index)))
-
     def addMonsterToToolbox(self, monster):
         row_position = self.toolbox_widget.monster_toolbox.rowCount()
         self.toolbox_widget.monster_toolbox.insertRow(row_position)
@@ -307,13 +306,15 @@ class DMTool(QMainWindow):
             item_cls = Item35
             monster_cls = Monster35
             spell_cls = Spell35
-        self.item_table_widget.load_all("./item", "{}/{}/Items/".format(resource_path, self.version), item_cls)
+        self.db = RainyDatabase(resource_path)
+        self.item_table_widget.set_database(self.db)
         self.item_table_widget.fill_table()
         self.item_table_widget.define_filters(self.version)
-        self.monster_table_widget.load_all("./monster", "{}/{}/Bestiary/".format(resource_path, self.version), monster_cls)
+        self.monster_table_widget.set_database(self.db)
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters(self.version)
-        self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
+        # self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
+        self.spell_table_widget.set_database(self.db)
         self.spell_table_widget.fill_table()
         self.spell_table_widget.define_filters(self.version)
 
@@ -323,24 +324,23 @@ class DMTool(QMainWindow):
     def addPlayersToCombat(self):
         encounterWidget = self.encounterWidget
         characterNames = encounterWidget.getCharacterNames()
-        print(characterNames)
         # Get active players
 
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, and should be
             if entry.getCharacter().getCharName() in characterNames and entry.isEnabled():
-                print("Character in encounter, and should be")
+                # print("Character in encounter, and should be")
                 encounterWidget.update_character(entry.getCharacter())
 
             # character in encounter, but shouldn't be
             elif entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
-                print("Character in enocunter, shouldn't be")
-                print(entry.getCharacter().getCharName(), entry.isEnabled())
+                # print("Character in enocunter, shouldn't be")
+                # print(entry.getCharacter().getCharName(), entry.isEnabled())
                 encounterWidget.remove_character(entry.getCharacter())
 
             # character not in encounter, but should be
             elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
-                print("Character not in encounter, should be")
+                # print("Character not in encounter, should be")
                 encounterWidget.addPlayerToEncounter(entry.getCharacter())
 
             # character not in encounter, and shouldn't be
@@ -461,16 +461,32 @@ class DMTool(QMainWindow):
                 version=self.version
             ), f)
 
+    def raise_exception(self):
+        raise EnvironmentError("Forced an exception")
+
     # SLOTS
     @pyqtSlot(str, str)
     def attackSlot(self, name, attack):
         self.print_attack(name, attack)
 
+    def excepthook(self, type, value, tb):
+        box = QMessageBox()
+        box.setWindowTitle("Oof!")
+        box.setText("RainyDM has crashed!")
+        box.setIcon(QMessageBox.Critical)
+        details = "".join(traceback.format_exception(type, value, tb))
+        box.setDetailedText(details)
+        box.setBaseSize(QSize(1200, 1200))
+        box.exec_()
+        # traceback.print_exception(type, value, tb)
+        old_excepthook(type, value, tb)
+        self.close()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    form = DMTool(os.path.join(os.getcwd(), "RainyDB"))  # We set the form to be our ExampleApp (design)
+    form = DMTool(os.path.join(os.getcwd(), "RainyDB"))
 
     form.show()  # Show the form
     sys.exit(app.exec_())  # and execute the app

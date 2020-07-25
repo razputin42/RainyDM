@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
     QHBoxLayout, QLineEdit, QSizePolicy, QMenu, QTabWidget, QFrame, QPushButton, QTableWidgetItem
 import dependencies.auxiliaries as aux
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 
 class LinkedTableWidget(QTableWidget):
     _NAME_COLUMN = 0
