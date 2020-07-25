@@ -115,7 +115,7 @@ class SearchableTable(QFrame):
     def sort_columns(self, n, order=None):
         if order is not None:
             self.order = order
-        elif self.old_n is n:
+        elif self.old_n is n:  # second click, switch order
             if self.order is Qt.AscendingOrder:
                 self.order = Qt.DescendingOrder
             else:
@@ -134,7 +134,7 @@ class SearchableTable(QFrame):
 
     # def load_all(self, s, dir, Class):
     #     self.dir = dir
-    #     self.list = []
+    #     self.database.values() = []
     #     for resource in os.listdir(dir):
     #         self.load_list(s, dir + resource, Class)
 
@@ -143,8 +143,8 @@ class SearchableTable(QFrame):
     #     xml = ElementTree.parse(resource)
     #     root = xml.getroot()
     #     for itt, entry in enumerate(root.findall(s)):
-    #         self.list.append(Class(entry, itt))
-    #     self.list_dict[str(Class)] = self.list
+    #         self.database.values().append(Class(entry, itt))
+    #     self.database.values()_dict[str(Class)] = self.database.values()
 
     def fill_table(self):
         self.table.clear()
@@ -153,7 +153,7 @@ class SearchableTable(QFrame):
             self.update_entry(itt, entry)
             self.idx_dict[entry.name] = itt
         self.table.setHorizontalHeaderLabels(self.HEADERS)
-        # self.sort_columns(self.NAME_COLUMN, Qt.AscendingOrder)
+        self.sort_columns(self.NAME_COLUMN, Qt.AscendingOrder)
 
     def update_entry(self, row, entry):
         item = QTableWidgetItem(entry.name)
@@ -180,18 +180,19 @@ class SearchableTable(QFrame):
     def search_handle(self):
         s = self.search_box.text()
         p = re.compile('.*{}.*'.format(s), re.IGNORECASE)
-        result = dict()
 
-        for entry in self.database.values():
-            total_cond = True if p.match(entry.name) else False
+        for idx in range(self.table.rowCount()):
+            name = self.table.item(idx, self.NAME_COLUMN).text()
+            entry = self.database[name]
+            total_cond = True if p.match(name) else False
             total_cond = total_cond and self.filter.evaluate_filter(entry)
-            result[entry.name] = total_cond
-        self._toggle_table(result)
+            self.table.setRowHidden(idx, not total_cond)
+        # self._toggle_table(result)
 
-    def _toggle_table(self, result):
-        for name, cond in result.items():
-            idx = self.idx_dict[name]
-            self.table.setRowHidden(idx, not cond)
+    # def _toggle_table(self, result):
+        # for name, cond in result.items():
+            # idx = self.idx_dict[name]
+            # self.table.setRowHidden(idx, not cond)
 
     def extract_subtypes(self, options):
         subtype_dict = dict()
@@ -224,7 +225,7 @@ class SearchableTable(QFrame):
 
     def subset(self, attr_dict):
         output_list = []
-        for entry in self.list:
+        for entry in self.database.values():
             valid = True
             for key in attr_dict:
                 if not hasattr(entry, key) or getattr(entry, key) != attr_dict[key]:
@@ -238,7 +239,7 @@ class SearchableTable(QFrame):
         attr = attr.lower()
         if type(value) is str:
             value = value.lower()
-        for entry in self.list:
+        for entry in self.database.values():
             if hasattr(entry, attr):
                 _value = getattr(entry, attr)
                 if type(_value) is str:
@@ -280,10 +281,10 @@ class SearchableTable(QFrame):
             msg.setWindowTitle("Duplicate Entry")
             msg.exec_()
             return False
-        self.list.append(entry)
-        entry.index = self.list.index(entry)
-        self.table.setRowCount(len(self.list))
-        self.update_entry(len(self.list) - 1, entry)
+        self.database.values().append(entry)
+        entry.index = self.database.values().index(entry)
+        self.table.setRowCount(len(self.database.values()))
+        self.update_entry(len(self.database.values()) - 1, entry)
         self.sort_columns(self.NAME_COLUMN, order=Qt.AscendingOrder)
 
     # find and return the SubElement handle for the first entry with the attribute equal to the value
@@ -490,7 +491,7 @@ class MonsterTableWidget(SearchableTable):
         if current_row == -1:
             return None
         monster_idx = int(self.table.item(current_row, 1).text())
-        return self.list[monster_idx]
+        return self.database.values()[monster_idx]
 
     def add_monster_to_encounter(self, number=False):
         monster = self.get_selected_monster()
@@ -586,7 +587,7 @@ class SpellTableWidget(SearchableTable):
 
         current_row = self.table.currentRow()
         idx = int(self.table.item(current_row, 1).text())
-        spell = self.list[idx]
+        spell = self.database.values()[idx]
 
         edit_entry = None
         edit_copy_entry = None
@@ -632,7 +633,7 @@ class ItemTableWidget(SearchableTable):
 
     def subset(self, attr_dict):
         output_list = []
-        for entry in self.list:
+        for entry in self.database.values():
             valid = True
             for key in attr_dict:
                 if key == "type" and attr_dict[key] == "Armor":
@@ -650,7 +651,7 @@ class ItemTableWidget(SearchableTable):
 
         current_row = self.table.currentRow()
         idx = int(self.table.item(current_row, 1).text())
-        item = self.list[idx]
+        item = self.database.values()[idx]
 
         edit_entry = None
         edit_copy_entry = None
