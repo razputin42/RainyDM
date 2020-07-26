@@ -48,7 +48,7 @@ def roll_function(dice):
             for i in range(int(amount)):
                 t = randint(1, int(size))
                 rolled = rolled + t
-            output.append(t)
+            output.append(rolled)
         else:
             if len(output) is 0:
                 output.append(int(roll))

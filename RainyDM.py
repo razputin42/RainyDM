@@ -10,10 +10,10 @@ from RainyCore.item import Item, Item35
 from RainyCore.monster import Monster, Monster35
 from RainyCore.spell import Spell, Spell35
 from RainyDB.RainyDatabase import RainyDatabase
-from PyQt5.QtCore import pyqtSlot, QSize
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QMessageBox
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QMessageBox, QSpacerItem
 import sys, json, os, traceback
 import html2text
 import pyperclip
@@ -119,8 +119,6 @@ class DMTool(QMainWindow):
         encounter_layout.addWidget(self.encounterWidget)
         encounter_layout.addWidget(self.bookmark_widget)
         encounter_frame.setLayout(encounter_layout)
-        # self.tab_widget.addTab(encounter_frame, "Encounter")
-        # self.tab_widget.addTab(self.lootWidget, "Loot")
 
         # player tab
         player_table_frame = QFrame()
@@ -134,7 +132,6 @@ class DMTool(QMainWindow):
         player_table_layout.addWidget(self.playerWidget)
         player_table_layout.addLayout(encounter_button_layout)
         player_table_frame.setLayout(player_table_layout)
-        # self.tab_widget.addTab(player_table_frame, "Players")
 
         self.monster_viewer_bar = QFrame()
         self.monster_viewer_bar.setContentsMargins(0, 0, 0, 0)
@@ -164,9 +161,6 @@ class DMTool(QMainWindow):
         self.tab_widget.addTab(encounter_frame, "Encounter")
         self.tab_widget.addTab(player_table_frame, "Players")
         self.tab_widget.addTab(self.loot_widget, "Loot")
-        # self.tab_widget.addTab(self.monster_table_widget, "Monster")
-        # self.tab_widget.addTab(self.spell_table_widget, "Spell")
-        # self.tab_widget.addTab(self.item_table_widget, "Item")
 
         # Center tab
         self.middle_frame.addTab(self.monster_table_widget, "Monster")
@@ -208,9 +202,9 @@ class DMTool(QMainWindow):
         button_plain_text = QAction("Plain text monsters", self, checkable=True)
         button_plain_text.setStatusTip("Plain text monsters")
         button_plain_text.triggered.connect(self.toggle_monster_bar)
-        raise_exception = QAction("Raise Exception", self)
-        raise_exception.setStatusTip("Raise an Exception")
-        raise_exception.triggered.connect(self.raise_exception)
+        # raise_exception = QAction("Raise Exception", self)
+        # raise_exception.setStatusTip("Raise an Exception")
+        # raise_exception.triggered.connect(self.raise_exception)
         self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
         self.edit_entries_action.setStatusTip("Enable edit data entries")
         # development
@@ -221,17 +215,12 @@ class DMTool(QMainWindow):
 
         experimental.addAction(button_plain_text)
         experimental.addAction(self.edit_entries_action)
-        experimental.addAction(raise_exception)
-
-        # tools = menu.addMenu("Tools")
-        # self.button_hide_spells = QAction("Spells", tools, checkable=True)
-        # self.button_hide_spells.setChecked(True)
-        # self.button_hide_spells.setStatusTip("Spells")
-        # self.button_hide_spells.triggered.connect(self.toggle_spells)
-
-        # tools.addAction(self.button_hide_spells)
+        # experimental.addAction(raise_exception)
 
         self.window_frame.setLayout(self.window_layout)
+
+    # def raise_exception(self):
+    #     raise EnvironmentError("Forced an exception")
 
     def enable_edit_data_entries(self):
         cond = self.edit_entries_action.isChecked()
@@ -487,9 +476,6 @@ class DMTool(QMainWindow):
                 version=self.version
             ), f)
 
-    def raise_exception(self):
-        raise EnvironmentError("Forced an exception")
-
     # SLOTS
     @pyqtSlot(str, str)
     def attackSlot(self, name, attack):
@@ -503,9 +489,11 @@ class DMTool(QMainWindow):
         box.setIcon(QMessageBox.Critical)
         details = "".join(traceback.format_exception(type, value, tb))
         box.setDetailedText(details)
-        box.setBaseSize(QSize(1200, 1200))
+
+        spacer = QSpacerItem(500, 0, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        box.layout().addItem(spacer, box.layout().rowCount(), 0, 1, box.layout().columnCount())
+
         box.exec_()
-        # traceback.print_exception(type, value, tb)
         old_excepthook(type, value, tb)
         self.close()
 
