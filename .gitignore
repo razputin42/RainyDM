@@ -17,3 +17,5 @@ main_tool\.spec
 assets/unused/*
 
 venv/*
+
+*.pyc
