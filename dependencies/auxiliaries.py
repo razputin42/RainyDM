@@ -29,7 +29,6 @@ class GlobalParameters:
 
 
 def roll_function(dice):
-    rolled = None
     p = "[+\-,]"
     matches = re.finditer(p, dice)
     idx = [match.start() for match in matches]
@@ -38,27 +37,26 @@ def roll_function(dice):
     idx.sort()
     rolls = [dice[idx[i]:idx[i+1]] for i in range(len(idx)-1)]
     output = []
+    # print("\tauxiliaries - roll_function: {}".format(rolls))
     for roll in rolls:
+        roll = roll.strip('+').strip(' ')
+        if roll == "":
+            continue
         if "d" in roll:
-            amount, size = roll.split("d")
-            if rolled is not None:
-                output.append(rolled)
             rolled = 0
-
+            amount, size = roll.split("d")
             for i in range(int(amount)):
                 t = randint(1, int(size))
                 rolled = rolled + t
+            output.append(t)
         else:
-            if rolled is not None:
-                output.append(rolled + int(roll))
-                rolled = 0
+            if len(output) is 0:
+                output.append(int(roll))
             else:
-                rolled = int(roll)
-    #         if itt is 0:
-    #             output[0] = int(each)
-    #         else:
-    #             output[itt - 1] = output[itt - 1] + int(each) * modifier
-    print("auxiliaries - roll_function", output)
-    if len(output) == 1:
+                output[-1] = output[-1] + int(roll)
+    # print("\tauxiliaries - roll_function: {}".format(output))
+    if len(output) is 0:
+        return None
+    elif len(output) is 1:
         return output[0]
-    # return output
+    return output

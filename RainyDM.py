@@ -35,14 +35,13 @@ class DMTool(QMainWindow):
         self.bind_signals()
         self.load_session()
         self._display_ui()
-
-        for monster in self.db[str(Monster)].values():
-            print(monster.name)
-            # self.monster_viewer.draw_view(monster)
-            if hasattr(monster, "action_list"):
-                for action in monster.action_list:
-                    if hasattr(action, "attack"):
-                        monster.performAttack(action)
+        # for monster in self.db[str(Monster)].values():
+        #     print(monster.name)
+        #     self.monster_viewer.draw_view(monster)
+        #     if hasattr(monster, "action_list"):
+        #         for action in monster.action_list:
+        #             if hasattr(action, "attack"):
+        #                 monster.performAttack(action)
 
     def _setup_ui(self, db_path):
         """
@@ -389,19 +388,25 @@ class DMTool(QMainWindow):
         self.middle_frame.setCurrentIndex(GlobalParameters.TEXT_BOX_INDEX)
         self.text_box.append(s)
 
-    def print_attack(self, monsterName, attack):
+    def print_attack(self, monster_name, attack):
+        attack = attack.strip(" ")
         comp = attack.split("|")
-        s = "{} uses {} -- ".format(monsterName, comp[0])
-        if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
-            attack_roll = roll_function("1d20+" + comp[1])
-            s = s + "{}({}) to hit -- ".format(attack_roll, attack_roll-int(comp[1]))
-
-        damage_roll = roll_function(comp[2])
-        if type(damage_roll) is list:
-            halved = [max(1, int(dr/2)) for dr in damage_roll]
+        if attack == "":
+            s = "{} used an action".format(monster_name)
         else:
-            halved = max(1, int(damage_roll/2))
-        s = s + "for {} ({} halved)".format(str(damage_roll), str(halved))
+            s = "{} uses {} -- ".format(monster_name, comp[0])
+
+            if comp[1] not in ["", " "]:  # this means there's an attack roll and a damage roll
+                attack_roll = roll_function("1d20+" + comp[1])
+                s = s + "{}({}) to hit".format(attack_roll, attack_roll-int(comp[1]))
+            damage_roll = roll_function(comp[2])
+            if damage_roll is not None:
+                if type(damage_roll) is list:
+                    halved = [max(1, int(dr/2)) for dr in damage_roll]
+                else:
+                    # print("\trainydm - print_attack: \"{}\"".format(damage_roll))
+                    halved = max(1, int(damage_roll/2))
+                s = s + " -- for {} ({} halved)".format(str(damage_roll), str(halved))
         self.print(s)
 
     def extract_and_add_spellbook(self, monster):

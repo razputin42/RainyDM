@@ -201,12 +201,13 @@ class DiceBox:
                 if "|" in roll:
                     bonus, dmg_dice = roll.split("|")
                     dmg = aux.roll_function(dmg_dice)
-                    atk_roll = aux.roll_function("1d20")
+                    atk_roll = aux.\
+                        roll_function("1d20")
                     atk = atk_roll + int(bonus)
                     sNexus.printSignal.emit("Dice rolls ({}): {}[{}], {} damage".format(roll, atk, atk_roll, dmg))
                 else:
                     result = aux.roll_function(roll)
-                    sNexus.printSignal.emit("Dice rolls ({}): {}".format(roll, result))
+                    sNexus.printSignal.emit("Dice rolls ({}): {}".format(roll, result[0]))
             except:
                 sNexus.printSignal.emit("Invalid dice format\nPress help for info")
         self.button.clicked.connect(lambda: perform_roll(self))
