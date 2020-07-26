@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QScrollArea, \
-    QWidget, QFormLayout, QGroupBox
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QScrollArea, \
+    QWidget
 from PyQt5.Qt import QMouseEvent
 from PyQt5.QtCore import Qt
+from RainyCore.player import Character
 
 colorDict = dict(
     white=[240, 240, 240],
@@ -37,18 +38,18 @@ class EntryWidget(QFrame):
             if self.deselect_signal is not None:
                 self.deselect_signal.emit()
             self.select()
-            if self.viewer is not None:
+            if self.viewer is not None and type(self.entry) is not Character:
                 self.viewer.draw_view(self.entry)
         self.redraw()
 
     def select(self):
-        self.hide_viewer(False)
+        # self.hide_viewer(False)
         self.setProperty('clicked', True)
         if hasattr(self, "button_bar"):
             self.button_bar.setHidden(False)
 
     def deselect(self):
-        self.hide_viewer(True)
+        # self.hide_viewer(True)
         self.setProperty('clicked', False)
         if hasattr(self, "button_bar"):
             self.button_bar.setHidden(True)
