@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushBu
     QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem
 from PyQt5.QtCore import Qt
 from .filter import Filter
-import xml.etree.ElementTree as ElementTree
 from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
@@ -10,6 +9,7 @@ from dependencies.auxiliaries import RarityList
 from RainyCore.monster import Monster
 from RainyCore.spell import Spell
 from RainyCore.item import Item
+from RainyCore.signals import sNexus
 
 
 class MyTableWidget(QTableWidget):
@@ -39,6 +39,7 @@ class SearchableTable(QFrame):
     EDITABLE = False
     DATABASE_ENTRY_FIELD = 'entry'
     ENTRY_CLASS = None
+    VIEWER_INDEX = None
 
     prev_entry = None
 
@@ -61,7 +62,7 @@ class SearchableTable(QFrame):
         self.table = MyTableWidget(parent)
         self.table.horizontalHeader().sectionClicked.connect(self.sort_columns)
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.table.clicked.connect(self.deselect_check_handle)
+        # self.table.clicked.connect(self.deselect_check_handle)
         self.table.selectionModel().selectionChanged.connect(self.selection_change_handle)
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
@@ -202,6 +203,7 @@ class SearchableTable(QFrame):
                 continue
             if "(" in s:  # indicates that there is a subtype
                 type = s[:s.find("(")].strip()  # find the original type
+                type = type.lower()
                 if type not in type_return:
                     type_return.append(type)
                 subtype_raw = s[s.find("(") + 1:s.find(")")]
@@ -281,8 +283,7 @@ class SearchableTable(QFrame):
             msg.setWindowTitle("Duplicate Entry")
             msg.exec_()
             return False
-        self.database.values().append(entry)
-        entry.index = self.database.values().index(entry)
+        self.database[entry.name] = entry
         self.table.setRowCount(len(self.database.values()))
         self.update_entry(len(self.database.values()) - 1, entry)
         self.sort_columns(self.NAME_COLUMN, order=Qt.AscendingOrder)
@@ -395,6 +396,7 @@ class MonsterTableWidget(SearchableTable):
     HEADERS = ['Name', 'Type', 'CR', 'FLOAT CR']
     DATABASE_ENTRY_FIELD = 'monster'
     ENTRY_CLASS = Monster
+    VIEWER_INDEX = 0
 
     def sort_columns(self, n, order=None):
         if n is self.CR_DISPLAY_COLUMN:
@@ -411,9 +413,9 @@ class MonsterTableWidget(SearchableTable):
         add_x_enc_button = QPushButton("Add more to initiative")
         add_x_enc_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
         add_x_enc_button.clicked.connect(self.add_monster_to_encounter)
-        add_tool_button = QPushButton("Add to toolbox")
+        add_tool_button = QPushButton("Add to bookmark")
         add_tool_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
-        add_tool_button.clicked.connect(self.add_monster_to_toolbox)
+        add_tool_button.clicked.connect(self.add_monster_to_bookmark)
         hspacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.button_bar_layout.addWidget(add_enc_button)
         self.button_bar_layout.addWidget(add_x_enc_button)
@@ -490,8 +492,8 @@ class MonsterTableWidget(SearchableTable):
         current_row = self.table.currentRow()
         if current_row == -1:
             return None
-        monster_idx = int(self.table.item(current_row, 1).text())
-        return self.database.values()[monster_idx]
+        monster = self.table.item(current_row, 0).text()
+        return self.database[monster]
 
     def add_monster_to_encounter(self, number=False):
         monster = self.get_selected_monster()
@@ -503,11 +505,11 @@ class MonsterTableWidget(SearchableTable):
                 return False
         self.parent.encounterWidget.addMonsterToEncounter(monster, number)
 
-    def add_monster_to_toolbox(self):
+    def add_monster_to_bookmark(self):
         monster = self.get_selected_monster()
         if monster is None:
             return
-        self.parent.addMonsterToToolbox(monster)
+        self.parent.addMonsterToBookmark(monster)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -517,9 +519,9 @@ class MonsterTableWidget(SearchableTable):
         addAction = menu.addAction("Add to initiative")
         addXAction = menu.addAction("Add X to initiative")
         menu.addSeparator()
-        addToolbox = menu.addAction("Add to toolbox")
+        addBookmark = menu.addAction("Add to bookmark")
         if hasattr(monster, "spells"):
-            add_spellbook = menu.addAction("Add monster's spells to toolbox")
+            add_spellbook = menu.addAction("Add monster's spells to bookmark")
 
         edit_entry = None
         edit_copy_entry = None
@@ -538,8 +540,8 @@ class MonsterTableWidget(SearchableTable):
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok and X < 2000:
                 self.parent.encounterWidget.addMonsterToEncounter(monster, X)
-        elif action == addToolbox:
-            self.parent.addMonsterToToolbox(monster)
+        elif action == addBookmark:
+            self.parent.addMonsterToBookmark(monster)
         elif hasattr(monster, "spells") and action is add_spellbook:
             self.parent.extract_and_add_spellbook(monster)
         elif self.EDITABLE and action is edit_entry:
@@ -556,6 +558,7 @@ class SpellTableWidget(SearchableTable):
     DATABASE_ENTRY_FIELD = 'spell'
     EDITABLE = True
     ENTRY_CLASS = Spell
+    VIEWER_INDEX = 1
 
     def update_entry(self, row, entry):
         self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
@@ -583,11 +586,9 @@ class SpellTableWidget(SearchableTable):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        add_toolbox = menu.addAction("Add to toolbox")
+        add_bookmark = menu.addAction("Add to bookmark")
 
-        current_row = self.table.currentRow()
-        idx = int(self.table.item(current_row, 1).text())
-        spell = self.database.values()[idx]
+        spell = self.get_current_entry()
 
         edit_entry = None
         edit_copy_entry = None
@@ -601,8 +602,8 @@ class SpellTableWidget(SearchableTable):
         if action is None:
             return
 
-        if action == add_toolbox:
-            self.parent.add_to_toolbox_spell(spell)
+        if action == add_bookmark:
+            self.parent.add_to_bookmark_spell(spell)
         elif self.EDITABLE and action is edit_entry:
             self.edit_entry(spell)
         elif self.EDITABLE and action is edit_copy_entry:
@@ -615,6 +616,7 @@ class ItemTableWidget(SearchableTable):
     DATABASE_ENTRY_FIELD = 'item'
     EDITABLE = True
     ENTRY_CLASS = Item
+    VIEWER_INDEX = 2
 
     def format(self):
         t = self.table
@@ -649,9 +651,7 @@ class ItemTableWidget(SearchableTable):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
 
-        current_row = self.table.currentRow()
-        idx = int(self.table.item(current_row, 1).text())
-        item = self.database.values()[idx]
+        item = self.get_current_entry()
 
         edit_entry = None
         edit_copy_entry = None

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton, \
     QLabel, QLineEdit, QMenu, QInputDialog, QFileDialog
 from PyQt5.QtGui import QFont, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
@@ -175,7 +175,7 @@ class MonsterWidget(InitiativeWidget):
 
         if hasattr(self.monster, 'spells'):
             menu.addSeparator()
-            addSpells = menu.addAction("Add monster's spells to toolbox")
+            addSpells = menu.addAction("Add monster's spells to bookmark")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:

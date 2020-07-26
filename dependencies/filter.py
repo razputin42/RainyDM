@@ -94,22 +94,22 @@ class Filter:
 
     def set_sub_filters(self, name, combo_box, sub_combo_box):
         name = name.lower()
-        main = combo_box.currentText()
-        sub = sub_combo_box.currentText()
-        if sub == "Any":
+        main = combo_box.currentText().lower()
+        sub = sub_combo_box.currentText().lower()
+        if sub == "any":
             self.filter[name] = main + ".*"
         else:
             self.filter[name] = main + ".*(\ \(|\,\ )(" + sub + ").*"
         self.filter_content()
 
     def set_filters(self, name, combo_box, sub_combo_box=None, suboptions=None):
-        main = combo_box.currentText()
+        main = combo_box.currentText().lower()
         sub_cond = sub_combo_box is not None
         if sub_cond:
             sub = sub_combo_box.currentText()
 
         name = name.lower()
-        if main == "Any" and name in self.filter.keys():
+        if main == "any" and name in self.filter.keys():
             del self.filter[name]
             if sub_cond:
                 sub_combo_box.setHidden(True)
@@ -124,6 +124,7 @@ class Filter:
                     sub_combo_box.clear()
                     sub_combo_box.setHidden(True)
             self.filter[name] = main + ".*"
+        # print(self.filter[name])
         self.filter_content()
 
     def get_frame(self):
@@ -149,6 +150,8 @@ class Filter:
                 p = re.compile('{}'.format(arg), re.IGNORECASE)
                 cond = cond and any([p.match(_attr) for _attr in attr])
             elif type(arg) is list:  # numerical range, must be inbetween two values
+                if attr is None or None in arg:
+                    continue
                 attr = eval("float({})".format(attr))
                 cond = cond and (arg[0] <= attr <= arg[1])
 

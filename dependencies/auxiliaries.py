@@ -1,10 +1,11 @@
 from random import randint
+import re
 
 
 RarityList = ["Common",
               "Uncommon",
               "Rare",
-              "Very Rare",
+              "Very rare",
               "Legendary",
               "Artifact"]
 
@@ -18,36 +19,44 @@ class GlobalParameters:
     MIDDLE_FRAME_POSITION = 1
     RIGHT_FRAME_POSITION = 2
 
+    MONSTER_VIEWER_INDEX = 0
+    SPELL_VIEWER_INDEX = 1
+    ITEM_VIEWER_INDEX = 2
+
+    TEXT_BOX_INDEX = 3
 
 # Global = GlobalParameters()
 
 
 def roll_function(dice):
+    p = "[+\-,]"
+    matches = re.finditer(p, dice)
+    idx = [match.start() for match in matches]
+    idx.append(0)
+    idx.append(len(dice))
+    idx.sort()
+    rolls = [dice[idx[i]:idx[i+1]] for i in range(len(idx)-1)]
     output = []
-    modifier = 1
-    if "-" in dice:
-        modifier = -1
-        split = dice.split("-")
-    elif "+" in dice:
-        split = dice.split("+")
-    elif "d" in dice:
-        split = [dice]
-    else:
-        return int(dice)
-
-    for itt, each in enumerate(split):
-        if "d" in each:
-            amount, size = each.split("d")
+    # print("\tauxiliaries - roll_function: {}".format(rolls))
+    for roll in rolls:
+        roll = roll.strip('+').strip(' ')
+        if roll == "":
+            continue
+        if "d" in roll:
             rolled = 0
+            amount, size = roll.split("d")
             for i in range(int(amount)):
-                roll = randint(1, int(size))
-                rolled = rolled + roll
-            output.append(rolled)
+                t = randint(1, int(size))
+                rolled = rolled + t
+            output.append(t)
         else:
-            if itt is 0:
-                output[0] = int(each)
+            if len(output) is 0:
+                output.append(int(roll))
             else:
-                output[itt - 1] = output[itt - 1] + int(each) * modifier
-    if len(output) == 1:
+                output[-1] = output[-1] + int(roll)
+    # print("\tauxiliaries - roll_function: {}".format(output))
+    if len(output) is 0:
+        return None
+    elif len(output) is 1:
         return output[0]
     return output
