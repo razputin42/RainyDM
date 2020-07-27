@@ -85,7 +85,7 @@ class SearchableTable(QFrame):
 
     def set_database(self, db):
         self.full_database = db
-        self.database = db[self.ENTRY_CLASS]
+        self.database = db[str(self.ENTRY_CLASS)]
 
     def get_current_entry(self):
         current_row = self.table.currentRow()
