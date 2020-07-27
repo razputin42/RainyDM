@@ -1,10 +1,9 @@
 from PyQt5.QtWidgets import QLineEdit, QLabel, QPushButton, QShortcut, QTextEdit, QVBoxLayout, \
-    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QWidget, QSpacerItem, QPlainTextEdit
+    QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QWidget, QPlainTextEdit
 from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5.QtCore import Qt
 import os
-from .monster import Monster
-import time
+from RainyCore.monster import Monster
 
 
 class ResizeableTextEditor(QPlainTextEdit):

@@ -109,20 +109,20 @@ class LootTableC(LootTable):
 
 class LootTableD(LootTable):
     chances = [
-        (0.64, potion("Very Rare")),
-        (0.08, wondrous("Very Rare")),
-        (0.23, scroll("Very Rare")),
-        (0.05, ammunition("Very Rare"))
+        (0.64, potion("Very rare")),
+        (0.08, wondrous("Very rare")),
+        (0.23, scroll("Very rare")),
+        (0.05, ammunition("Very rare"))
         ]
 
 
 class LootTableE(LootTable):
     chances = [
-        (0.40, potion("Very Rare")),
-        (0.30, scroll("Very Rare")),
+        (0.40, potion("Very rare")),
+        (0.30, scroll("Very rare")),
         (0.15, scroll("Legendary")),
         (0.10, wondrous("Legendary")),
-        (0.05, ammunition("Very Rare"))
+        (0.05, ammunition("Very rare"))
         ]
 
 
@@ -153,14 +153,14 @@ class LootTableG(LootTable):
 
 class LootTableH(LootTable):
     chances = [
-        (0.34, wondrous("Very Rare")),
-        (0.19, weapon("Very Rare")),
-        (0.15, armor("Very Rare")),
-        (0.10, staff("Very Rare")),
-        (0.08, rod("Very Rare")),
-        (0.08, wand("Very Rare")),
-        (0.06, ring("Very Rare")),
-        (0.04, shield("Very Rare"))
+        (0.34, wondrous("Very rare")),
+        (0.19, weapon("Very rare")),
+        (0.15, armor("Very rare")),
+        (0.10, staff("Very rare")),
+        (0.08, rod("Very rare")),
+        (0.08, wand("Very rare")),
+        (0.06, ring("Very rare")),
+        (0.04, shield("Very rare"))
     ]
 
 

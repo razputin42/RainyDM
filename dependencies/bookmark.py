@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QInputDialog, QTableWidget, QHeaderView, QVBoxLayout, \
     QHBoxLayout, QLineEdit, QSizePolicy, QMenu, QTabWidget, QFrame, QPushButton, QTableWidgetItem
 import dependencies.auxiliaries as aux
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 
 class LinkedTableWidget(QTableWidget):
     _NAME_COLUMN = 0
@@ -71,11 +71,11 @@ class LinkedMonsterTable(LinkedTableWidget):
         add_x_action = menu.addAction("Add X to initiative")
         if hasattr(entry, "spells"):
             menu.addSeparator()
-            add_spellbook = menu.addAction("Add monster's spells to toolbox")
+            add_spellbook = menu.addAction("Add monster's spells to bookmark")
         else:
             add_spellbook = None
         menu.addSeparator()
-        remove = menu.addAction("Remove from Toolbox")
+        remove = menu.addAction("Remove from Bookmark")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -112,16 +112,16 @@ class LinkedSpellTable(LinkedTableWidget):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        remove_toolbox = menu.addAction("Remove from toolbox")
+        remove_bookmark = menu.addAction("Remove from bookmark")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
             return
-        if action == remove_toolbox:
+        if action == remove_bookmark:
             self.remove_rows()
 
 
-class ToolboxWidget(QFrame):
+class BookmarkWidget(QFrame):
     SPELL_TAB = 0
     DICE_TAB = 1
 
@@ -131,54 +131,55 @@ class ToolboxWidget(QFrame):
         self.spell_table = spell_table
         self.monster_viewer = monster_viewer
         self.spell_viewer = spell_viewer
-        self.toolbox_frame = QFrame()
-        self.toolbox_frame.setMaximumHeight(300)
+        self.bookmark_frame = QFrame()
+        self.bookmark_frame.setMaximumHeight(300)
         self.button_bar = QFrame()
         self.button_bar.setLayout(QHBoxLayout())
-        toolbox_layout = QHBoxLayout()
+        bookmark_layout = QHBoxLayout()
         self.setLayout(QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum))
 
-        self.spell_toolbox = LinkedSpellTable(self.spell_table, self.spell_viewer)
-        self.monster_toolbox = LinkedMonsterTable(self.monster_table, self.monster_viewer)
+        self.spell_bookmark = LinkedSpellTable(self.spell_table, self.spell_viewer)
+        self.monster_bookmark = LinkedMonsterTable(self.monster_table, self.monster_viewer)
         self.monster_tabWidget = QTabWidget()
-        self.monster_tabWidget.addTab(self.monster_toolbox, "Monster")
+        self.monster_tabWidget.addTab(self.monster_bookmark, "Monster")
 
         self.spell_tabWidget = QTabWidget()
-        self.spell_tabWidget.addTab(self.spell_toolbox, "Spell")
+        self.spell_tabWidget.addTab(self.spell_bookmark, "Spell")
 
-        self.dice_toolbox = QFrame()
+        self.dice_bookmark = QFrame()
         dice_layout = QVBoxLayout()
         for i in range(5):
             dice_layout.addWidget(DiceBox().frame)
         dice_help_button = QPushButton("Help")
         dice_help_button.clicked.connect(self.dice_instructions)
         dice_layout.addWidget(dice_help_button)
-        self.dice_toolbox.setLayout(dice_layout)
-        self.spell_tabWidget.addTab(self.dice_toolbox, "Dice")
+        self.dice_bookmark.setLayout(dice_layout)
+        self.spell_tabWidget.addTab(self.dice_bookmark, "Dice")
 
-        toolbox_layout.addWidget(self.monster_tabWidget)
-        toolbox_layout.addWidget(self.spell_tabWidget)
-        self.toolbox_frame.setLayout(toolbox_layout)
+        bookmark_layout.addWidget(self.monster_tabWidget)
+        bookmark_layout.addWidget(self.spell_tabWidget)
+        self.bookmark_frame.setLayout(bookmark_layout)
 
-        self.clear_toolbox_button = QPushButton("Clear Toolbox")
-        self.toggle_toolbox_button = QPushButton("Toggle Toolbox")
+        self.clear_bookmark_button = QPushButton("Clear Bookmark")
+        self.toggle_bookmark_button = QPushButton("Toggle Bookmark")
         self.button_bar.layout().setContentsMargins(0, 0, 0, 0)
-        self.button_bar.layout().addWidget(self.clear_toolbox_button)
-        self.button_bar.layout().addWidget(self.toggle_toolbox_button)
+        self.button_bar.layout().addWidget(self.clear_bookmark_button)
+        self.button_bar.layout().addWidget(self.toggle_bookmark_button)
 
-        self.layout().addWidget(self.toolbox_frame)
+        self.layout().addWidget(self.bookmark_frame)
         self.layout().addWidget(self.button_bar)
 
-        self.hidden = False
+        self.bookmark_frame.setHidden(True)
+        self.hidden = True
 
     def dice_instructions(self):
         sNexus.printSignal.emit("\nEither input diceroll in format xdy+z, AttackBonus|DamageRoll, or"
                                     " AttackBonus, DamageRoll\nExample: 1d20+6\n5|2d6+3\n5, 2d6+3\n")
     def toggle_hide(self):
         self.hidden = not self.hidden
-        self.toolbox_frame.setHidden(self.hidden)
+        self.bookmark_frame.setHidden(self.hidden)
 
 
 class DiceBox:
@@ -200,12 +201,13 @@ class DiceBox:
                 if "|" in roll:
                     bonus, dmg_dice = roll.split("|")
                     dmg = aux.roll_function(dmg_dice)
-                    atk_roll = aux.roll_function("1d20")
+                    atk_roll = aux.\
+                        roll_function("1d20")
                     atk = atk_roll + int(bonus)
                     sNexus.printSignal.emit("Dice rolls ({}): {}[{}], {} damage".format(roll, atk, atk_roll, dmg))
                 else:
                     result = aux.roll_function(roll)
-                    sNexus.printSignal.emit("Dice rolls ({}): {}".format(roll, result))
+                    sNexus.printSignal.emit("Dice rolls ({}): {}".format(roll, result[0]))
             except:
                 sNexus.printSignal.emit("Invalid dice format\nPress help for info")
         self.button.clicked.connect(lambda: perform_roll(self))

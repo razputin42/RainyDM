@@ -14,36 +14,8 @@ main_tool\.spec
 
 *.spec
 
-RainyDM_standalone_beta\.zip
-
-resources/3\.5/Changes\.txt
-
-resources/3\.5/class_table\.xml
-
-resources/3\.5/class\.xml
-
-resources/3\.5/create_a_database_called_dnd35_for_mysql\.txt
-
-resources/3\.5/domain\.xml
-
-resources/3\.5/equipment\.xml
-
-resources/3\.5/feat\.xml
-
-resources/3\.5/monster\.xml
-
-resources/3\.5/OGL\.txt
-
-resources/3\.5/PCGen60401 - Shortcut\.lnk
-
-resources/3\.5/power\.xml
-
-resources/3\.5/skill\.xml
-
-resources/3\.5/SpellForge_3\.5_4\.5\.0 - readme_SF\.txt
-
-resources/3\.5/srd-db-v1\.3\.sql
-
-resources/5/*/custom.xml
-
 assets/unused/*
+
+venv/*
+
+*.pyc

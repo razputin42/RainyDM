@@ -1,11 +1,9 @@
-from PyQt5.QtWidgets import QTableWidget, QMenu, QVBoxLayout, QFrame, QLabel, QTableWidgetItem, \
-    QInputDialog, QSizePolicy, QLineEdit, QHBoxLayout, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QTableWidget, QMenu, QVBoxLayout, QFrame, QLabel, QSizePolicy, QLineEdit, QHBoxLayout, \
+    QCheckBox
 from PyQt5.QtGui import QIntValidator, QFont
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget
-from dependencies.player import Character
-from dependencies.signals import sNexus
-from dependencies.encounter import InitiativeFrame
+from RainyCore.player import Character
 import json
 
 
@@ -74,7 +72,7 @@ class InputTableWidget(QTableWidget):
 #
 #     def contextMenuEvent(self, event):
 #         current_row = self.currentRow()
-#         addToolbox = None
+#         addBookmark = None
 #         add_spellbook = None
 #
 #         if current_row == -1:  # empty table
@@ -96,18 +94,18 @@ class InputTableWidget(QTableWidget):
 #         removeAction = menu.addAction("Remove from initiative")
 #
 #         if monster_idx is not -1:
-#             addToolbox = menu.addAction("Add to toolbox")
+#             addBookmark = menu.addAction("Add to bookmark")
 #             if hasattr(monster, "spells"):
-#                 add_spellbook = menu.addAction("Add monster's spells to toolbox")
+#                 add_spellbook = menu.addAction("Add monster's spells to bookmark")
 #
 #         action = menu.exec_(self.mapToGlobal(event.pos()))
 #         if action is None:
 #             return
-#         elif action == addToolbox:
+#         elif action == addBookmark:
 #             if monster_idx == -1:  # monster is a player
 #                 return
 #             monster = self.parent.monster_table_widget.list[monster_idx]
-#             self.parent.add_to_toolbox(monster)
+#             self.parent.add_to_bookmark(monster)
 #         elif action == removeAction:
 #             self.remove_rows()
 #             self.calculate_encounter_xp()

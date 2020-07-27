@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, \
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton, \
     QLabel, QLineEdit, QMenu, QInputDialog, QFileDialog
 from PyQt5.QtGui import QFont, QPixmap, QIntValidator
 from PyQt5.QtCore import Qt
 from dependencies.list_widget import ListWidget, EntryWidget, colorDict
 from dependencies.auxiliaries import roll_function
-from dependencies.signals import sNexus
+from RainyCore.signals import sNexus
 import os, json
 
 
@@ -175,7 +175,7 @@ class MonsterWidget(InitiativeWidget):
 
         if hasattr(self.monster, 'spells'):
             menu.addSeparator()
-            addSpells = menu.addAction("Add monster's spells to toolbox")
+            addSpells = menu.addAction("Add monster's spells to bookmark")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:

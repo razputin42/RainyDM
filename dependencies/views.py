@@ -1,13 +1,12 @@
 from PyQt5 import QtGui
-from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QTextBrowser, QPushButton
 from dependencies.html_format import monster_dict, spell_dict, item_dict, general_head, general_foot
 from dependencies.auxiliaries import GlobalParameters
 from string import Template
-from .monster import Monster35
-from .spell import Spell35
-from .item import Item35
-from dependencies.signals import sNexus
+from RainyCore.monster import Monster35
+from RainyCore.spell import Spell35
+from RainyCore.item import Item35
+from RainyCore.signals import sNexus
 from abc import abstractmethod as abstract
 
 
@@ -20,7 +19,7 @@ class Viewer(QTextBrowser):
         self.horizontalScrollBar().setHidden(True)
         # self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
         self.aux_format()
-        self.setHidden(True)
+        # self.setHidden(True)
 
     def aux_format(self):
         pass
@@ -105,7 +104,7 @@ class MonsterViewer(Viewer):
             for itt, trait in enumerate(monster.trait_list):
                 template = Template(monster_dict['action_even'])
                 html = html + template.safe_substitute(
-                    name=trait.name,
+                    name=trait.name if hasattr(trait, "name") else "",
                     text=trait.text
                 )
 
@@ -121,7 +120,7 @@ class MonsterViewer(Viewer):
                 else:
                     template = Template(monster_dict['action_odd'])
                 html = html + template.safe_substitute(
-                    name=action.name,
+                    name=action.name if hasattr(action, "name") else "",
                     text=action.text
                 )
 
@@ -134,7 +133,7 @@ class MonsterViewer(Viewer):
                     else:
                         template = Template(monster_dict['action_odd'])
                     html = html + template.safe_substitute(
-                        name=action.name,
+                        name=action.name if hasattr(action, "name") else "",
                         text=action.text
                     )
 
@@ -145,6 +144,7 @@ class MonsterViewer(Viewer):
         self.setHtml(html)
         self.current_view = monster
         self.update_button_bar(monster)
+        sNexus.viewerSelectChanged.emit(GlobalParameters.MONSTER_VIEWER_INDEX)
 
     def update_button_bar(self, monster):
         button_bar_layout = self.button_bar.layout()
@@ -181,6 +181,7 @@ class SpellViewer(Viewer):
             )
         self.setHtml(html)
         self.current_view = spell
+        sNexus.viewerSelectChanged.emit(GlobalParameters.SPELL_VIEWER_INDEX)
 
     @staticmethod
     def ordinal(n):
@@ -257,3 +258,4 @@ class ItemViewer(Viewer):
             html = html + item_dict['foot']
         self.setHtml(html)
         self.current_view = item
+        sNexus.viewerSelectChanged.emit(GlobalParameters.ITEM_VIEWER_INDEX)
