@@ -18,7 +18,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputDir=D:\Git\RainyHub\RainyDM\build
+OutputDir=.\build
 OutputBaseFilename=RainyDM_installer
 Compression=lzma
 SolidCompression=yes
@@ -31,12 +31,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Git\RainyHub\RainyDM\build\exe.win-amd64-3.7\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#SourcePath}\build\exe.win-amd64-3.7\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\assets\rainy_square.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\assets\rainy_square.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
