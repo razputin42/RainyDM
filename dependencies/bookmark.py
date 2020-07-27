@@ -55,8 +55,8 @@ class LinkedTableWidget(QTableWidget):
 
     def get_current_selection(self):
         current_row = self.currentRow()
-        entry_idx = int(self.item(current_row, 1).text())
-        return self.table.list[entry_idx]
+        entry = self.item(current_row, 0).text()
+        return self.table.database[entry]
 
     def set_hidden(self, condition):
         self.viewer.set_hidden(condition)
