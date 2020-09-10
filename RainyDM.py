@@ -29,6 +29,7 @@ class DMTool(QMainWindow):
     def __init__(self, db_path):
         super().__init__()
         sys.excepthook = self.excepthook
+        self.settings = dict({"query_srd": True})
         self.load_meta()
         self._setup_ui(db_path)
         self._setup_menu()
@@ -418,6 +419,7 @@ class DMTool(QMainWindow):
                     meta_dict = eval(f.read())
                     if 'version' in meta_dict.keys():
                         self.version = meta_dict['version']
+                        self.settings = meta_dict['settings']
             except:
                 None
 
@@ -473,7 +475,8 @@ class DMTool(QMainWindow):
 
         with open("metadata/meta.txt", "w") as f:
             json.dump(dict(
-                version=self.version
+                version=self.version,
+                settings=self.settings
             ), f)
 
     # SLOTS

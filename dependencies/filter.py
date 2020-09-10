@@ -7,6 +7,8 @@ class FilterWidget:  ## this will be used to rework how the filtering is handled
         pass
 
 class Filter:
+    locks = dict()
+
     def __init__(self, filter_content):
         self.filter_content = filter_content
         self.filter = dict()
@@ -66,7 +68,7 @@ class Filter:
         self.filter_content()
 
     def add_dropdown(self, name, options, suboptions=None, default=None, alphabetical=True):
-        options = [option.capitalize() for option in options]
+        options = [str(option).capitalize() for option in options]
         if alphabetical:
             options.sort()
         combo_box = QComboBox()
@@ -127,6 +129,9 @@ class Filter:
         # print(self.filter[name])
         self.filter_content()
 
+    def lock(self, attr, value):
+        self.locks[attr] = value
+
     def get_frame(self):
         return self.frame
 
@@ -138,6 +143,9 @@ class Filter:
 
     def evaluate_filter(self, entry):
         cond = True
+        for key, arg in self.locks.items():
+            if not hasattr(entry, key) or getattr(entry, key) != arg:
+                return False
         for key, arg in self.filter.items():
             if not hasattr(entry, key):
                 # print("Wrong filter key passed to entry in SearchableTable")

@@ -48,9 +48,14 @@ class MonsterViewer(Viewer):
         self.button_bar.setContentsMargins(0, 0, 0, 0)
 
     def draw_view(self, monster):
+        if monster.srd == "no":
+            template = Template(monster_dict['not_srd'])
+            html = template.safe_substitute(
+                name=monster.name
+            )
         # this is going to get confusing fast... This is everything before saving throws
-        if isinstance(monster, Monster35):
-            html = general_head + monster.full_text + general_foot
+        # if isinstance(monster, Monster35):
+        #     html = general_head + monster.full_text + general_foot
         else:
             template = Template(monster_dict['first'])
             html = template.safe_substitute(
@@ -137,13 +142,13 @@ class MonsterViewer(Viewer):
                         text=action.text
                     )
 
-            # rest of the monster
-            template = Template(monster_dict['rest'])
-            html = html + template.safe_substitute()
+            self.update_button_bar(monster)
+        # rest of the monster
+        template = Template(monster_dict['rest'])
+        html = html + template.safe_substitute()
         self.html = html
         self.setHtml(html)
         self.current_view = monster
-        self.update_button_bar(monster)
         sNexus.viewerSelectChanged.emit(GlobalParameters.MONSTER_VIEWER_INDEX)
 
     def update_button_bar(self, monster):

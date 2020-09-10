@@ -8,6 +8,13 @@ from RainyCore.signals import sNexus
 import os, json
 
 
+class NumberInput(QLineEdit):
+    def __init__(self):
+        super().__init__()
+        self.setFixedWidth(30)
+        self.setValidator(QIntValidator(-999, 999))
+
+
 class NameLabel(QLabel):
     def __init__(self, name):
         super().__init__(name)
@@ -21,7 +28,7 @@ class HealthFrame(QFrame):
     ratio = 1
     iconPath = "assets/icons/heart_icon.png"
 
-    def __init__(self, health):
+    def __init__(self, health, srd_valid):
         super().__init__()
         self.m_maxHP = health
 
@@ -31,18 +38,25 @@ class HealthFrame(QFrame):
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
-        self.textLabel = QLabel(str(self.m_maxHP))
-        self.textLabel.setFixedWidth(30)
-        self.textLabel.setFont(QFont("Helvetica [Cronyx]", 12))
+        if srd_valid:
+            self.health = QLabel(str(self.m_maxHP))
+            self.health.setFixedWidth(30)
+            self.health.setFont(QFont("Helvetica [Cronyx]", 12))
+        else:
+            self.health = NumberInput()
+            # self.health.returnPressed.connect(self.return_pressed_handle)
         self.layout().addWidget(iconLabel)
-        self.layout().addWidget(self.textLabel)
+        self.layout().addWidget(self.health)
         self.layout().setAlignment(Qt.AlignLeft)
 
     def set(self, value):
-        self.textLabel.setText(str(value))
+        self.health.setText(str(value))
 
     def get(self):
-        return int(self.textLabel.text())
+        try:
+            return int(self.health.text())
+        except ValueError:
+            return 0
 
     def max(self):
         return int(self.m_maxHP)
@@ -53,19 +67,18 @@ class DamageInputFrame(QFrame):
     ratio = 0.67
     iconPath = "assets/icons/sword_icon.png"
 
-    def __init__(self, healthWidget):
+    def __init__(self, healthWidget, srd_valid):
         super().__init__()
         self.m_health = healthWidget
+        self.srd_valid = srd_valid
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
         iconSize = [self.ratio*self.height, self.height]
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
-        self.damageEdit = QLineEdit()
-        self.damageEdit.setFixedWidth(30)
+        self.damageEdit = NumberInput()
         self.damageEdit.returnPressed.connect(self.returnPressedHandle)
-        self.damageEdit.setValidator(QIntValidator(-999, 999))
 
         self.layout().addWidget(iconLabel)
         self.layout().addWidget(self.damageEdit)
@@ -74,9 +87,10 @@ class DamageInputFrame(QFrame):
     def returnPressedHandle(self):
         damage = int(self.damageEdit.text())
         newHealth = self.m_health.get() - damage
+        print(damage, self.m_health.get())
         if newHealth < 0:
             newHealth = 0
-        if newHealth > self.m_health.max():
+        if self.srd_valid and newHealth > self.m_health.max():
             newHealth = self.m_health.max()
         self.m_health.set(newHealth)
         self.damageEdit.clear()
@@ -87,7 +101,7 @@ class InitiativeFrame(QFrame):
     ratio = 0.56
     iconPath = "assets/icons/initiative_icon.png"
 
-    def __init__(self, initiative):
+    def __init__(self, initiative, srd_valid):
         super().__init__()
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
@@ -95,19 +109,22 @@ class InitiativeFrame(QFrame):
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
-        self.textLabel = QLabel(initiative)
-        self.textLabel.setFixedWidth(30)
-        self.textLabel.setFont(QFont("Helvetica [Cronyx]", 12))
+        if srd_valid:
+            self.initiative = QLabel(initiative)
+            self.initiative.setFixedWidth(30)
+            self.initiative.setFont(QFont("Helvetica [Cronyx]", 12))
+        else:
+            self.initiative = NumberInput()
         self.layout().addWidget(iconLabel)
-        self.layout().addWidget(self.textLabel)
+        self.layout().addWidget(self.initiative)
         self.layout().setAlignment(Qt.AlignLeft)
 
     def set(self, value):
-        self.textLabel.setText(str(value))
+        self.initiative.setText(str(value))
 
     def get(self):
         try:
-            return int(self.textLabel.text())
+            return int(self.initiative.text())
         except ValueError:
             return 0
 
@@ -133,16 +150,17 @@ class InitiativeWidget(EntryWidget):
 class MonsterWidget(InitiativeWidget):
     def __init__(self, monster, parentList, viewer=None, init=None, hp=None, desc=None):
         self.monster = monster
+        srd_bool = monster.srd == "yes"
         super().__init__(monster)
-        self.m_health = HealthFrame(hp)
-        self.m_initiative = InitiativeFrame(str(init))
+        self.m_health = HealthFrame(hp, monster.srd_bool)
+        self.m_initiative = InitiativeFrame(str(init), monster.srd_bool)
         self.viewer = viewer
         self.parent = parentList
         self.m_name = NameLabel(monster.name)
         self.layout().addWidget(self.m_name)
         self.layout().addStretch(1)
         self.layout().addWidget(self.m_health)
-        self.layout().addWidget(DamageInputFrame(self.m_health))
+        self.layout().addWidget(DamageInputFrame(self.m_health, monster.srd_bool))
         self.layout().addWidget(self.m_initiative)
 
     def rollInitiative(self):
@@ -345,7 +363,7 @@ class EncounterWidget(ListWidget):
 
     def rollInitiative(self):
         for entry in self.m_widgetList:
-            if type(entry) is MonsterWidget:
+            if type(entry) is MonsterWidget and entry.monster.srd_bool:
                 entry.rollInitiative()
 
     def addMonsterToEncounter(self, monster, number=1, init=None, hp=None, desc=None):
