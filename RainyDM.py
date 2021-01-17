@@ -1,5 +1,4 @@
 from dependencies.auxiliaries import roll_function, GlobalParameters
-from dependencies.custom_widgets import RainyButton
 from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.TreasureHoard import TreasureHoardTab
