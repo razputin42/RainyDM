@@ -4,7 +4,8 @@ from dependencies.auxiliaries import roll_function
 from dependencies.encounter import NameLabel
 from dependencies.list_widget import ListWidget, EntryWidget
 from RainyCore.signals import sNexus
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox, QSpacerItem
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox, QSpacerItem, \
+    QCheckBox, QLabel
 from PyQt5.QtGui import QMouseEvent
 
 
@@ -171,9 +172,13 @@ class TreasureHoardWidget(ListWidget):
         self.viewer = viewer
         rollButton = QPushButton("Roll")
         rollButton.clicked.connect(self.roll_loot)
+        srd_label = QLabel("Only SRD")
+        self.srd_checkbox = QCheckBox()
         bottom_bar = QFrame()
         bottom_bar.setLayout(QHBoxLayout())
         bottom_bar.layout().addStretch(1)
+        bottom_bar.layout().addWidget(srd_label)
+        bottom_bar.layout().addWidget(self.srd_checkbox)
         bottom_bar.layout().addWidget(self.challenge_rating_combo_box)
         bottom_bar.layout().addWidget(rollButton)
         self.layout().addWidget(bottom_bar)
@@ -197,8 +202,15 @@ class TreasureHoardWidget(ListWidget):
         if items_dict is None:
             self.set_no_loot()
         else:
+            items_dict = self.srd_check(items_dict)
             loot = self.acquire_loot(items_dict)
             self.set_loot(loot)
+
+    def srd_check(self, items_dict):
+        if self.srd_checkbox.isChecked():
+            for item in items_dict:
+                item["srd"] = "yes"
+        return items_dict
 
     def set_no_loot(self):
         self.clear()
@@ -211,6 +223,8 @@ class TreasureHoardWidget(ListWidget):
         output_list = []
         for item_dict in items_dict:
             subset = self.item_list.subset(item_dict)
+            if len(subset) is 0:
+                continue
             output_list.append(random.choice(subset))
         return output_list
 

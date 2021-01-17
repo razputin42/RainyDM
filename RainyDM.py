@@ -1,4 +1,5 @@
 from dependencies.auxiliaries import roll_function, GlobalParameters
+from dependencies.custom_widgets import RainyButton
 from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.TreasureHoard import TreasureHoardTab
@@ -101,13 +102,6 @@ class DMTool(QMainWindow):
 
         # Initiative list
         self.encounterWidget = EncounterWidget(self.monster_viewer)
-
-        # Bookmark buttons
-        bookmark_button_layout = QHBoxLayout()
-        self.clear_bookmark_button = QPushButton("Clear Bookmark")
-        self.toggle_bookmark_button = QPushButton("Toggle Bookmark")
-        bookmark_button_layout.addWidget(self.clear_bookmark_button)
-        bookmark_button_layout.addWidget(self.toggle_bookmark_button)
 
         # bookmark
         self.bookmark_widget = BookmarkWidget(self.monster_table_widget,

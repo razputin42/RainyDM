@@ -11,6 +11,24 @@ general_foot = """
 </body>
 """
 
+not_srd = """
+<!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+    .name {
+        font-size:225%;
+        font-family:Georgia, serif;
+        font-variant:small-caps;
+        font-weight:bold;
+        color:#A73335;
+    </style>
+    </head>
+    <body>
+    <div contenteditable="false"  style="width:310px; font-family:Arial,Helvetica,sans-serif;font-size:17px;">
+    <div class="name"> $name is not SRD :( </div>
+"""
+
 item_dict = dict(
     header="""
     <!DOCTYPE html>
@@ -304,65 +322,4 @@ th, td {
 </div>
 </body>
 </html>
-""",
-    not_srd="""
-<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    .gradient {
-        margin:10px 0px;
-    }
-    .name {
-        font-size:225%;
-        font-family:Georgia, serif;
-        font-variant:small-caps;
-        font-weight:bold;
-        color:#A73335;
-    }
-    .description {
-        font-style:italic;    
-    }
-    .bold {
-        font-weight:bold;
-    }
-    .red {
-        color:#A73335;
-    }
-    table {
-        width:100%;
-        border:0px;
-        border-collapse:collapse;
-        color:#A73335;
-    }
-    th, td {
-        width:50px;
-        text-align:center;
-    }
-    .actions {
-        font-size:175%;
-        font-variant:small-caps;
-        margin:17px 0px 0px 0px;
-    }
-    .hr {
-        background: #A73335;
-        height:2px;
-    }
-    .attack_odd {
-        margin:10px 0px;
-        color: black;
-    }
-    .attack_even {
-        margin:10px 0px;
-        color: white;
-    }
-    .bolditalic {
-        font-weight:bold;
-        font-style:italic;
-    }
-    </style>
-    </head>
-    <body>
-    <div contenteditable="true"  style="width:310px; font-family:Arial,Helvetica,sans-serif;font-size:17px;">
-    <div class="name"> $name is not SRD :( </div>
 """)
