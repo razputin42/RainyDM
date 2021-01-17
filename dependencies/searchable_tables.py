@@ -464,6 +464,8 @@ class MonsterTableWidget(SearchableTable):
             self.filter.add_dropdown("Size", self.unique_attr("size"))
             self.filter.add_dropdown("Source", self.unique_attr("source"))
             self.filter.add_range("CR")
+            # self.filter.lock("srd", "yes")
+            self.filter.add_dropdown("SRD", self.unique_attr("srd"))
             # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
         elif version == "3.5":
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))

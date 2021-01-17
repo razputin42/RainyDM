@@ -1,4 +1,5 @@
 from dependencies.auxiliaries import roll_function, GlobalParameters
+from dependencies.custom_widgets import RainyButton
 from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.TreasureHoard import TreasureHoardTab
@@ -29,6 +30,7 @@ class DMTool(QMainWindow):
     def __init__(self, db_path):
         super().__init__()
         sys.excepthook = self.excepthook
+        self.settings = dict({"query_srd": True})
         self.load_meta()
         self._setup_ui(db_path)
         self._setup_menu()
@@ -100,13 +102,6 @@ class DMTool(QMainWindow):
 
         # Initiative list
         self.encounterWidget = EncounterWidget(self.monster_viewer)
-
-        # Bookmark buttons
-        bookmark_button_layout = QHBoxLayout()
-        self.clear_bookmark_button = QPushButton("Clear Bookmark")
-        self.toggle_bookmark_button = QPushButton("Toggle Bookmark")
-        bookmark_button_layout.addWidget(self.clear_bookmark_button)
-        bookmark_button_layout.addWidget(self.toggle_bookmark_button)
 
         # bookmark
         self.bookmark_widget = BookmarkWidget(self.monster_table_widget,
@@ -418,6 +413,7 @@ class DMTool(QMainWindow):
                     meta_dict = eval(f.read())
                     if 'version' in meta_dict.keys():
                         self.version = meta_dict['version']
+                        self.settings = meta_dict['settings']
             except:
                 None
 
@@ -473,7 +469,8 @@ class DMTool(QMainWindow):
 
         with open("metadata/meta.txt", "w") as f:
             json.dump(dict(
-                version=self.version
+                version=self.version,
+                settings=self.settings
             ), f)
 
     # SLOTS
