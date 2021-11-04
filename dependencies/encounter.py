@@ -101,7 +101,7 @@ class InitiativeFrame(QFrame):
     ratio = 0.56
     iconPath = "assets/icons/initiative_icon.png"
 
-    def __init__(self, initiative, srd_valid):
+    def __init__(self, initiative, srd_valid=True):
         super().__init__()
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
@@ -150,17 +150,16 @@ class InitiativeWidget(EntryWidget):
 class MonsterWidget(InitiativeWidget):
     def __init__(self, monster, parentList, viewer=None, init=None, hp=None, desc=None):
         self.monster = monster
-        srd_bool = monster.srd == "yes"
         super().__init__(monster)
-        self.m_health = HealthFrame(hp, monster.srd_bool)
-        self.m_initiative = InitiativeFrame(str(init), monster.srd_bool)
+        self.m_health = HealthFrame(hp, monster.is_srd_valid())
+        self.m_initiative = InitiativeFrame(str(init), monster.is_srd_valid())
         self.viewer = viewer
         self.parent = parentList
         self.m_name = NameLabel(monster.name)
         self.layout().addWidget(self.m_name)
         self.layout().addStretch(1)
         self.layout().addWidget(self.m_health)
-        self.layout().addWidget(DamageInputFrame(self.m_health, monster.srd_bool))
+        self.layout().addWidget(DamageInputFrame(self.m_health, monster.is_srd_valid()))
         self.layout().addWidget(self.m_initiative)
 
     def rollInitiative(self):
@@ -363,7 +362,7 @@ class EncounterWidget(ListWidget):
 
     def rollInitiative(self):
         for entry in self.m_widgetList:
-            if type(entry) is MonsterWidget and entry.monster.srd_bool:
+            if type(entry) is MonsterWidget and entry.monster.is_srd_valid():
                 entry.rollInitiative()
 
     def addMonsterToEncounter(self, monster, number=1, init=None, hp=None, desc=None):
