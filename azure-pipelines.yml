@@ -14,7 +14,7 @@ strategy:
       python.version: '3.9'
 
 steps:
-- checkout: RainyDM # self represents the repo where the initial Pipelines YAML file was found
+- checkout: self # self represents the repo where the initial Pipelines YAML file was found
   fetchDepth: number  # the depth of commits to ask Git to fetch; defaults to no limit
   lfs: boolean  # whether to download Git-LFS files; defaults to false
   submodules: recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules; defaults to not checking out submodules
