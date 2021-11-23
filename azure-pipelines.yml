@@ -26,7 +26,7 @@ steps:
 
 - script: |
     pip install pytest pytest-azurepipelines pytest-cov
-    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-config=.coveragerc
+    python -m pytest --junitxml=junit/test-results.xml --cov=. --cov-report=xml tests
   displayName: 'pytest'
 
 - task: PublishCodeCoverageResults@1
