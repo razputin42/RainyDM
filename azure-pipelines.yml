@@ -35,9 +35,9 @@ steps:
     python -m pytest --junitxml=junit/test-results.xml tests
   displayName: 'pytest'
   
-  scirpt: |
+- script: |
     installer.bat
-  displayName: 'Package'
+  displayName: 'Install dependencies'
 
 - task: PublishBuildArtifacts@1
   inputs:
