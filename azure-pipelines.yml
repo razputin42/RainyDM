@@ -39,8 +39,12 @@ steps:
     installer.bat
   displayName: 'Package'
 
-  
-  
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'dist/RainyDM'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
