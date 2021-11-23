@@ -29,11 +29,17 @@ steps:
     python -m pip install --upgrade pip
     pip install -r requirements.txt
     pip install pytest pytest-azurepipelines pytest-cov
-
   displayName: 'Install dependencies'
+
 - script: |
     python -m pytest --junitxml=junit/test-results.xml tests
   displayName: 'pytest'
+  
+  scirpt: |
+    installer.bat
+  displayName: 'Package'
+
+  
   
 - task: PublishTestResults@2
   inputs:
