@@ -1,6 +1,6 @@
 [submodule "RainyCore"]
 	path = RainyCore
-	url = ../RainyCore.git
+	url = https://github.com/razputin42/RainyCore.git
 [submodule "RainyDB"]
 	path = RainyDB
-	url = ../RainyDB.git
+	url = https://github.com/razputin42/RainyDB.git

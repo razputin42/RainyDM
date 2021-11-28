@@ -3,13 +3,11 @@ from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.TreasureHoard import TreasureHoardTab
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
-from RainyCore.signals import sNexus
 from dependencies.bookmark import BookmarkWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
-from RainyCore.item import Item, Item35
-from RainyCore.monster import Monster, Monster35
-from RainyCore.spell import Spell, Spell35
-from RainyDB.RainyDatabase import RainyDatabase
+from RainyCore.signals import sNexus
+from RainyDB import RainyDatabase
+from RainyCore import System
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -26,25 +24,21 @@ old_excepthook = sys.excepthook
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
-    def __init__(self, db_path):
+    def __init__(self, db_path, validate_views=False):
         super().__init__()
+        self._database_path = db_path
         sys.excepthook = self.excepthook
         self.settings = dict({"query_srd": True})
         self.load_meta()
-        self._setup_ui(db_path)
+        self._setup_ui()
         self._setup_menu()
         self.bind_signals()
         self.load_session()
         self._display_ui()
-        # for monster in self.db[str(Monster)].values():
-        #     print(monster.name)
-        #     self.monster_viewer.draw_view(monster)
-        #     if hasattr(monster, "action_list"):
-        #         for action in monster.action_list:
-        #             if hasattr(action, "attack"):
-        #                 monster.performAttack(action)
+        if validate_views:
+            self.validate_views()
 
-    def _setup_ui(self, db_path):
+    def _setup_ui(self):
         """
         Layout is a windowLayout with a horizontal box on the left and a tab widget on the right
         :return:
@@ -63,7 +57,7 @@ class DMTool(QMainWindow):
         monster_button_bar = QFrame()
         monster_button_bar_layout = QHBoxLayout()
         monster_button_bar.setLayout(monster_button_bar_layout)
-        self.monster_viewer = MonsterViewer(monster_button_bar)
+        self.monster_viewer = MonsterViewer(monster_button_bar, self.system)
         monster_viewer_frame_layout = QVBoxLayout()
         self.monster_viewer_frame = QFrame()
         self.monster_viewer_frame.setLayout(monster_viewer_frame_layout)
@@ -71,10 +65,10 @@ class DMTool(QMainWindow):
         self.monster_viewer_frame.setFrameStyle(0)
 
         # - spell viewer
-        self.spell_viewer = SpellViewer()
+        self.spell_viewer = SpellViewer(self.system)
 
         # - item viewer
-        self.item_viewer = ItemViewer()
+        self.item_viewer = ItemViewer(self.system)
 
         # Text box
         self.text_box = QTextEdit()
@@ -93,10 +87,10 @@ class DMTool(QMainWindow):
         self.item_table_widget = ItemTableWidget(self, self.item_viewer)
         self.item_table_widget.layout().addWidget(self.item_viewer)
 
-        self.load_resources(db_path)
+        self.load_resources(self._database_path)
 
         # Loot Generator Widget
-        self.lootViewer = ItemViewer()
+        self.lootViewer = ItemViewer(self.system)
         self.loot_widget = TreasureHoardTab(self, self.item_viewer, self.item_table_widget)
 
         # Initiative list
@@ -183,14 +177,18 @@ class DMTool(QMainWindow):
         ### Menubar
         menu = self.menuBar()
         version = menu.addMenu("Version")
-        button_3_5 = QAction("3.5 Edition", self)
-        button_3_5.setStatusTip("3.5 Edition")
-        version.addAction(button_3_5)
+        # button_3_5 = QAction("3.5 Edition", self)
+        # button_3_5.setStatusTip("3.5 Edition")
+        # version.addAction(button_3_5)
         button_5 = QAction("5th Edition", self)
         button_5.setStatusTip("5th Edition")
         version.addAction(button_5)
-        button_5.triggered.connect(lambda: self.change_version("5"))
-        button_3_5.triggered.connect(lambda: self.change_version("3.5"))
+        button_5.triggered.connect(lambda: self.change_version(System.DnD5e))
+        button_sw5e = QAction("SW 5th Edition", self)
+        button_sw5e.setStatusTip("SW 5th Edition")
+        version.addAction(button_sw5e)
+        button_sw5e.triggered.connect(lambda: self.change_version(System.SW5e))
+        # button_3_5.triggered.connect(lambda: self.change_version("3.5"))
 
         experimental = menu.addMenu("Experimental")
         button_plain_text = QAction("Plain text monsters", self, checkable=True)
@@ -259,9 +257,9 @@ class DMTool(QMainWindow):
         self.right_tab.setCurrentIndex(idx)
 
     def change_version(self, version):
-        if self.version == version:
+        if self.system == version:
             return
-        self.version = version
+        self.system = version
         self.clear_bookmark_handle()
         self.clear_encounter_handle()
 
@@ -271,7 +269,7 @@ class DMTool(QMainWindow):
 
         self.monster_table_widget.filter.clear_filters()
 
-        self.load_resources()
+        self.load_resources(self._database_path)
 
     def addMonsterToBookmark(self, monster):
         row_position = self.bookmark_widget.monster_bookmark.rowCount()
@@ -299,26 +297,18 @@ class DMTool(QMainWindow):
             self.bookmark_widget.spell_bookmark.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
             self.bookmark_widget.spell_bookmark.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
-    def load_resources(self, resource_path):
-        if self.version == "5":
-            item_cls = Item
-            monster_cls = Monster
-            spell_cls = Spell
-        elif self.version == "3.5":
-            item_cls = Item35
-            monster_cls = Monster35
-            spell_cls = Spell35
-        self.db = RainyDatabase(resource_path)
-        self.item_table_widget.set_database(self.db)
+    def load_resources(self, database_path):
+        self.db = RainyDatabase(database_path, system=self.system)
+        self.item_table_widget.set_entries(self.db.get_items())
         self.item_table_widget.fill_table()
-        self.item_table_widget.define_filters(self.version)
-        self.monster_table_widget.set_database(self.db)
+        self.item_table_widget.define_filters(self.system)
+        self.monster_table_widget.set_entries(self.db.get_monsters())
         self.monster_table_widget.fill_table()
-        self.monster_table_widget.define_filters(self.version)
+        self.monster_table_widget.define_filters(self.system)
         # self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
-        self.spell_table_widget.set_database(self.db)
+        self.spell_table_widget.set_entries(self.db.get_spells())
         self.spell_table_widget.fill_table()
-        self.spell_table_widget.define_filters(self.version)
+        self.spell_table_widget.define_filters(self.system)
 
     def add_player(self, player=None):
         self.playerWidget.add(PlayerFrame(self.playerWidget))
@@ -405,16 +395,15 @@ class DMTool(QMainWindow):
     def load_meta(self):
         if not os.path.exists("metadata/"):
             os.mkdir("metadata")
-        self.version = "5"
-        if os.path.exists("metadata/meta.txt"):
-            try:
-                with open("metadata/meta.txt", "r") as f:
-                    meta_dict = eval(f.read())
-                    if 'version' in meta_dict.keys():
-                        self.version = meta_dict['version']
-                        self.settings = meta_dict['settings']
-            except:
-                None
+
+        meta_path = os.path.join("metadata", "meta.txt")
+        if os.path.exists(meta_path):
+            with open(meta_path, "r") as f:
+                meta_dict = json.load(f)
+                self.system = System.from_plaintext(meta_dict['system'])
+                self.settings = meta_dict['settings']
+        else:
+            self.system = System.DnD5e
 
     def load_session(self):
         if not os.path.exists("metadata/"):
@@ -468,7 +457,7 @@ class DMTool(QMainWindow):
 
         with open("metadata/meta.txt", "w") as f:
             json.dump(dict(
-                version=self.version,
+                system=System.to_plaintext(self.system),
                 settings=self.settings
             ), f)
 
@@ -493,11 +482,30 @@ class DMTool(QMainWindow):
         old_excepthook(type, value, tb)
         self.close()
 
+    def validate_views(self):
+        for spell in self.db.get_spells().values():
+            self.spell_viewer.draw_view(spell)
+        for monster in self.db.get_monsters().values():
+            self.monster_viewer.draw_view(monster)
+        for item in self.db.get_items().values():
+            self.item_viewer.draw_view(item)
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='RainyDM')
+    parser.add_argument('--validate_views', dest='validate_views', action='store_const',
+                        const=True, default=False,
+                        help='Display all entries in the view after launching')
+
+    args = parser.parse_args()
+
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    form = DMTool(os.path.join(os.getcwd(), "RainyDB"))
+    form = DMTool(
+        os.path.join(os.getcwd(), "RainyDB"),
+        validate_views=args.validate_views
+    )
 
     form.show()  # Show the form
     sys.exit(app.exec_())  # and execute the app

@@ -14,7 +14,7 @@ strategy:
       python.version: '3.9'
 
 steps:
-- checkout: RainyDM # self represents the repo where the initial Pipelines YAML file was found
+- checkout: self # self represents the repo where the initial Pipelines YAML file was found
   fetchDepth: number  # the depth of commits to ask Git to fetch; defaults to no limit
   lfs: boolean  # whether to download Git-LFS files; defaults to false
   submodules: recursive  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules; defaults to not checking out submodules
@@ -28,14 +28,14 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
+    pip install pytest pytest-azurepipelines pytest-cov
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines pytest-cov
-    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-config=.coveragerc
+    python -m pytest --junitxml=junit/test-results.xml tests
   displayName: 'pytest'
 
-- task: PublishCodeCoverageResults@1
+- task: PublishTestResults@2
   inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: 'coverage.xml'
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/test-result.xml'

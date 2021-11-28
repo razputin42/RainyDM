@@ -1,24 +1,20 @@
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QTextBrowser, QPushButton
-from dependencies.html_format import monster_dict, spell_dict, item_dict, general_head, general_foot, not_srd
+from dependencies.html_format import monster_dict, spell_dict, sw5e_dict, item_dict, general_head, general_foot, not_srd
 from dependencies.auxiliaries import GlobalParameters
 from string import Template
-from RainyCore.spell import Spell35
-from RainyCore.item import Item35
-from RainyCore.signals import sNexus
+from RainyCore import System, sNexus
 from abc import abstractmethod as abstract
-
 
 
 class Viewer(QTextBrowser):
     current_view = None
 
-    def __init__(self):
+    def __init__(self, system):
         QTextBrowser.__init__(self)
+        self._system = system
         self.horizontalScrollBar().setHidden(True)
-        # self.setStyleSheet("border-image: url(assets/viewer_background.jpg);")
         self.aux_format()
-        # self.setHidden(True)
 
     def aux_format(self):
         pass
@@ -41,21 +37,21 @@ class Viewer(QTextBrowser):
 
 
 class MonsterViewer(Viewer):
-    def __init__(self, button_bar):
-        super().__init__()
+    def __init__(self, button_bar, system):
+        super().__init__(system)
         self.button_bar = button_bar
         self.button_bar.setContentsMargins(0, 0, 0, 0)
 
     def draw_view(self, monster):
-        if monster.srd == "no":
+        if not monster.is_srd_valid():
+            # What to display is monster is not SRD valid
             template = Template(not_srd)
             html = template.safe_substitute(
                 name=monster.name
             )
-        # this is going to get confusing fast... This is everything before saving throws
-        # if isinstance(monster, Monster35):
-        #     html = general_head + monster.full_text + general_foot
+
         else:
+            # this is going to get confusing fast... This is everything before saving throws
             template = Template(monster_dict['first'])
             html = template.safe_substitute(
                 name=monster.name,
@@ -69,7 +65,7 @@ class MonsterViewer(Viewer):
                 str_mod=monster.calculate_modifier(monster.str, sign=True),
                 dex=monster.dex,
                 dex_mod=monster.calculate_modifier(monster.dex, sign=True),
-                con = monster.con,
+                con=monster.con,
                 con_mod=monster.calculate_modifier(monster.con, sign=True),
                 int=monster.int,
                 int_mod=monster.calculate_modifier(monster.int, sign=True),
@@ -102,14 +98,14 @@ class MonsterViewer(Viewer):
                     cr=monster.cr,
                     xp=monster.xp
                 )
-
             html = html + monster_dict['gradient']
+
             # add traits
             for itt, trait in enumerate(monster.trait_list):
                 template = Template(monster_dict['action_even'])
                 html = html + template.safe_substitute(
                     name=trait.name if hasattr(trait, "name") else "",
-                    text=trait.text
+                    text=trait.text.replace("\n", "<br/>")
                 )
 
             # second part of the monster
@@ -119,7 +115,7 @@ class MonsterViewer(Viewer):
 
             # add each action
             for itt, action in enumerate(monster.action_list):
-                if itt % 2 == 0: # even
+                if itt % 2 == 0:  # even
                     template = Template(monster_dict['action_even'])
                 else:
                     template = Template(monster_dict['action_odd'])
@@ -168,16 +164,27 @@ class MonsterViewer(Viewer):
 
 class SpellViewer(Viewer):
     def draw_view(self, spell):
-        if spell.srd == "no":
+        if hasattr(spell, "srd") and spell.srd == "no":
             template = Template(not_srd)
             html = template.safe_substitute(
                 name=spell.name
             )
             html = html + general_foot
         else:
-            if isinstance(spell, Spell35):
-                html = general_head + spell.full_text + general_foot
-            else:
+            # if isinstance(spell, Spell35):
+            #     html = general_head + spell.full_text + general_foot
+            if self._system == System.SW5e:
+                template = Template(sw5e_dict['spell'])
+                html = template.safe_substitute(
+                    name=spell.name,
+                    level=self.ordinal(spell.level),
+                    time=spell.time,
+                    range=spell.range,
+                    duration=spell.duration,
+                    text=spell.text,
+                    classes=', '.join(spell.classes) if hasattr(spell, "classes") else ""
+                )
+            elif self._system == System.DnD5e:
                 template = Template(spell_dict['entire'])
                 html = template.safe_substitute(
                     name=spell.name,
@@ -222,18 +229,13 @@ class ItemViewer(Viewer):
         self.setMaximumWidth(53000)  # i.e. as large as it wants
 
     def draw_view(self, item):
-        if not item.srd_bool:
+        if not item.is_srd_valid():
             template = Template(not_srd)
             html = template.safe_substitute(
                 name=item.name
             )
         else:
-            if isinstance(item, Item35):  # 3.5e item
-                if hasattr(item, "full_text"):
-                    html = general_head + item.full_text + general_foot
-                else:
-                    html = general_head + item_dict['body35'] + general_foot
-            else:  # 5e item
+            if self._system.is_DnD5e() or self._system.is_SW5e():  # 5e item
                 html = item_dict['header']
                 template = Template(item_dict["name"])
                 html = html + template.safe_substitute(desc=item.name)
@@ -254,6 +256,7 @@ class ItemViewer(Viewer):
                                     dmg1=getattr(item, "dmg1"),
                                     dmg2=getattr(item, "dmg2"),
                                     dmgType=item.damage_type_dict[getattr(item, "dmgType")]
+                                    if hasattr(item, "dmgType") else "None"
                                 )
                             else:  # has only one damage dice
                                 template = Template(item_dict['dmg'])
@@ -261,6 +264,7 @@ class ItemViewer(Viewer):
                                     name=name,
                                     dmg1=getattr(item, "dmg1"),
                                     dmgType=item.damage_type_dict[getattr(item, "dmgType")]
+                                    if hasattr(item, "dmgType") else "None"
                                 )
                         else:  # general case
                             template = Template(item_dict['desc'])

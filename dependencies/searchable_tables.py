@@ -6,10 +6,8 @@ from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
 from dependencies.auxiliaries import RarityList
-from RainyCore.monster import Monster
-from RainyCore.spell import Spell
-from RainyCore.item import Item
-from RainyCore.signals import sNexus
+from RainyDB import EntryType
+from RainyCore import System
 
 
 class MyTableWidget(QTableWidget):
@@ -38,7 +36,7 @@ class SearchableTable(QFrame):
     HEADERS = ['Name', 'REFERENCE']
     EDITABLE = False
     DATABASE_ENTRY_FIELD = 'entry'
-    ENTRY_CLASS = None
+    ENTRY_TYPE = None
     VIEWER_INDEX = None
 
     prev_entry = None
@@ -83,16 +81,15 @@ class SearchableTable(QFrame):
         self.setup_button_bar()
         self.format()
 
-    def set_database(self, db):
-        self.full_database = db
-        self.database = db[str(self.ENTRY_CLASS)]
+    def set_entries(self, entries):
+        self.entries = entries
 
     def get_current_entry(self):
         current_row = self.table.currentRow()
         if current_row == -1:
             return None
         name = self.table.item(current_row, 0).text()
-        entry = self.database[name]
+        entry = self.entries[name]
         return entry
 
     def selection_change_handle(self, e):
@@ -133,24 +130,10 @@ class SearchableTable(QFrame):
     def define_filters(self):
         pass
 
-    # def load_all(self, s, dir, Class):
-    #     self.dir = dir
-    #     self.database.values() = []
-    #     for resource in os.listdir(dir):
-    #         self.load_list(s, dir + resource, Class)
-
-
-    # def load_list(self, s, resource, Class):
-    #     xml = ElementTree.parse(resource)
-    #     root = xml.getroot()
-    #     for itt, entry in enumerate(root.findall(s)):
-    #         self.database.values().append(Class(entry, itt))
-    #     self.database.values()_dict[str(Class)] = self.database.values()
-
     def fill_table(self):
         self.table.clear()
-        self.table.setRowCount(len(self.database))
-        for itt, entry in enumerate(self.database.values()):
+        self.table.setRowCount(len(self.entries))
+        for itt, entry in enumerate(self.entries.values()):
             self.update_entry(itt, entry)
             self.idx_dict[entry.name] = itt
         self.table.setHorizontalHeaderLabels(self.HEADERS)
@@ -163,7 +146,7 @@ class SearchableTable(QFrame):
 
     def unique_attr(self, attr):
         result = []
-        for entry in self.database.values():
+        for entry in self.entries.values():
             if hasattr(entry, attr):
                 entry_attr = getattr(entry, attr)
                 if entry_attr is None:
@@ -184,38 +167,33 @@ class SearchableTable(QFrame):
 
         for idx in range(self.table.rowCount()):
             name = self.table.item(idx, self.NAME_COLUMN).text()
-            entry = self.database[name]
+            entry = self.entries[name]
             total_cond = True if p.match(name) else False
             total_cond = total_cond and self.filter.evaluate_filter(entry)
             self.table.setRowHidden(idx, not total_cond)
-        # self._toggle_table(result)
 
-    # def _toggle_table(self, result):
-        # for name, cond in result.items():
-            # idx = self.idx_dict[name]
-            # self.table.setRowHidden(idx, not cond)
-
-    def extract_subtypes(self, options):
+    @staticmethod
+    def extract_subtypes(options):
         subtype_dict = dict()
         type_return = []
-        for s in options:
-            if s is None:
+        for entry_type in options:
+            if entry_type is None:
                 continue
-            if "(" in s:  # indicates that there is a subtype
-                type = s[:s.find("(")].strip()  # find the original type
-                type = type.lower()
-                if type not in type_return:
-                    type_return.append(type)
-                subtype_raw = s[s.find("(") + 1:s.find(")")]
+            entry_type = entry_type.capitalize()
+            if "(" in entry_type:  # indicates that there is a subtype
+                main_type = entry_type[:entry_type.find("(")].strip()  # find the main type
+                if main_type not in type_return:
+                    type_return.append(main_type)
+                subtype_raw = entry_type[entry_type.find("(") + 1:entry_type.find(")")]
                 subtype_list = subtype_raw.split(", ")
                 for subtype in subtype_list:
-                    if type not in subtype_dict.keys():
-                        subtype_dict[type] = [subtype]
-                    elif subtype not in subtype_dict[type]:
-                        subtype_dict[type].append(subtype)
+                    if main_type not in subtype_dict.keys():
+                        subtype_dict[main_type] = [subtype]
+                    elif subtype not in subtype_dict[main_type]:
+                        subtype_dict[main_type].append(subtype)
             else:
-                if s not in type_return:
-                    type_return.append(s)
+                if entry_type not in type_return:
+                    type_return.append(entry_type)
 
         for key, value in subtype_dict.items():
             value = [option.capitalize() for option in value]
@@ -227,7 +205,7 @@ class SearchableTable(QFrame):
 
     def subset(self, attr_dict):
         output_list = []
-        for entry in self.database.values():
+        for entry in self.entries.values():
             valid = True
             for key in attr_dict:
                 if not hasattr(entry, key) or getattr(entry, key) != attr_dict[key]:
@@ -241,7 +219,7 @@ class SearchableTable(QFrame):
         attr = attr.lower()
         if type(value) is str:
             value = value.lower()
-        for entry in self.database.values():
+        for entry in self.entries.values():
             if hasattr(entry, attr):
                 _value = getattr(entry, attr)
                 if type(_value) is str:
@@ -283,9 +261,9 @@ class SearchableTable(QFrame):
             msg.setWindowTitle("Duplicate Entry")
             msg.exec_()
             return False
-        self.database[entry.name] = entry
-        self.table.setRowCount(len(self.database.values()))
-        self.update_entry(len(self.database.values()) - 1, entry)
+        self.entries[entry.name] = entry
+        self.table.setRowCount(len(self.entries.values()))
+        self.update_entry(len(self.entries.values()) - 1, entry)
         self.sort_columns(self.NAME_COLUMN, order=Qt.AscendingOrder)
 
     # find and return the SubElement handle for the first entry with the attribute equal to the value
@@ -395,7 +373,7 @@ class MonsterTableWidget(SearchableTable):
     CR_COLUMN = 3
     HEADERS = ['Name', 'Type', 'CR', 'FLOAT CR']
     DATABASE_ENTRY_FIELD = 'monster'
-    ENTRY_CLASS = Monster
+    ENTRY_TYPE = EntryType.Monster
     VIEWER_INDEX = 0
 
     def sort_columns(self, n, order=None):
@@ -459,7 +437,7 @@ class MonsterTableWidget(SearchableTable):
         self.idx_dict[entry.name] = row
 
     def define_filters(self, version):
-        if version == "5":
+        if version == System.DnD5e:
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
             self.filter.add_dropdown("Size", self.unique_attr("size"))
             self.filter.add_dropdown("Source", self.unique_attr("source"))
@@ -467,10 +445,10 @@ class MonsterTableWidget(SearchableTable):
             # self.filter.lock("srd", "yes")
             self.filter.add_dropdown("SRD", self.unique_attr("srd"))
             # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
-        elif version == "3.5":
+        elif version == System.SW5e:
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
             self.filter.add_dropdown("Size", self.unique_attr("size"))
-            # self.filter.add_dropdown("Source", self.unique_attr("source"))
+            self.filter.add_dropdown("Source", self.unique_attr("source"))
             self.filter.add_range("CR")
         self.search_handle()
         self.define_filter_buttons()
@@ -495,7 +473,7 @@ class MonsterTableWidget(SearchableTable):
         if current_row == -1:
             return None
         monster = self.table.item(current_row, 0).text()
-        return self.database[monster]
+        return self.entries[monster]
 
     def add_monster_to_encounter(self, number=False):
         monster = self.get_selected_monster()
@@ -559,7 +537,7 @@ class SpellTableWidget(SearchableTable):
     HEADERS = ['Name', 'REFERENCE', 'Spell Level']
     DATABASE_ENTRY_FIELD = 'spell'
     EDITABLE = True
-    ENTRY_CLASS = Spell
+    ENTRY_TYPE = EntryType.Spell
     VIEWER_INDEX = 1
 
     def update_entry(self, row, entry):
@@ -575,16 +553,14 @@ class SpellTableWidget(SearchableTable):
         t.setColumnHidden(self.LEVEL_COLUMN, False)
 
     def define_filters(self, version):
-        if version == "5":
+        if version == System.DnD5e:
             self.filter.add_dropdown("School", self.unique_attr("school"))
             self.filter.add_dropdown("Level", self.unique_attr("level"))
             self.filter.add_dropdown('Classes', *self.extract_subtypes(self.unique_attr('classes')))
             self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr('range')))
             self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr("source")))
-        elif version == "3.5":
-            self.filter.add_dropdown("School", self.unique_attr("school"))
-            # self.filter.add_dropdown("Level", self.unique_attr("level"))
-            # self.filter.add_dropdown("Range", self.unique_attr("range"))
+        elif version == System.SW5e:
+            pass
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -617,7 +593,7 @@ class ItemTableWidget(SearchableTable):
     INDEX_COLUMN = 1
     DATABASE_ENTRY_FIELD = 'item'
     EDITABLE = True
-    ENTRY_CLASS = Item
+    ENTRY_TYPE = EntryType.Item
     VIEWER_INDEX = 2
 
     def format(self):
@@ -627,17 +603,17 @@ class ItemTableWidget(SearchableTable):
         t.setColumnHidden(self.INDEX_COLUMN, True)
 
     def define_filters(self, version):
-        if version == "5":
+        if version == System.DnD5e:
             self.filter.add_dropdown("Type", self.unique_attr("type"))
             self.filter.add_dropdown("Rarity", RarityList, alphabetical=False)
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
             self.filter.add_range("value", capitalize=True)
-        elif version == "3.5":
-            self.filter.add_dropdown("Category", self.unique_attr("category"))
+        elif version == System.SW5e:
+            pass
 
     def subset(self, attr_dict):
         output_list = []
-        for entry in self.database.values():
+        for entry in self.entries.values():
             valid = True
             for key in attr_dict:
                 if key == "type" and attr_dict[key] == "Armor":

@@ -17,7 +17,6 @@ class Filter:
         self.frame.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         actual_layout = QVBoxLayout()
         widget_frame = QFrame()
-        # widget_frame.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.layout = QVBoxLayout()
         widget_frame.setLayout(self.layout)
         actual_layout.addWidget(widget_frame)
@@ -68,7 +67,6 @@ class Filter:
         self.filter_content()
 
     def add_dropdown(self, name, options, suboptions=None, default=None, alphabetical=True):
-        options = [str(option).capitalize() for option in options]
         if alphabetical:
             options.sort()
         combo_box = QComboBox()
@@ -105,23 +103,24 @@ class Filter:
         self.filter_content()
 
     def set_filters(self, name, combo_box, sub_combo_box=None, suboptions=None):
-        main = combo_box.currentText().lower()
+        main = combo_box.currentText()
         sub_cond = sub_combo_box is not None
         if sub_cond:
             sub = sub_combo_box.currentText()
 
         name = name.lower()
-        if main == "any" and name in self.filter.keys():
+        if main == "Any" and name in self.filter.keys():
             del self.filter[name]
             if sub_cond:
                 sub_combo_box.setHidden(True)
         else:
             if sub_cond:
                 if main in suboptions.keys():
+                    _suboptions = [subopt for subopt in suboptions[main] if subopt != "Any"]  # remove Any as suboption
                     sub_combo_box.setHidden(False)
                     sub_combo_box.clear()
                     sub_combo_box.addItem("Any")
-                    sub_combo_box.addItems(suboptions[main])
+                    sub_combo_box.addItems(_suboptions)
                 else:
                     sub_combo_box.clear()
                     sub_combo_box.setHidden(True)
