@@ -34,16 +34,6 @@ steps:
 - script: |
     python -m pytest --junitxml=junit/test-results.xml tests
   displayName: 'pytest'
-  
-- script: |
-    installer.bat
-  displayName: 'Install dependencies'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'dist/RainyDM'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
 
 - task: PublishTestResults@2
   inputs:
