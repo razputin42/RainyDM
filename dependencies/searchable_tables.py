@@ -6,8 +6,7 @@ from lxml import etree as ET
 import re, os
 from dependencies.db_editor import DBEditor
 from dependencies.auxiliaries import RarityList
-from RainyDB import EntryType
-from RainyCore import System
+from RainyDB import EntryType, System
 
 
 class MyTableWidget(QTableWidget):
@@ -135,12 +134,12 @@ class SearchableTable(QFrame):
         self.table.setRowCount(len(self.entries))
         for itt, entry in enumerate(self.entries.values()):
             self.update_entry(itt, entry)
-            self.idx_dict[entry.name] = itt
+            self.idx_dict[entry.get_name()] = itt
         self.table.setHorizontalHeaderLabels(self.HEADERS)
         self.sort_columns(self.NAME_COLUMN, Qt.AscendingOrder)
 
     def update_entry(self, row, entry):
-        item = QTableWidgetItem(entry.name)
+        item = QTableWidgetItem(entry.get_name())
         self.table.setItem(row, self.NAME_COLUMN, item)
         # self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
 
@@ -254,14 +253,14 @@ class SearchableTable(QFrame):
         self.db_editor.show()  # the DBEditor calls the copy_entry and save_entry functions defined below
 
     def copy_entry(self, entry):
-        if self.find_entry('name', entry.name) is not None:
+        if self.find_entry('name', entry.get_name()) is not None:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
-            msg.setText('Entry with name {} already exists'.format(entry.name))
+            msg.setText('Entry with name {} already exists'.format(entry.get_name()))
             msg.setWindowTitle("Duplicate Entry")
             msg.exec_()
             return False
-        self.entries[entry.name] = entry
+        self.entries[entry.get_name()] = entry
         self.table.setRowCount(len(self.entries.values()))
         self.update_entry(len(self.entries.values()) - 1, entry)
         self.sort_columns(self.NAME_COLUMN, order=Qt.AscendingOrder)
@@ -416,7 +415,7 @@ class MonsterTableWidget(SearchableTable):
         self.sort_columns(self.NAME_COLUMN)
 
     def update_entry(self, row, entry):
-        name_item = QTableWidgetItem(entry.name)
+        name_item = QTableWidgetItem(entry.get_name())
         # name_item.setFlags(Qt.TextEditable)
         self.table.setItem(row, self.NAME_COLUMN, name_item)
         # self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
@@ -434,10 +433,10 @@ class MonsterTableWidget(SearchableTable):
             cr_item = QTableWidgetItem()
             cr_item.setData(Qt.DisplayRole, true_cr)
             self.table.setItem(row, self.CR_COLUMN, cr_item)
-        self.idx_dict[entry.name] = row
+        self.idx_dict[entry.get_name()] = row
 
     def define_filters(self, version):
-        if version == System.DnD5e:
+        if version is System.DnD5e:
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
             self.filter.add_dropdown("Size", self.unique_attr("size"))
             self.filter.add_dropdown("Source", self.unique_attr("source"))
@@ -445,7 +444,7 @@ class MonsterTableWidget(SearchableTable):
             # self.filter.lock("srd", "yes")
             self.filter.add_dropdown("SRD", self.unique_attr("srd"))
             # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
-        elif version == System.SW5e:
+        elif version is System.SW5e:
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
             self.filter.add_dropdown("Size", self.unique_attr("size"))
             self.filter.add_dropdown("Source", self.unique_attr("source"))
@@ -541,7 +540,7 @@ class SpellTableWidget(SearchableTable):
     VIEWER_INDEX = 1
 
     def update_entry(self, row, entry):
-        self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.name)))
+        self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.get_name())))
         self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
         self.table.setItem(row, self.LEVEL_COLUMN, QTableWidgetItem(str(entry.level)))
 
@@ -553,13 +552,13 @@ class SpellTableWidget(SearchableTable):
         t.setColumnHidden(self.LEVEL_COLUMN, False)
 
     def define_filters(self, version):
-        if version == System.DnD5e:
+        if version is System.DnD5e:
             self.filter.add_dropdown("School", self.unique_attr("school"))
             self.filter.add_dropdown("Level", self.unique_attr("level"))
             self.filter.add_dropdown('Classes', *self.extract_subtypes(self.unique_attr('classes')))
             self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr('range')))
             self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr("source")))
-        elif version == System.SW5e:
+        elif version is System.SW5e:
             pass
 
     def contextMenuEvent(self, event):
@@ -603,12 +602,12 @@ class ItemTableWidget(SearchableTable):
         t.setColumnHidden(self.INDEX_COLUMN, True)
 
     def define_filters(self, version):
-        if version == System.DnD5e:
+        if version is System.DnD5e:
             self.filter.add_dropdown("Type", self.unique_attr("type"))
             self.filter.add_dropdown("Rarity", RarityList, alphabetical=False)
             self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
             self.filter.add_range("value", capitalize=True)
-        elif version == System.SW5e:
+        elif version is System.SW5e:
             pass
 
     def subset(self, attr_dict):

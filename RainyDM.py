@@ -6,8 +6,8 @@ from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget,
 from dependencies.bookmark import BookmarkWidget
 from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 from RainyCore.signals import sNexus
-from RainyDB import RainyDatabase
-from RainyCore import System
+from RainyDB import RainyDatabase, System, EntryType
+from RainyCore import ItemSW5e, MonsterSW5e, PowerSW5e
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
@@ -94,7 +94,7 @@ class DMTool(QMainWindow):
         self.loot_widget = TreasureHoardTab(self, self.item_viewer, self.item_table_widget)
 
         # Initiative list
-        self.encounterWidget = EncounterWidget(self.monster_viewer)
+        #self.encounterWidget = EncounterWidget(self.monster_viewer)
 
         # bookmark
         self.bookmark_widget = BookmarkWidget(self.monster_table_widget,
@@ -104,7 +104,7 @@ class DMTool(QMainWindow):
 
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
-        encounter_layout.addWidget(self.encounterWidget)
+        #encounter_layout.addWidget(self.encounterWidget)
         encounter_layout.addWidget(self.bookmark_widget)
         encounter_frame.setLayout(encounter_layout)
 
@@ -298,15 +298,32 @@ class DMTool(QMainWindow):
             self.bookmark_widget.spell_bookmark.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
     def load_resources(self, database_path):
-        self.db = RainyDatabase(database_path, system=self.system)
-        self.item_table_widget.set_entries(self.db.get_items())
+        if self.system is System.SW5e:
+            system_entry_classes = {
+                EntryType.Monster: MonsterSW5e,
+                EntryType.Power: PowerSW5e,
+                EntryType.Item: ItemSW5e
+            }
+        elif self.system is System.DnD5e:
+            system_entry_classes = {}
+            # system_entry_classes = {
+            #     EntryType.Monster: Monster5e,
+            #     EntryType.Power: Power5e,
+            #     EntryType.Item: Item5e
+            # }
+        self.db = RainyDatabase(
+            path=database_path,
+            system=self.system,
+            system_entry_classes=system_entry_classes
+        )
+        self.item_table_widget.set_entries(self.db.get(EntryType.Item))
         self.item_table_widget.fill_table()
         self.item_table_widget.define_filters(self.system)
-        self.monster_table_widget.set_entries(self.db.get_monsters())
+        self.monster_table_widget.set_entries(self.db.get(EntryType.Monster))
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters(self.system)
         # self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
-        self.spell_table_widget.set_entries(self.db.get_spells())
+        self.spell_table_widget.set_entries(self.db.get(EntryType.Power))
         self.spell_table_widget.fill_table()
         self.spell_table_widget.define_filters(self.system)
 
@@ -403,7 +420,7 @@ class DMTool(QMainWindow):
                 self.system = System.from_plaintext(meta_dict['system'])
                 self.settings = meta_dict['settings']
         else:
-            self.system = System.DnD5e
+            self.system = System.SW5e
 
     def load_session(self):
         if not os.path.exists("metadata/"):

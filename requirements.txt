@@ -2,3 +2,4 @@ pyqt5
 html2text
 pyperclip
 lxml
+requests

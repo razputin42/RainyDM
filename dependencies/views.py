@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QTextBrowser, QPushButton
 from dependencies.html_format import monster_dict, spell_dict, sw5e_dict, item_dict, general_head, general_foot, not_srd
 from dependencies.auxiliaries import GlobalParameters
 from string import Template
-from RainyCore import System, sNexus
+from RainyCore import sNexus
+from RainyDB import System
 from abc import abstractmethod as abstract
 
 
@@ -173,7 +174,7 @@ class SpellViewer(Viewer):
         else:
             # if isinstance(spell, Spell35):
             #     html = general_head + spell.full_text + general_foot
-            if self._system == System.SW5e:
+            if self._system is System.SW5e:
                 template = Template(sw5e_dict['spell'])
                 html = template.safe_substitute(
                     name=spell.name,
@@ -184,7 +185,7 @@ class SpellViewer(Viewer):
                     text=spell.text,
                     classes=', '.join(spell.classes) if hasattr(spell, "classes") else ""
                 )
-            elif self._system == System.DnD5e:
+            elif self._system is System.DnD5e:
                 template = Template(spell_dict['entire'])
                 html = template.safe_substitute(
                     name=spell.name,
