@@ -55,8 +55,8 @@ class MonsterViewer(Viewer):
             # this is going to get confusing fast... This is everything before saving throws
             template = Template(monster_dict['first'])
             html = template.safe_substitute(
-                name=monster.name,
-                size=monster.size,
+                name=monster.get_name(),
+                size=monster.get_size(),
                 type=monster.type,
                 alignment=monster.alignment,
                 armor_class=monster.ac,
@@ -75,39 +75,36 @@ class MonsterViewer(Viewer):
                 cha=monster.cha,
                 cha_mod=monster.calculate_modifier(monster.cha, sign=True)
             )
-            descriptive = ["save", "resist", "immune", "conditionImmune", "skill", "senses", "languages"]
-            name_dict = dict(
-                save="Saving Throws",
-                resist="Damage Resistance",
-                immune="Damage Immunities",
-                conditionImmune="Condition Immunities",
-                skill="Skills",
-                senses="Senses",
-                languages="Languages",
-                cr="Challenge Rating"
-            )
-            for desc in descriptive:
-                if hasattr(monster, desc) and getattr(monster, desc) is not None:
-                    template = Template(monster_dict['desc'])
-                    html = html + template.safe_substitute(
-                        name=name_dict[desc],
-                        desc=getattr(monster, desc))
-
-            if hasattr(monster, "cr"):
-                template = Template(monster_dict['cr'])
+            descriptive_list = [
+                ("Saving Throws", monster.get_saving_throws()),
+                ("Damage Resistance", monster.get_resistances()),
+                ("Damage Immunities", monster.get_immunities()),
+                ("Condition Immunities", monster.get_condition_immunities()),
+                ("Skills", monster.get_skills()),
+                ("Senses", monster.get_senses()),
+                ("Languages", monster.get_languages()),
+            ]
+            for name, value in descriptive_list:
+                template = Template(monster_dict['desc'])
                 html = html + template.safe_substitute(
-                    cr=monster.cr,
-                    xp=monster.xp
+                    name=name,
+                    desc=value
                 )
+
+            template = Template(monster_dict['cr'])
+            html = html + template.safe_substitute(
+                cr=monster.get_challenge_rating(),
+                xp=monster.get_experience()
+            )
             html = html + monster_dict['gradient']
 
             # add traits
             for itt, trait in enumerate(monster.trait_list):
                 template = Template(monster_dict['action_even'])
-                html = html + template.safe_substitute(
-                    name=trait.name if hasattr(trait, "name") else "",
-                    text=trait.text.replace("\n", "<br/>")
-                )
+            html = html + template.safe_substitute(
+                name=trait.name if hasattr(trait, "name") else "",
+                text=trait.text.replace("\n", "<br/>")
+            )
 
             # second part of the monster
             template = Template(monster_dict['second'])
@@ -128,24 +125,24 @@ class MonsterViewer(Viewer):
             # add each legendary action
             if len(monster.legendary_list) != 0:
                 html = html + monster_dict['legendary_header']
-                for itt, action in enumerate(monster.legendary_list):
-                    if itt % 2 == 0:  # even
-                        template = Template(monster_dict['action_even'])
-                    else:
-                        template = Template(monster_dict['action_odd'])
-                    html = html + template.safe_substitute(
-                        name=action.name if hasattr(action, "name") else "",
-                        text=action.text
-                    )
+            for itt, action in enumerate(monster.legendary_list):
+                if itt % 2 == 0:  # even
+                    template = Template(monster_dict['action_even'])
+                else:
+                    template = Template(monster_dict['action_odd'])
+                html = html + template.safe_substitute(
+                    name=action.name if hasattr(action, "name") else "",
+                    text=action.text
+                )
 
             self.update_button_bar(monster)
-        # rest of the monster
-        template = Template(monster_dict['rest'])
-        html = html + template.safe_substitute()
-        self.html = html
-        self.setHtml(html)
-        self.current_view = monster
-        sNexus.viewerSelectChanged.emit(GlobalParameters.MONSTER_VIEWER_INDEX)
+            # rest of the monster
+            template = Template(monster_dict['rest'])
+            html = html + template.safe_substitute()
+            self.html = html
+            self.setHtml(html)
+            self.current_view = monster
+            sNexus.viewerSelectChanged.emit(GlobalParameters.MONSTER_VIEWER_INDEX)
 
     def update_button_bar(self, monster):
         button_bar_layout = self.button_bar.layout()

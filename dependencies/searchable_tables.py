@@ -41,6 +41,7 @@ class SearchableTable(QFrame):
     prev_entry = None
 
     def __init__(self, parent, viewer):
+        self.entries = None
         self.old_n = None
         self.order = None
         self.COLUMNS = len(self.HEADERS)
@@ -141,13 +142,13 @@ class SearchableTable(QFrame):
     def update_entry(self, row, entry):
         item = QTableWidgetItem(entry.get_name())
         self.table.setItem(row, self.NAME_COLUMN, item)
-        # self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
 
     def unique_attr(self, attr):
         result = []
         for entry in self.entries.values():
-            if hasattr(entry, attr):
-                entry_attr = getattr(entry, attr)
+            attributes = entry.get_attributes()
+            if hasattr(attributes, attr):
+                entry_attr = getattr(attributes, attr)
                 if entry_attr is None:
                     continue
                 if type(entry_attr) is not list:
@@ -406,34 +407,20 @@ class MonsterTableWidget(SearchableTable):
         t.setRowCount(1)
         resize = QHeaderView.ResizeToContents
         stretch = QHeaderView.Stretch
-        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_DISPLAY_COLUMN], [stretch, resize, resize]):
+        for column, policy in zip([self.NAME_COLUMN, self.TYPE_COLUMN, self.CR_DISPLAY_COLUMN],
+                                  [stretch, resize, resize]):
             h.setSectionResizeMode(column, policy)
         t.setShowGrid(False)
-        # t.setColumnHidden(self.INDEX_COLUMN, True)
         t.setColumnHidden(self.TYPE_COLUMN, True)
         t.setColumnHidden(self.CR_COLUMN, True)
         self.sort_columns(self.NAME_COLUMN)
 
     def update_entry(self, row, entry):
         name_item = QTableWidgetItem(entry.get_name())
-        # name_item.setFlags(Qt.TextEditable)
         self.table.setItem(row, self.NAME_COLUMN, name_item)
-        # self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
-        # self.table.setItem(row, self.TYPE_COLUMN, QTableWidgetItem(str(entry.type)))
-        if hasattr(entry, "cr"):
-            if entry.cr == "00" or entry.cr is None:
-                shown_cr = "-"
-                true_cr = 0
-            else:
-                shown_cr = str(entry.cr)
-                true_cr = eval("float({})".format(entry.cr))
-            cr_item = QTableWidgetItem(shown_cr)
-            # cr_item.setFlags(Qt.ItemIsEditable)
-            self.table.setItem(row, self.CR_DISPLAY_COLUMN, cr_item)
-            cr_item = QTableWidgetItem()
-            cr_item.setData(Qt.DisplayRole, true_cr)
-            self.table.setItem(row, self.CR_COLUMN, cr_item)
-        self.idx_dict[entry.get_name()] = row
+        cr = entry.get_challenge_rating()
+        cr_item = QTableWidgetItem(cr)
+        self.table.setItem(row, self.CR_DISPLAY_COLUMN, cr_item)
 
     def define_filters(self, version):
         if version is System.DnD5e:
@@ -441,9 +428,7 @@ class MonsterTableWidget(SearchableTable):
             self.filter.add_dropdown("Size", self.unique_attr("size"))
             self.filter.add_dropdown("Source", self.unique_attr("source"))
             self.filter.add_range("CR")
-            # self.filter.lock("srd", "yes")
             self.filter.add_dropdown("SRD", self.unique_attr("srd"))
-            # self.filter.add_dropdown("Alignment", self.unique_attr("alignment"))
         elif version is System.SW5e:
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
             self.filter.add_dropdown("Size", self.unique_attr("size"))
@@ -531,9 +516,8 @@ class MonsterTableWidget(SearchableTable):
 
 class SpellTableWidget(SearchableTable):
     NAME_COLUMN = 0
-    INDEX_COLUMN = 1
-    LEVEL_COLUMN = 2
-    HEADERS = ['Name', 'REFERENCE', 'Spell Level']
+    LEVEL_COLUMN = 1
+    HEADERS = ['Name', 'Spell Level']
     DATABASE_ENTRY_FIELD = 'spell'
     EDITABLE = True
     ENTRY_TYPE = EntryType.Spell
@@ -541,21 +525,18 @@ class SpellTableWidget(SearchableTable):
 
     def update_entry(self, row, entry):
         self.table.setItem(row, self.NAME_COLUMN, QTableWidgetItem(str(entry.get_name())))
-        self.table.setItem(row, self.INDEX_COLUMN, QTableWidgetItem(str(entry.index)))
-        self.table.setItem(row, self.LEVEL_COLUMN, QTableWidgetItem(str(entry.level)))
+        self.table.setItem(row, self.LEVEL_COLUMN, QTableWidgetItem(str(entry.get_level())))
 
     def format(self):
         t = self.table
-        h = self.table.horizontalHeader()
         t.setColumnCount(self.COLUMNS)
-        t.setColumnHidden(self.INDEX_COLUMN, True)
         t.setColumnHidden(self.LEVEL_COLUMN, False)
 
     def define_filters(self, version):
         if version is System.DnD5e:
             self.filter.add_dropdown("School", self.unique_attr("school"))
             self.filter.add_dropdown("Level", self.unique_attr("level"))
-            self.filter.add_dropdown('Classes', *self.extract_subtypes(self.unique_attr('classes')))
+            self.filter.add_dropdown("Classes", *self.extract_subtypes(self.unique_attr('classes')))
             self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr('range')))
             self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr("source")))
         elif version is System.SW5e:

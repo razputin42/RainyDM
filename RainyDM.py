@@ -24,10 +24,11 @@ old_excepthook = sys.excepthook
 class DMTool(QMainWindow):
     SEARCH_BOX_WIDTH = 200
 
-    def __init__(self, db_path, validate_views=False):
+    def __init__(self, db_path, validate_views=False, skip_excepthook=False):
         super().__init__()
         self._database_path = db_path
-        sys.excepthook = self.excepthook
+        if not skip_excepthook:
+            sys.excepthook = self.excepthook
         self.settings = dict({"query_srd": True})
         self.load_meta()
         self._setup_ui()
@@ -94,7 +95,7 @@ class DMTool(QMainWindow):
         self.loot_widget = TreasureHoardTab(self, self.item_viewer, self.item_table_widget)
 
         # Initiative list
-        #self.encounterWidget = EncounterWidget(self.monster_viewer)
+        self.encounterWidget = EncounterWidget(self.monster_viewer)
 
         # bookmark
         self.bookmark_widget = BookmarkWidget(self.monster_table_widget,
@@ -104,7 +105,7 @@ class DMTool(QMainWindow):
 
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
-        #encounter_layout.addWidget(self.encounterWidget)
+        encounter_layout.addWidget(self.encounterWidget)
         encounter_layout.addWidget(self.bookmark_widget)
         encounter_frame.setLayout(encounter_layout)
 
@@ -177,9 +178,6 @@ class DMTool(QMainWindow):
         ### Menubar
         menu = self.menuBar()
         version = menu.addMenu("Version")
-        # button_3_5 = QAction("3.5 Edition", self)
-        # button_3_5.setStatusTip("3.5 Edition")
-        # version.addAction(button_3_5)
         button_5 = QAction("5th Edition", self)
         button_5.setStatusTip("5th Edition")
         version.addAction(button_5)
@@ -188,15 +186,11 @@ class DMTool(QMainWindow):
         button_sw5e.setStatusTip("SW 5th Edition")
         version.addAction(button_sw5e)
         button_sw5e.triggered.connect(lambda: self.change_version(System.SW5e))
-        # button_3_5.triggered.connect(lambda: self.change_version("3.5"))
 
         experimental = menu.addMenu("Experimental")
         button_plain_text = QAction("Plain text monsters", self, checkable=True)
         button_plain_text.setStatusTip("Plain text monsters")
         button_plain_text.triggered.connect(self.toggle_monster_bar)
-        # raise_exception = QAction("Raise Exception", self)
-        # raise_exception.setStatusTip("Raise an Exception")
-        # raise_exception.triggered.connect(self.raise_exception)
         self.edit_entries_action = QAction("Edit Entries", self, checkable=True)
         self.edit_entries_action.setStatusTip("Enable edit data entries")
         # development
@@ -416,6 +410,9 @@ class DMTool(QMainWindow):
         meta_path = os.path.join("metadata", "meta.txt")
         if os.path.exists(meta_path):
             with open(meta_path, "r") as f:
+                if f.read() == "":
+                    self.system = System.SW5e
+                    return
                 meta_dict = json.load(f)
                 self.system = System.from_plaintext(meta_dict['system'])
                 self.settings = meta_dict['settings']
@@ -514,6 +511,9 @@ if __name__ == '__main__':
     parser.add_argument('--validate_views', dest='validate_views', action='store_const',
                         const=True, default=False,
                         help='Display all entries in the view after launching')
+    parser.add_argument('--skip_excepthook', dest='skip_excepthook', action='store_const',
+                        const=True, default=False,
+                        help='Do not set excepthook to display error message in pop-ups.')
 
     args = parser.parse_args()
 
@@ -521,7 +521,8 @@ if __name__ == '__main__':
     app.setStyle('Fusion')
     form = DMTool(
         os.path.join(os.getcwd(), "RainyDB"),
-        validate_views=args.validate_views
+        validate_views=args.validate_views,
+        skip_excepthook=args.skip_excepthook
     )
 
     form.show()  # Show the form
