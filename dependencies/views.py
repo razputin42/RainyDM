@@ -57,23 +57,23 @@ class MonsterViewer(Viewer):
             html = template.safe_substitute(
                 name=monster.get_name(),
                 size=monster.get_size(),
-                type=monster.type,
-                alignment=monster.alignment,
-                armor_class=monster.ac,
-                hit_points=monster.hp,
-                speed=monster.speed,
-                str=monster.str,
-                str_mod=monster.calculate_modifier(monster.str, sign=True),
-                dex=monster.dex,
-                dex_mod=monster.calculate_modifier(monster.dex, sign=True),
-                con=monster.con,
-                con_mod=monster.calculate_modifier(monster.con, sign=True),
-                int=monster.int,
-                int_mod=monster.calculate_modifier(monster.int, sign=True),
-                wis=monster.wis,
-                wis_mod=monster.calculate_modifier(monster.wis, sign=True),
-                cha=monster.cha,
-                cha_mod=monster.calculate_modifier(monster.cha, sign=True)
+                type=monster.get_type(),
+                alignment=monster.get_alignment(),
+                armor_class=monster.get_armor_class(),
+                hit_points=monster.get_hit_points(),
+                speed=monster.get_speed(),
+                str=monster.get_strength(),
+                str_mod=monster.get_strength_modifier(),
+                dex=monster.get_dexterity(),
+                dex_mod=monster.get_dexterity_modifier(),
+                con=monster.get_constitution(),
+                con_mod=monster.get_constitution_modifier(),
+                int=monster.get_intelligence(),
+                int_mod=monster.get_intelligence_modifier(),
+                wis=monster.get_wisdom(),
+                wis_mod=monster.get_wisdom_modifier(),
+                cha=monster.get_charisma(),
+                cha_mod=monster.get_charisma_modifier()
             )
             descriptive_list = [
                 ("Saving Throws", monster.get_saving_throws()),
@@ -98,41 +98,40 @@ class MonsterViewer(Viewer):
             )
             html = html + monster_dict['gradient']
 
-            # add traits
-            for itt, trait in enumerate(monster.trait_list):
+            # add behaviors
+            for itt, behavior in enumerate(monster.get_behaviors()):
                 template = Template(monster_dict['action_even'])
-            html = html + template.safe_substitute(
-                name=trait.name if hasattr(trait, "name") else "",
-                text=trait.text.replace("\n", "<br/>")
-            )
+                html = html + template.safe_substitute(
+                    name=behavior.get_name(),
+                    text=behavior.get_text().replace("\n", "<br/>")
+                )
 
             # second part of the monster
             template = Template(monster_dict['second'])
-            html = html + template.safe_substitute(
-            )
+            html = html + template.safe_substitute()
 
             # add each action
-            for itt, action in enumerate(monster.action_list):
+            for itt, action in enumerate(monster.get_actions()):
                 if itt % 2 == 0:  # even
                     template = Template(monster_dict['action_even'])
                 else:
                     template = Template(monster_dict['action_odd'])
                 html = html + template.safe_substitute(
-                    name=action.name if hasattr(action, "name") else "",
-                    text=action.text
+                    name=action.get_name(),
+                    text=action.get_text()
                 )
 
             # add each legendary action
-            if len(monster.legendary_list) != 0:
+            if len(list(monster.get_legendary_actions())) != 0:
                 html = html + monster_dict['legendary_header']
-            for itt, action in enumerate(monster.legendary_list):
+            for itt, action in enumerate(monster.get_legendary_actions()):
                 if itt % 2 == 0:  # even
                     template = Template(monster_dict['action_even'])
                 else:
                     template = Template(monster_dict['action_odd'])
                 html = html + template.safe_substitute(
-                    name=action.name if hasattr(action, "name") else "",
-                    text=action.text
+                    name=action.get_name(),
+                    text=action.get_text()
                 )
 
             self.update_button_bar(monster)
@@ -148,12 +147,12 @@ class MonsterViewer(Viewer):
         button_bar_layout = self.button_bar.layout()
         for i in reversed(range(button_bar_layout.count())):  # first, clear layout
             button_bar_layout.itemAt(i).widget().setParent(None)
-        for action in monster.action_list:  # second, repopulate
-            if not hasattr(action, "attack"):
+        for action in monster.get_actions():  # second, repopulate
+            if not action.is_attack:
                 continue
-            button = QPushButton(action.name)
-            button.clicked.connect(lambda state, x=action: monster.performAttack(x))
-            button_bar_layout.addWidget(button)
+            # button = QPushButton(action.get_name())
+            # button.clicked.connect(lambda state, x=action: monster.performAttack(x))
+            # button_bar_layout.addWidget(button)
 
     def set_hidden(self, condition):
         self.setHidden(condition)
