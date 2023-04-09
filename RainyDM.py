@@ -497,11 +497,11 @@ class DMTool(QMainWindow):
         self.close()
 
     def validate_views(self):
-        for spell in self.db.get_spells().values():
-            self.spell_viewer.draw_view(spell)
-        for monster in self.db.get_monsters().values():
+        for power in self.db.get(EntryType.Power).values():
+            self.spell_viewer.draw_view(power)
+        for monster in self.db.get(EntryType.Monster).values():
             self.monster_viewer.draw_view(monster)
-        for item in self.db.get_items().values():
+        for item in self.db.get(EntryType.Item).values():
             self.item_viewer.draw_view(item)
 
 if __name__ == '__main__':

@@ -57,7 +57,7 @@ class MonsterViewer(Viewer):
             html = template.safe_substitute(
                 name=monster.get_name(),
                 size=monster.get_size(),
-                type=monster.get_type(),
+                type=", ".join(monster.get_type()),
                 alignment=monster.get_alignment(),
                 armor_class=monster.get_armor_class(),
                 hit_points=monster.get_hit_points(),
@@ -85,6 +85,10 @@ class MonsterViewer(Viewer):
                 ("Languages", monster.get_languages()),
             ]
             for name, value in descriptive_list:
+                if value is None:
+                    continue
+                if isinstance(value, list):
+                    value = ", ".join(value)
                 template = Template(monster_dict['desc'])
                 html = html + template.safe_substitute(
                     name=name,
@@ -103,7 +107,7 @@ class MonsterViewer(Viewer):
                 template = Template(monster_dict['action_even'])
                 html = html + template.safe_substitute(
                     name=behavior.get_name(),
-                    text=behavior.get_text().replace("\n", "<br/>")
+                    text=behavior.get_description().replace("\n", "<br/>")
                 )
 
             # second part of the monster
@@ -118,7 +122,7 @@ class MonsterViewer(Viewer):
                     template = Template(monster_dict['action_odd'])
                 html = html + template.safe_substitute(
                     name=action.get_name(),
-                    text=action.get_text()
+                    text=action.get_description()
                 )
 
             # add each legendary action
@@ -131,7 +135,7 @@ class MonsterViewer(Viewer):
                     template = Template(monster_dict['action_odd'])
                 html = html + template.safe_substitute(
                     name=action.get_name(),
-                    text=action.get_text()
+                    text=action.get_description()
                 )
 
             self.update_button_bar(monster)
@@ -173,13 +177,13 @@ class SpellViewer(Viewer):
             if self._system is System.SW5e:
                 template = Template(sw5e_dict['spell'])
                 html = template.safe_substitute(
-                    name=spell.name,
-                    level=self.ordinal(spell.level),
-                    time=spell.time,
-                    range=spell.range,
-                    duration=spell.duration,
-                    text=spell.text,
-                    classes=', '.join(spell.classes) if hasattr(spell, "classes") else ""
+                    name=spell.get_name(),
+                    level=self.ordinal(spell.get_level()),
+                    time=spell.get_casting_time(),
+                    range=spell.get_range(),
+                    duration=spell.get_duration(),
+                    text=spell.get_description(),
+                    classes=', '.join(spell.get_classes())
                 )
             elif self._system is System.DnD5e:
                 template = Template(spell_dict['entire'])
@@ -214,14 +218,6 @@ class SpellViewer(Viewer):
 
 
 class ItemViewer(Viewer):
-    item_keyname_dict = dict(
-        dmg1="Damage",
-        ac="AC",
-        range="Range",
-        weight="Weight",
-        value="Value"
-    )
-
     def aux_format(self):
         self.setMaximumWidth(53000)  # i.e. as large as it wants
 
@@ -232,46 +228,13 @@ class ItemViewer(Viewer):
                 name=item.name
             )
         else:
-            if self._system.is_DnD5e() or self._system.is_SW5e():  # 5e item
-                html = item_dict['header']
-                template = Template(item_dict["name"])
-                html = html + template.safe_substitute(desc=item.name)
-                html = html + item_dict['gradient']
+            html = item_dict['header']
+            template = Template(item_dict["name"])
+            html = html + template.safe_substitute(desc=item.get_name())
+            html = html + item_dict['gradient']
 
-                for desc in ["ac", "dmg1", "range", "weight", "value"]:
-                    if desc in self.item_keyname_dict.keys():
-                        name = self.item_keyname_dict[desc]
-                    else:
-                        name = desc.capitalize()
-
-                    if hasattr(item, desc):  # exceptions first, then the general case
-                        if desc == "dmg1":
-                            if hasattr(item, "dmg2"):  # has two dmg dice (for example with versatile weapons)
-                                template = Template(item_dict['dmg_vers'])
-                                html = html + template.safe_substitute(
-                                    name=name,
-                                    dmg1=getattr(item, "dmg1"),
-                                    dmg2=getattr(item, "dmg2"),
-                                    dmgType=item.damage_type_dict[getattr(item, "dmgType")]
-                                    if hasattr(item, "dmgType") else "None"
-                                )
-                            else:  # has only one damage dice
-                                template = Template(item_dict['dmg'])
-                                html = html + template.safe_substitute(
-                                    name=name,
-                                    dmg1=getattr(item, "dmg1"),
-                                    dmgType=item.damage_type_dict[getattr(item, "dmgType")]
-                                    if hasattr(item, "dmgType") else "None"
-                                )
-                        else:  # general case
-                            template = Template(item_dict['desc'])
-                            html = html + template.safe_substitute(
-                                name=name,
-                                desc=getattr(item, desc)
-                            )
-
-                template = Template(item_dict["text"])
-                html = html + template.safe_substitute(text=item.text)
+            template = Template(item_dict["text"])
+            html = html + template.safe_substitute(text=item.get_description())
 
             html = html + item_dict['foot']
         self.setHtml(html)
