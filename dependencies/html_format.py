@@ -11,24 +11,6 @@ general_foot = """
 </body>
 """
 
-not_srd = """
-<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    .name {
-        font-size:225%;
-        font-family:Georgia, serif;
-        font-variant:small-caps;
-        font-weight:bold;
-        color:#A73335;
-    </style>
-    </head>
-    <body>
-    <div contenteditable="false"  style="width:310px; font-family:Arial,Helvetica,sans-serif;font-size:17px;">
-    <div class="name"> $name is not SRD :( </div>
-"""
-
 item_dict = dict(
     header="""
     <!DOCTYPE html>

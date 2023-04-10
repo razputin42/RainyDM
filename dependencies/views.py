@@ -1,6 +1,6 @@
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QTextBrowser, QPushButton
-from dependencies.html_format import monster_dict, spell_dict, sw5e_dict, item_dict, general_head, general_foot, not_srd
+from dependencies.html_format import monster_dict, spell_dict, sw5e_dict, item_dict, general_head, general_foot
 from dependencies.auxiliaries import GlobalParameters
 from string import Template
 from RainyCore import sNexus
@@ -43,117 +43,20 @@ class MonsterViewer(Viewer):
         self.button_bar = button_bar
         self.button_bar.setContentsMargins(0, 0, 0, 0)
 
-    def draw_view(self, monster):
-        if not monster.is_srd_valid():
-            # What to display is monster is not SRD valid
-            template = Template(not_srd)
-            html = template.safe_substitute(
-                name=monster.name
-            )
-
-        else:
-            # this is going to get confusing fast... This is everything before saving throws
-            template = Template(monster_dict['first'])
-            html = template.safe_substitute(
-                name=monster.get_name(),
-                size=monster.get_size(),
-                type=", ".join(monster.get_type()),
-                alignment=monster.get_alignment(),
-                armor_class=monster.get_armor_class(),
-                hit_points=monster.get_hit_points(),
-                speed=monster.get_speed(),
-                str=monster.get_strength(),
-                str_mod=monster.get_strength_modifier(),
-                dex=monster.get_dexterity(),
-                dex_mod=monster.get_dexterity_modifier(),
-                con=monster.get_constitution(),
-                con_mod=monster.get_constitution_modifier(),
-                int=monster.get_intelligence(),
-                int_mod=monster.get_intelligence_modifier(),
-                wis=monster.get_wisdom(),
-                wis_mod=monster.get_wisdom_modifier(),
-                cha=monster.get_charisma(),
-                cha_mod=monster.get_charisma_modifier()
-            )
-            descriptive_list = [
-                ("Saving Throws", monster.get_saving_throws()),
-                ("Damage Resistance", monster.get_resistances()),
-                ("Damage Immunities", monster.get_immunities()),
-                ("Condition Immunities", monster.get_condition_immunities()),
-                ("Skills", monster.get_skills()),
-                ("Senses", monster.get_senses()),
-                ("Languages", monster.get_languages()),
-            ]
-            for name, value in descriptive_list:
-                if value is None:
-                    continue
-                if isinstance(value, list):
-                    value = ", ".join(value)
-                template = Template(monster_dict['desc'])
-                html = html + template.safe_substitute(
-                    name=name,
-                    desc=value
-                )
-
-            template = Template(monster_dict['cr'])
-            html = html + template.safe_substitute(
-                cr=monster.get_challenge_rating(),
-                xp=monster.get_experience()
-            )
-            html = html + monster_dict['gradient']
-
-            # add behaviors
-            for itt, behavior in enumerate(monster.get_behaviors()):
-                template = Template(monster_dict['action_even'])
-                html = html + template.safe_substitute(
-                    name=behavior.get_name(),
-                    text=behavior.get_description().replace("\n", "<br/>")
-                )
-
-            # second part of the monster
-            template = Template(monster_dict['second'])
-            html = html + template.safe_substitute()
-
-            # add each action
-            for itt, action in enumerate(monster.get_actions()):
-                if itt % 2 == 0:  # even
-                    template = Template(monster_dict['action_even'])
-                else:
-                    template = Template(monster_dict['action_odd'])
-                html = html + template.safe_substitute(
-                    name=action.get_name(),
-                    text=action.get_description()
-                )
-
-            # add each legendary action
-            if len(list(monster.get_legendary_actions())) != 0:
-                html = html + monster_dict['legendary_header']
-            for itt, action in enumerate(monster.get_legendary_actions()):
-                if itt % 2 == 0:  # even
-                    template = Template(monster_dict['action_even'])
-                else:
-                    template = Template(monster_dict['action_odd'])
-                html = html + template.safe_substitute(
-                    name=action.get_name(),
-                    text=action.get_description()
-                )
-
-            self.update_button_bar(monster)
-            # rest of the monster
-            template = Template(monster_dict['rest'])
-            html = html + template.safe_substitute()
-            self.html = html
-            self.setHtml(html)
-            self.current_view = monster
-            sNexus.viewerSelectChanged.emit(GlobalParameters.MONSTER_VIEWER_INDEX)
+    def draw_view(self, entry):
+        html = entry.to_html()
+        self.update_button_bar(entry)
+        self.html = html
+        self.setHtml(html)
+        self.current_view = entry
+        sNexus.viewerSelectChanged.emit(GlobalParameters.MONSTER_VIEWER_INDEX)
 
     def update_button_bar(self, monster):
         button_bar_layout = self.button_bar.layout()
         for i in reversed(range(button_bar_layout.count())):  # first, clear layout
             button_bar_layout.itemAt(i).widget().setParent(None)
         for action in monster.get_actions():  # second, repopulate
-            if not action.is_attack:
-                continue
+            pass
             # button = QPushButton(action.get_name())
             # button.clicked.connect(lambda state, x=action: monster.performAttack(x))
             # button_bar_layout.addWidget(button)
