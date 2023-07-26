@@ -1,11 +1,14 @@
+import logging
+from abc import abstractmethod as abstract
+from string import Template
+
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QTextBrowser, QPushButton
-from dependencies.html_format import monster_dict, spell_dict, sw5e_dict, item_dict, general_head, general_foot
-from dependencies.auxiliaries import GlobalParameters
-from string import Template
+
 from RainyCore import sNexus
 from RainyDB import System
-from abc import abstractmethod as abstract
+from dependencies.auxiliaries import GlobalParameters
+from dependencies.html_format import spell_dict, sw5e_dict, item_dict, general_foot
 
 
 class Viewer(QTextBrowser):
@@ -53,13 +56,13 @@ class MonsterViewer(Viewer):
 
     def update_button_bar(self, monster):
         button_bar_layout = self.button_bar.layout()
+        logging.debug(f"Updating button bar for monster {monster.get_name()}")
         for i in reversed(range(button_bar_layout.count())):  # first, clear layout
             button_bar_layout.itemAt(i).widget().setParent(None)
         for action in monster.get_actions():  # second, repopulate
-            pass
-            # button = QPushButton(action.get_name())
-            # button.clicked.connect(lambda state, x=action: monster.performAttack(x))
-            # button_bar_layout.addWidget(button)
+            button = QPushButton(action.get_name())
+            button.clicked.connect(lambda state, x=action: monster.perform_attack(x))
+            button_bar_layout.addWidget(button)
 
     def set_hidden(self, condition):
         self.setHidden(condition)

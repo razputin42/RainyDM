@@ -81,7 +81,7 @@ class DBEditor(QWidget):
                 self.attributes_layout.addLayout(horizontal_layout)
 
         # actions tab
-        if hasattr(self.entry, 'action_list') and len(self.entry.action_list) is not 0:
+        if hasattr(self.entry, 'action_list') and len(self.entry.action_list) != 0:
             self.action_list = self.add_tab(self.entry.action_list, 'Actions')
         #
         # if hasattr(self.entry, 'trait_list') and len(self.entry.trait_list) is not 0:
@@ -134,7 +134,7 @@ class DBEditor(QWidget):
                     #     edit = QLineEdit()
                     edit = ResizeableTextEditor()
 
-                    if attr is 'text':
+                    if attr == 'text':
                         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                         sizePolicy.setHorizontalStretch(3)
                     else:
@@ -229,7 +229,7 @@ def create_element_field(element):
         # if hasattr(element, attr):
         field_layout = QVBoxLayout()
         label = QLabel(attr.capitalize())
-        if attr is "text":
+        if attr == "text":
             edit = QTextEdit()
             edit.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
             # edit.setMinimumHeight(100)

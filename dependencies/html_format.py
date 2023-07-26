@@ -171,7 +171,6 @@ th, td {
 <body>
 <div contenteditable="true"  style="width:310px; font-family:Arial,Helvetica,sans-serif;font-size:17px;">
 <div class="name"> $name </div>
-
 <div class="gradient"><img scr="assets/linear_gradient.png;" /></div>    
 <br>
 <div><span class="bold">Casting Time:</span><span> $time</span></div>
@@ -180,8 +179,6 @@ th, td {
 <div><span class="bold">Duration:</span><span> $duration</span></div>
 <br>
 <div><span class="bold">$classes</span></div>
-<br>
-
 <div><span>$text</span></div>
 </div>
 </body>
@@ -369,14 +366,12 @@ th, td {
 <div class="description">$level</div>
 
 <div class="gradient"><img scr="assets/linear_gradient.png;" /></div>    
-<br>
+
 <div><span class="bold">Casting Time:</span><span> $time</span></div>
 <div><span class="bold">Range:</span><span> $range</span></div>
 <div><span class="bold">Duration:</span><span> $duration</span></div>
 <br>
 <div><span class="bold">$classes</span></div>
-<br>
-
 <div><span>$text</span></div>
 </div>
 </body>

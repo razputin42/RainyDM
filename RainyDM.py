@@ -1,20 +1,26 @@
-from dependencies.auxiliaries import roll_function, GlobalParameters
-from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
-from dependencies.input_tables import PlayerTable, PlayerFrame
-from dependencies.TreasureHoard import TreasureHoardTab
-from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
-from dependencies.bookmark import BookmarkWidget
-from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
-from RainyCore.signals import sNexus
-from RainyDB import RainyDatabase, System, EntryType
-from RainyCore import ItemSW5e, MonsterSW5e, PowerSW5e
+import json
+import logging
+import os
+import sys
+import traceback
+
+import html2text
+import pyperclip
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QMessageBox, QSpacerItem
-import sys, json, os, traceback
-import html2text
-import pyperclip
+
+from RainyCore import ItemSW5e, MonsterSW5e, PowerSW5e, BaseMonster
+from RainyCore.signals import sNexus
+from RainyDB import RainyDatabase, System, EntryType
+from dependencies.TreasureHoard import TreasureHoardTab
+from dependencies.auxiliaries import roll_function, GlobalParameters
+from dependencies.bookmark import BookmarkWidget
+from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
+from dependencies.input_tables import PlayerTable, PlayerFrame
+from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
+from dependencies.views import MonsterViewer, SpellViewer, ItemViewer
 
 MONSTER_TAB = 0
 SPELL_TAB = 1
@@ -410,11 +416,12 @@ class DMTool(QMainWindow):
         meta_path = os.path.join("metadata", "meta.txt")
         if os.path.exists(meta_path):
             with open(meta_path, "r") as f:
-                if f.read() == "":
+                settings = f.read()
+                if settings == "":  # empty meta file, program crashed at some point
                     self.system = System.SW5e
                     return
-                meta_dict = json.load(f)
-                self.system = System.from_plaintext(meta_dict['system'])
+                meta_dict = json.loads(settings)
+                self.system = System(meta_dict['system'])
                 self.settings = meta_dict['settings']
         else:
             self.system = System.SW5e
@@ -471,14 +478,15 @@ class DMTool(QMainWindow):
 
         with open("metadata/meta.txt", "w") as f:
             json.dump(dict(
-                system=System.to_plaintext(self.system),
+                system=self.system.value,
                 settings=self.settings
             ), f)
 
     # SLOTS
-    @pyqtSlot(str, str)
-    def attackSlot(self, name, attack):
-        self.print_attack(name, attack)
+    @pyqtSlot(BaseMonster, BaseMonster.Behavior)
+    def attackSlot(self, monster: BaseMonster, attack: BaseMonster.Behavior):
+        to_hit, damage = attack.roll()
+        # self.print_attack(monster.get_name(), attack)
         self.middle_frame.setCurrentIndex(GlobalParameters.TEXT_BOX_INDEX)
 
     def excepthook(self, type, value, tb):
@@ -507,11 +515,13 @@ class DMTool(QMainWindow):
 if __name__ == '__main__':
     import argparse
 
+    logging.basicConfig(level=logging.DEBUG)
+
     parser = argparse.ArgumentParser(description='RainyDM')
-    parser.add_argument('--validate_views', dest='validate_views', action='store_const',
+    parser.add_argument('--validate-views', dest='validate_views', action='store_const',
                         const=True, default=False,
                         help='Display all entries in the view after launching')
-    parser.add_argument('--skip_excepthook', dest='skip_excepthook', action='store_const',
+    parser.add_argument('--skip-excepthook', dest='skip_excepthook', action='store_const',
                         const=True, default=False,
                         help='Do not set excepthook to display error message in pop-ups.')
 

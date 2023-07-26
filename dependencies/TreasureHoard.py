@@ -137,7 +137,7 @@ class LootWidget(EntryWidget):
     def reroll_item(self):
         item_dict = dict({"type": self.type_dropdown.currentText(), "rarity": self.rarity_dropdown.currentText()})
         subset = self.item_list.subset(item_dict)
-        if len(subset) is 0:
+        if len(subset) == 0:
             sNexus.printSignal.emit(
                 "There is no {} {} in the database.".format(item_dict["rarity"], item_dict["type"]))
             return
@@ -223,7 +223,7 @@ class TreasureHoardWidget(ListWidget):
         output_list = []
         for item_dict in items_dict:
             subset = self.item_list.subset(item_dict)
-            if len(subset) is 0:
+            if len(subset) == 0:
                 continue
             output_list.append(random.choice(subset))
         return output_list

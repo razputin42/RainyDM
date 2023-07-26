@@ -184,7 +184,7 @@ class MonsterWidget(InitiativeWidget):
         removeAction = menu.addAction("Remove from Initiative")
 
         actionMenuHandles = []
-        if len(self.monster.action_list) is not 0:
+        if len(self.monster.action_list) != 0:
             menu.addSeparator()
             for attack in self.monster.action_list:
                 if hasattr(attack, "attack"):
@@ -206,7 +206,7 @@ class MonsterWidget(InitiativeWidget):
         elif action in [i[0] for i in actionMenuHandles]:
             for _action, attack in actionMenuHandles:
                 if action is _action:
-                    self.monster.performAttack(attack)
+                    self.monster.perform_attack(attack)
         elif action is addSpells:
             self.monster.addSpells()
 

@@ -50,13 +50,13 @@ def roll_function(dice):
                 rolled = rolled + t
             output.append(rolled)
         else:
-            if len(output) is 0:
+            if len(output) == 0:
                 output.append(int(roll))
             else:
                 output[-1] = output[-1] + int(roll)
     # print("\tauxiliaries - roll_function: {}".format(output))
-    if len(output) is 0:
+    if len(output) == 0:
         return None
-    elif len(output) is 1:
+    elif len(output) == 1:
         return output[0]
     return output
