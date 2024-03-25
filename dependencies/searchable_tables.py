@@ -1,12 +1,16 @@
+import logging
+import os
+import re
+
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QFrame, QPushButton, QTableWidget, QHeaderView, QMenu, \
     QInputDialog, QTableWidgetItem, QSizePolicy, QMessageBox, QSpacerItem
-from PyQt5.QtCore import Qt
-from .filter import Filter
 from lxml import etree as ET
-import re, os
-from dependencies.db_editor import DBEditor
-from dependencies.auxiliaries import RarityList
+
 from RainyDB import EntryType, System
+from dependencies.auxiliaries import RarityList
+from dependencies.db_editor import DBEditor
+from .filter import Filter
 
 
 class MyTableWidget(QTableWidget):
@@ -147,15 +151,15 @@ class SearchableTable(QFrame):
         result = []
         for entry in self.entries.values():
             attributes = entry.get_attributes()
-            if hasattr(attributes, attr):
-                entry_attr = getattr(attributes, attr)
-                if entry_attr is None:
-                    continue
-                if type(entry_attr) is not list:
-                    entry_attr = [entry_attr]
-                for _entry_attr in entry_attr:
-                    if _entry_attr not in result:
-                        result.append(_entry_attr)
+            entry_attr = attributes.get(attr, None)
+            if entry_attr is None:
+                logging.warning(f"Attempted to filter by non-existent attribute for entry: {attributes['name']}")
+                continue
+            if type(entry_attr) is not list:
+                entry_attr = [entry_attr]
+            for _entry_attr in entry_attr:
+                if _entry_attr not in result:
+                    result.append(_entry_attr)
         return result
 
     def filter_handle(self):
@@ -430,10 +434,13 @@ class MonsterTableWidget(SearchableTable):
             self.filter.add_range("CR")
             self.filter.add_dropdown("SRD", self.unique_attr("srd"))
         elif version is System.SW5e:
-            self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
+            self.filter.add_dropdown(
+                name="Type",
+                options=self.unique_attr("types"),
+                attribute="types"
+            )
             self.filter.add_dropdown("Size", self.unique_attr("size"))
-            self.filter.add_dropdown("Source", self.unique_attr("source"))
-            self.filter.add_range("CR")
+            self.filter.add_range(name="CR", attribute="challengeRating")
         self.search_handle()
         self.define_filter_buttons()
 
