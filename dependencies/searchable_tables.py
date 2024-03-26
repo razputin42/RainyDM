@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import re
 
 from PyQt5.QtCore import Qt
@@ -64,7 +65,6 @@ class SearchableTable(QFrame):
         self.table = MyTableWidget(parent)
         self.table.horizontalHeader().sectionClicked.connect(self.sort_columns)
         self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # self.table.clicked.connect(self.deselect_check_handle)
         self.table.selectionModel().selectionChanged.connect(self.selection_change_handle)
         self.table_layout.addWidget(self.table)
         self.table_layout.addWidget(self.filter.get_frame())
@@ -147,7 +147,7 @@ class SearchableTable(QFrame):
         item = QTableWidgetItem(entry.get_name())
         self.table.setItem(row, self.NAME_COLUMN, item)
 
-    def unique_attr(self, attr):
+    def unique_attr_key(self, attr):
         result = []
         for entry in self.entries.values():
             attributes = entry.get_attributes()
@@ -155,6 +155,20 @@ class SearchableTable(QFrame):
             if entry_attr is None:
                 logging.warning(f"Attempted to filter by non-existent attribute for entry: {attributes['name']}")
                 continue
+            if type(entry_attr) is not list:
+                entry_attr = [entry_attr]
+            for _entry_attr in entry_attr:
+                if _entry_attr not in result:
+                    result.append(_entry_attr)
+        return result
+
+    def unique_attr_func(self, function):
+        result = []
+        for entry in self.entries.values():
+            if not hasattr(entry, function) or not callable(getattr(entry, function)):
+                logging.warning(f"Attempted to filter by non-existent function for entry: {entry.get_name()}")
+                continue
+            entry_attr = getattr(entry, function)()
             if type(entry_attr) is not list:
                 entry_attr = [entry_attr]
             for _entry_attr in entry_attr:
@@ -207,16 +221,8 @@ class SearchableTable(QFrame):
 
         return type_return, subtype_dict
 
-    def subset(self, attr_dict):
-        output_list = []
-        for entry in self.entries.values():
-            valid = True
-            for key in attr_dict:
-                if not hasattr(entry, key) or getattr(entry, key) != attr_dict[key]:
-                    valid = False
-            if valid:
-                output_list.append(entry)
-        return output_list
+    def subset(self, **attr_dict):
+        return [entry for entry in self.entries.values() if entry.matches(**attr_dict)]
 
     # find entry in the instantiated list of whatever is in the table
     def find_entry(self, attr, value):
@@ -230,6 +236,9 @@ class SearchableTable(QFrame):
                     _value = _value.lower()
                 if _value == value:
                     return entry
+
+    def random(self):
+        return random.choice(list(self.entries.values()))
 
     def new_entry(self):
         if self.ENTRY_CLASS is None:
@@ -428,18 +437,18 @@ class MonsterTableWidget(SearchableTable):
 
     def define_filters(self, version):
         if version is System.DnD5e:
-            self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr("type")))
-            self.filter.add_dropdown("Size", self.unique_attr("size"))
-            self.filter.add_dropdown("Source", self.unique_attr("source"))
+            self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr_key("type")))
+            self.filter.add_dropdown("Size", self.unique_attr_key("size"))
+            self.filter.add_dropdown("Source", self.unique_attr_key("source"))
             self.filter.add_range("CR")
-            self.filter.add_dropdown("SRD", self.unique_attr("srd"))
+            self.filter.add_dropdown("SRD", self.unique_attr_key("srd"))
         elif version is System.SW5e:
             self.filter.add_dropdown(
                 name="Type",
-                options=self.unique_attr("types"),
+                options=self.unique_attr_key("types"),
                 attribute="types"
             )
-            self.filter.add_dropdown("Size", self.unique_attr("size"))
+            self.filter.add_dropdown("Size", self.unique_attr_key("size"))
             self.filter.add_range(name="CR", attribute="challengeRating")
         self.search_handle()
         self.define_filter_buttons()
@@ -541,11 +550,11 @@ class SpellTableWidget(SearchableTable):
 
     def define_filters(self, version):
         if version is System.DnD5e:
-            self.filter.add_dropdown("School", self.unique_attr("school"))
-            self.filter.add_dropdown("Level", self.unique_attr("level"))
-            self.filter.add_dropdown("Classes", *self.extract_subtypes(self.unique_attr('classes')))
-            self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr('range')))
-            self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr("source")))
+            self.filter.add_dropdown("School", self.unique_attr_key("school"))
+            self.filter.add_dropdown("Level", self.unique_attr_key("level"))
+            self.filter.add_dropdown("Classes", *self.extract_subtypes(self.unique_attr_key('classes')))
+            self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr_key('range')))
+            self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr_key("source")))
         elif version is System.SW5e:
             pass
 
@@ -591,27 +600,12 @@ class ItemTableWidget(SearchableTable):
 
     def define_filters(self, version):
         if version is System.DnD5e:
-            self.filter.add_dropdown("Type", self.unique_attr("type"))
+            self.filter.add_dropdown("Type", self.unique_attr_key("type"))
             self.filter.add_dropdown("Rarity", RarityList, alphabetical=False)
-            self.filter.add_dropdown("Magic", self.unique_attr("magic"), default="Any")
+            self.filter.add_dropdown("Magic", self.unique_attr_key("magic"), default="Any")
             self.filter.add_range("value", capitalize=True)
         elif version is System.SW5e:
             pass
-
-    def subset(self, attr_dict):
-        output_list = []
-        for entry in self.entries.values():
-            valid = True
-            for key in attr_dict:
-                if key == "type" and attr_dict[key] == "Armor":
-                    valid = valid and entry.type in ["Heavy Armor", "Medium Armor", "Light Armor"]
-                elif key == "type" and attr_dict[key] == "Weapon":
-                    valid = valid and entry.type in ["Melee", "Ranged", "Rod", "Staff"]
-                elif not hasattr(entry, key) or getattr(entry, key) != attr_dict[key]:
-                    valid = False
-            if valid:
-                output_list.append(entry)
-        return output_list
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)

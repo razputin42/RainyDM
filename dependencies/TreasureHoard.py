@@ -1,12 +1,15 @@
-import dependencies.lootTables as LT
 import random
+
+from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox, QSpacerItem, \
+    QCheckBox, QLabel
+
+import dependencies.lootTables as LT
+from RainyCore.signals import sNexus
 from dependencies.auxiliaries import roll_function
 from dependencies.encounter import NameLabel
 from dependencies.list_widget import ListWidget, EntryWidget
-from RainyCore.signals import sNexus
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QComboBox, QSpacerItem, \
-    QCheckBox, QLabel
-from PyQt5.QtGui import QMouseEvent
+from dependencies.searchable_tables import ItemTableWidget
 
 
 class TreasureHoard:
@@ -34,47 +37,47 @@ class TreasureHoard:
 
 class TreasureHoardLow(TreasureHoard):
     table = [(36, None),
-            (22,    [("1d6",  LT.LootTableA)]),
-            (16,    [("1d4",  LT.LootTableB)]),
-            (10,     [("1d4",  LT.LootTableA)]),
-            (12,    [("1d4",  LT.LootTableA)]),
-            (4,     [("1",    LT.LootTableA)])
-    ]
+             (22, [("1d6", LT.LootTableA)]),
+             (16, [("1d4", LT.LootTableB)]),
+             (10, [("1d4", LT.LootTableA)]),
+             (12, [("1d4", LT.LootTableA)]),
+             (4, [("1", LT.LootTableA)])
+             ]
 
 
 class TreasureHoardMidLow(TreasureHoard):
     table = [(28, None),
-             (16,   [("1d6",  LT.LootTableA)]),
-             (19,   [("1d4",  LT.LootTableB)]),
-             (11,   [("1d4",  LT.LootTableC)]),
-             (6,    [("1",    LT.LootTableD)]),
-             (14,   [("1d4",  LT.LootTableF)]),
-             (4,    [("1d4",  LT.LootTableG)]),
-             (2,    [("1",    LT.LootTableH)])
-    ]
+             (16, [("1d6", LT.LootTableA)]),
+             (19, [("1d4", LT.LootTableB)]),
+             (11, [("1d4", LT.LootTableC)]),
+             (6, [("1", LT.LootTableD)]),
+             (14, [("1d4", LT.LootTableF)]),
+             (4, [("1d4", LT.LootTableG)]),
+             (2, [("1", LT.LootTableH)])
+             ]
 
 
 class TreasureHoardMidHigh(TreasureHoard):
     table = [(28, None),
-             (16,   [("1d6",  LT.LootTableA)]),
-             (19,   [("1d4",  LT.LootTableB)]),
-             (11,   [("1d4",  LT.LootTableC)]),
-             (6,    [("1",    LT.LootTableD)]),
-             (14,   [("1d4",  LT.LootTableF)]),
-             (4,    [("1d4",  LT.LootTableG)]),
-             (2,    [("1",    LT.LootTableH)])
-    ]
+             (16, [("1d6", LT.LootTableA)]),
+             (19, [("1d4", LT.LootTableB)]),
+             (11, [("1d4", LT.LootTableC)]),
+             (6, [("1", LT.LootTableD)]),
+             (14, [("1d4", LT.LootTableF)]),
+             (4, [("1d4", LT.LootTableG)]),
+             (2, [("1", LT.LootTableH)])
+             ]
 
 
 class TreasureHoardHigh(TreasureHoard):
     table = [(2, None),
-             (12,   [("1d8", LT.LootTableC)]),
-             (32,   [("1d6", LT.LootTableD)]),
-             (22,   [("1d6", LT.LootTableE)]),
-             (4,    [("1d4", LT.LootTableG)]),
-             (8,    [("1d4", LT.LootTableH)]),
-             (20,   [("1d4", LT.LootTableI)])
-    ]
+             (12, [("1d8", LT.LootTableC)]),
+             (32, [("1d6", LT.LootTableD)]),
+             (22, [("1d6", LT.LootTableE)]),
+             (4, [("1d4", LT.LootTableG)]),
+             (8, [("1d4", LT.LootTableH)]),
+             (20, [("1d4", LT.LootTableI)])
+             ]
 
 
 class RerollButton(QPushButton):
@@ -93,7 +96,7 @@ class LootWidget(EntryWidget):
         name_frame = QFrame()
         name_frame.setContentsMargins(0, 0, 0, 0)
         name_frame.setLayout(QHBoxLayout())
-        self.name_label = NameLabel(item.name)
+        self.name_label = NameLabel(item.get_name())
         self.name_label.setObjectName("LootWidget_name")
         name_frame.layout().addWidget(self.name_label)
         name_frame.layout().addStretch(1)
@@ -110,17 +113,17 @@ class LootWidget(EntryWidget):
         self.type_dropdown.addItem("Any")
         self.type_dropdown.addItem("Weapon")
         self.type_dropdown.addItem("Armor")
-        self.type_dropdown.addItems(self.item_list.unique_attr("type"))
-        if self.item.type in ["Staff", "Melee", "Ranged", "Rod"]:
+        self.type_dropdown.addItems(self.item_list.unique_attr_key("type"))
+        if self.item.get_type() in ["Staff", "Melee", "Ranged", "Rod"]:
             self.type_dropdown.setCurrentText("Weapon")
-        elif self.item.type in ["Light Armor, Medium Armor, Heavy Armor"]:
+        elif self.item.get_type() in ["Light Armor, Medium Armor, Heavy Armor"]:
             self.type_dropdown.setCurrentText("Armor")
         else:
-            self.type_dropdown.setCurrentText(self.item.type)
+            self.type_dropdown.setCurrentText(self.item.get_type())
 
         self.rarity_dropdown = QComboBox()
-        self.rarity_dropdown.addItems(self.item_list.unique_attr("rarity"))
-        self.rarity_dropdown.setCurrentText(self.item.rarity)
+        self.rarity_dropdown.addItems(self.item_list.unique_attr_func("get_rarity"))
+        self.rarity_dropdown.setCurrentText(self.item.get_rarity())
 
         self.button_bar.layout().addWidget(self.type_dropdown)
         self.button_bar.layout().addWidget(self.rarity_dropdown)
@@ -135,14 +138,17 @@ class LootWidget(EntryWidget):
         self.setFrameShape(QFrame.Box)
 
     def reroll_item(self):
-        item_dict = dict({"type": self.type_dropdown.currentText(), "rarity": self.rarity_dropdown.currentText()})
-        subset = self.item_list.subset(item_dict)
+        subset = self.item_list.subset(
+            type=self.type_dropdown.currentText(),
+            rarity=self.rarity_dropdown.currentText()
+        )
         if len(subset) == 0:
             sNexus.printSignal.emit(
-                "There is no {} {} in the database.".format(item_dict["rarity"], item_dict["type"]))
+                f"There is no {self.rarity_dropdown.currentText()} {self.type_dropdown.currentText()} in the database."
+            )
             return
         self.item = random.choice(subset)
-        self.name_label.setText(self.item.name)
+        self.name_label.setText(self.item.get_name())
         self.viewer.draw_view(self.item)
 
     def mousePressEvent(self, a0: QMouseEvent):
@@ -161,7 +167,7 @@ class TreasureHoardWidget(ListWidget):
     challengeRatingMidHigh = "11 - 16"
     challengeRatingHigh = "17+"
 
-    def __init__(self, item_list, viewer):
+    def __init__(self, item_list: ItemTableWidget, viewer):
         self.challenge_rating_combo_box = QComboBox()
         self.challenge_rating_combo_box.addItems([
             self.challengeRatingLow,
@@ -172,6 +178,8 @@ class TreasureHoardWidget(ListWidget):
         self.viewer = viewer
         rollButton = QPushButton("Roll")
         rollButton.clicked.connect(self.roll_loot)
+        singleButton = QPushButton("Add Item")
+        singleButton.clicked.connect(self.add_item)
         srd_label = QLabel("Only SRD")
         self.srd_checkbox = QCheckBox()
         bottom_bar = QFrame()
@@ -181,6 +189,7 @@ class TreasureHoardWidget(ListWidget):
         bottom_bar.layout().addWidget(self.srd_checkbox)
         bottom_bar.layout().addWidget(self.challenge_rating_combo_box)
         bottom_bar.layout().addWidget(rollButton)
+        bottom_bar.layout().addWidget(singleButton)
         self.layout().addWidget(bottom_bar)
         self.item_list = item_list
         sNexus.treasureHoardDeselectSignal.connect(self.deselectAll)
@@ -233,6 +242,10 @@ class TreasureHoardWidget(ListWidget):
         for item in loot:
             frame = LootWidget(item, self.item_list, self.viewer)
             self.add(frame)
+
+    def add_item(self):
+        frame = LootWidget(self.item_list.random(), self.item_list, self.viewer)
+        self.add(frame)
 
 
 class TreasureHoardTab(QWidget):
