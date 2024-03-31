@@ -322,7 +322,6 @@ class DMTool(QMainWindow):
         self.monster_table_widget.set_entries(self.db.get(EntryType.Monster))
         self.monster_table_widget.fill_table()
         self.monster_table_widget.define_filters(self.system)
-        # self.spell_table_widget.load_all("./spell", "{}/{}/Spells/".format(resource_path, self.version), spell_cls)
         self.spell_table_widget.set_entries(self.db.get(EntryType.Power))
         self.spell_table_widget.fill_table()
         self.spell_table_widget.define_filters(self.system)

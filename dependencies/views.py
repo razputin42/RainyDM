@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QTextBrowser, QPushButton
 from RainyCore import sNexus
 from RainyDB import System
 from dependencies.auxiliaries import GlobalParameters
-from dependencies.html_format import spell_dict, sw5e_dict, item_dict, general_foot
+from RainyCore import spell_dict, sw5e_dict, general_foot
 
 
 class Viewer(QTextBrowser):
@@ -78,8 +78,6 @@ class SpellViewer(Viewer):
             )
             html = html + general_foot
         else:
-            # if isinstance(spell, Spell35):
-            #     html = general_head + spell.full_text + general_foot
             if self._system is System.SW5e:
                 template = Template(sw5e_dict['spell'])
                 html = template.safe_substitute(
@@ -125,24 +123,12 @@ class SpellViewer(Viewer):
 
 class ItemViewer(Viewer):
     def aux_format(self):
-        self.setMaximumWidth(53000)  # i.e. as large as it wants
+        self.setOpenExternalLinks(True)
+        # self.setMaximumWidth(53000)  # i.e. as large as it wants
 
-    def draw_view(self, item):
-        if not item.is_srd_valid():
-            template = Template(not_srd)
-            html = template.safe_substitute(
-                name=item.name
-            )
-        else:
-            html = item_dict['header']
-            template = Template(item_dict["name"])
-            html = html + template.safe_substitute(desc=item.get_name())
-            html = html + item_dict['gradient']
-
-            template = Template(item_dict["text"])
-            html = html + template.safe_substitute(text=item.get_description())
-
-            html = html + item_dict['foot']
+    def draw_view(self, entry):
+        html = entry.to_html()
+        self.html = html
         self.setHtml(html)
-        self.current_view = item
+        self.current_view = entry
         sNexus.viewerSelectChanged.emit(GlobalParameters.ITEM_VIEWER_INDEX)

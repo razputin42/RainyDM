@@ -3,3 +3,4 @@ html2text
 pyperclip
 lxml
 requests
+markdown
