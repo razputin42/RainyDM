@@ -183,15 +183,6 @@ class MonsterWidget(InitiativeWidget):
         removeAction = menu.addAction("Remove from Initiative")
 
         actionMenuHandles = []
-        # if len(self.monster.action_list) != 0:
-        #     menu.addSeparator()
-        #     for attack in self.monster.get_actions():
-        #         if hasattr(attack, "attack"):
-        #             actionMenuHandles.append((menu.addAction(attack.name), attack))
-
-        # if hasattr(self.monster, 'spells'):
-        #     menu.addSeparator()
-        #     addSpells = menu.addAction("Add monster's spells to bookmark")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -206,8 +197,6 @@ class MonsterWidget(InitiativeWidget):
             for _action, attack in actionMenuHandles:
                 if action is _action:
                     self.monster.perform_attack(attack)
-        elif action is addSpells:
-            self.monster.addSpells()
 
     def jsonlify(self):
         output = dict(
