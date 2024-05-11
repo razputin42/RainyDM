@@ -34,7 +34,7 @@ class HealthFrame(QFrame):
 
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
-        iconSize = [self.ratio*self.height, self.height]
+        iconSize = [self.ratio * self.height, self.height]
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
@@ -73,7 +73,7 @@ class DamageInputFrame(QFrame):
         self.srd_valid = srd_valid
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
-        iconSize = [self.ratio*self.height, self.height]
+        iconSize = [self.ratio * self.height, self.height]
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
@@ -87,7 +87,6 @@ class DamageInputFrame(QFrame):
     def returnPressedHandle(self):
         damage = int(self.damageEdit.text())
         newHealth = self.m_health.get() - damage
-        print(damage, self.m_health.get())
         if newHealth < 0:
             newHealth = 0
         if self.srd_valid and newHealth > self.m_health.max():
@@ -105,7 +104,7 @@ class InitiativeFrame(QFrame):
         super().__init__()
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
-        iconSize = [self.ratio*self.height, self.height]
+        iconSize = [self.ratio * self.height, self.height]
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
@@ -155,7 +154,7 @@ class MonsterWidget(InitiativeWidget):
         self.m_initiative = InitiativeFrame(str(init), monster.is_srd_valid())
         self.viewer = viewer
         self.parent = parentList
-        self.m_name = NameLabel(monster.name)
+        self.m_name = NameLabel(monster.get_name())
         self.layout().addWidget(self.m_name)
         self.layout().addStretch(1)
         self.layout().addWidget(self.m_health)
@@ -163,7 +162,7 @@ class MonsterWidget(InitiativeWidget):
         self.layout().addWidget(self.m_initiative)
 
     def rollInitiative(self):
-        self.m_initiative.set(roll_function("1d20") + self.monster.initiative)
+        self.m_initiative.set(roll_function("1d20") + self.monster.get_initiative_bonus())
 
     # def mouseReleaseEvent(self, event):
     #     if self.viewer is None:
@@ -184,15 +183,15 @@ class MonsterWidget(InitiativeWidget):
         removeAction = menu.addAction("Remove from Initiative")
 
         actionMenuHandles = []
-        if len(self.monster.action_list) != 0:
-            menu.addSeparator()
-            for attack in self.monster.action_list:
-                if hasattr(attack, "attack"):
-                    actionMenuHandles.append((menu.addAction(attack.name), attack))
+        # if len(self.monster.action_list) != 0:
+        #     menu.addSeparator()
+        #     for attack in self.monster.get_actions():
+        #         if hasattr(attack, "attack"):
+        #             actionMenuHandles.append((menu.addAction(attack.name), attack))
 
-        if hasattr(self.monster, 'spells'):
-            menu.addSeparator()
-            addSpells = menu.addAction("Add monster's spells to bookmark")
+        # if hasattr(self.monster, 'spells'):
+        #     menu.addSeparator()
+        #     addSpells = menu.addAction("Add monster's spells to bookmark")
 
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action is None:
@@ -367,7 +366,7 @@ class EncounterWidget(ListWidget):
 
     def addMonsterToEncounter(self, monster, number=1, init=None, hp=None, desc=None):
         if hp is None:
-            hp = monster.hp_no_dice
+            hp = monster.get_hit_points()
         for itt in range(number):
             self.add(MonsterWidget(monster, self, self.viewer, init, hp, desc))
 
@@ -397,11 +396,10 @@ class EncounterWidget(ListWidget):
         idx = self.find(entry)
         if idx is None:
             return
-        if idx + move > len(newList)-1 or idx + move < 0:
+        if idx + move > len(newList) - 1 or idx + move < 0:
             return
-        newList[idx], newList[idx+move] = newList[idx+move], newList[idx]
+        newList[idx], newList[idx + move] = newList[idx + move], newList[idx]
         self.refill(newList)
-
 
     def jsonlify(self):
         return_list = []

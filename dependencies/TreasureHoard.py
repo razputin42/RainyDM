@@ -231,7 +231,7 @@ class TreasureHoardWidget(ListWidget):
     def acquire_loot(self, items_dict):
         output_list = []
         for item_dict in items_dict:
-            subset = self.item_list.subset(item_dict)
+            subset = self.item_list.subset(**item_dict)
             if len(subset) == 0:
                 continue
             output_list.append(random.choice(subset))

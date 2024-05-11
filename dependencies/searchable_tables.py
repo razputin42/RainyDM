@@ -404,13 +404,9 @@ class MonsterTableWidget(SearchableTable):
         add_x_enc_button = QPushButton("Add more to initiative")
         add_x_enc_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
         add_x_enc_button.clicked.connect(self.add_monster_to_encounter)
-        add_tool_button = QPushButton("Add to bookmark")
-        add_tool_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
-        add_tool_button.clicked.connect(self.add_monster_to_bookmark)
         hspacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.button_bar_layout.addWidget(add_enc_button)
         self.button_bar_layout.addWidget(add_x_enc_button)
-        self.button_bar_layout.addWidget(add_tool_button)
         self.button_bar_layout.addItem(hspacer)
 
     def format(self):
@@ -485,12 +481,6 @@ class MonsterTableWidget(SearchableTable):
                 return False
         self.parent.encounterWidget.addMonsterToEncounter(monster, number)
 
-    def add_monster_to_bookmark(self):
-        monster = self.get_selected_monster()
-        if monster is None:
-            return
-        self.parent.addMonsterToBookmark(monster)
-
     def contextMenuEvent(self, event):
         menu = QMenu(self)
 
@@ -498,10 +488,6 @@ class MonsterTableWidget(SearchableTable):
 
         addAction = menu.addAction("Add to initiative")
         addXAction = menu.addAction("Add X to initiative")
-        menu.addSeparator()
-        addBookmark = menu.addAction("Add to bookmark")
-        if hasattr(monster, "spells"):
-            add_spellbook = menu.addAction("Add monster's spells to bookmark")
 
         edit_entry = None
         edit_copy_entry = None
@@ -520,10 +506,6 @@ class MonsterTableWidget(SearchableTable):
             X, ok = QInputDialog.getInt(self, 'Add Monster', 'How many?')
             if ok and X < 2000:
                 self.parent.encounterWidget.addMonsterToEncounter(monster, X)
-        elif action == addBookmark:
-            self.parent.addMonsterToBookmark(monster)
-        elif hasattr(monster, "spells") and action is add_spellbook:
-            self.parent.extract_and_add_spellbook(monster)
         elif self.EDITABLE and action is edit_entry:
             self.edit_entry(monster)
         elif self.EDITABLE and action is edit_copy_entry:
@@ -560,7 +542,6 @@ class SpellTableWidget(SearchableTable):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        add_bookmark = menu.addAction("Add to bookmark")
 
         spell = self.get_current_entry()
 
@@ -576,9 +557,7 @@ class SpellTableWidget(SearchableTable):
         if action is None:
             return
 
-        if action == add_bookmark:
-            self.parent.add_to_bookmark_spell(spell)
-        elif self.EDITABLE and action is edit_entry:
+        if self.EDITABLE and action is edit_entry:
             self.edit_entry(spell)
         elif self.EDITABLE and action is edit_copy_entry:
             self.edit_copy_of_entry(spell)

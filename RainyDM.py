@@ -16,7 +16,6 @@ from RainyCore.signals import sNexus
 from RainyDB import RainyDatabase, System, EntryType
 from dependencies.TreasureHoard import TreasureHoardTab
 from dependencies.auxiliaries import roll_function, GlobalParameters
-from dependencies.bookmark import BookmarkWidget
 from dependencies.encounter import EncounterWidget, MonsterWidget, PlayerWidget
 from dependencies.input_tables import PlayerTable, PlayerFrame
 from dependencies.searchable_tables import MonsterTableWidget, SpellTableWidget, ItemTableWidget
@@ -103,16 +102,9 @@ class DMTool(QMainWindow):
         # Initiative list
         self.encounterWidget = EncounterWidget(self.monster_viewer)
 
-        # bookmark
-        self.bookmark_widget = BookmarkWidget(self.monster_table_widget,
-                                            self.monster_viewer,
-                                            self.spell_table_widget,
-                                            self.spell_viewer)
-
         encounter_frame = QFrame()
         encounter_layout = QVBoxLayout()
         encounter_layout.addWidget(self.encounterWidget)
-        encounter_layout.addWidget(self.bookmark_widget)
         encounter_frame.setLayout(encounter_layout)
 
         # player tab
@@ -227,12 +219,9 @@ class DMTool(QMainWindow):
         self.encounterWidget.save_encounter_button.clicked.connect(self.encounterWidget.save)
         self.encounterWidget.load_encounter_button.clicked.connect(lambda: self.encounterWidget.load(self.monster_table_widget))
         self.encounterWidget.clear_encounter_button.clicked.connect(self.clear_encounter_handle)
-        self.bookmark_widget.clear_bookmark_button.clicked.connect(self.clear_bookmark_handle)
-        self.bookmark_widget.toggle_bookmark_button.clicked.connect(self.toggle_bookmark_handle)
 
         self.add_player_button.clicked.connect(self.add_player)
         sNexus.attackSignal.connect(self.attackSlot)
-        sNexus.addSpellsSignal.connect(self.addSpellsToBookmark)
         sNexus.printSignal.connect(self.print)
         sNexus.addMonstersToEncounter.connect(self.encounterWidget.addMonsterToEncounter)
         sNexus.setWidgetStretch.connect(self._set_widget_stretch)
@@ -260,7 +249,6 @@ class DMTool(QMainWindow):
         if self.system == version:
             return
         self.system = version
-        self.clear_bookmark_handle()
         self.clear_encounter_handle()
 
         self.monster_table_widget.table.clear()
@@ -270,32 +258,6 @@ class DMTool(QMainWindow):
         self.monster_table_widget.filter.clear_filters()
 
         self.load_resources(self._database_path)
-
-    def addMonsterToBookmark(self, monster):
-        row_position = self.bookmark_widget.monster_bookmark.rowCount()
-        self.bookmark_widget.monster_bookmark.insertRow(row_position)
-        if type(monster) == list:
-            for itt, value in enumerate(monster):
-                self.bookmark_widget.monster_bookmark.setItem(row_position, itt, QTableWidgetItem(str(value)))
-        else:
-            self.bookmark_widget.monster_bookmark.setItem(row_position, 0, QTableWidgetItem(str(monster.name)))
-            self.bookmark_widget.monster_bookmark.setItem(row_position, 1, QTableWidgetItem(str(monster.index)))
-
-    def addSpellsToBookmark(self, spells):
-        for spell in spells:
-            _spell = self.spell_table_widget.find_entry('name', spell)
-            self.add_to_bookmark_spell(_spell)
-
-    def add_to_bookmark_spell(self, spell):
-        row_position = self.bookmark_widget.spell_bookmark.rowCount()
-        self.bookmark_widget.spell_bookmark.insertRow(row_position)
-        if type(spell) == list:
-            for itt, value in enumerate(spell):
-                self.bookmark_widget.spell_bookmark.setItem(row_position, itt, QTableWidgetItem(str(value)))
-        elif spell is not None:
-            self.bookmark_widget.spell_bookmark.setItem(row_position, 0, QTableWidgetItem(str(spell.name)))
-            self.bookmark_widget.spell_bookmark.setItem(row_position, 1, QTableWidgetItem(str(spell.index)))
-            self.bookmark_widget.spell_bookmark.setItem(row_position, 2, QTableWidgetItem(str(spell.level)))
 
     def load_resources(self, database_path):
         if self.system is System.SW5e:
@@ -337,18 +299,14 @@ class DMTool(QMainWindow):
         for entry in self.playerWidget.m_widgetList:
             # character in encounter, and should be
             if entry.getCharacter().getCharName() in characterNames and entry.isEnabled():
-                # print("Character in encounter, and should be")
                 encounterWidget.update_character(entry.getCharacter())
 
             # character in encounter, but shouldn't be
             elif entry.getCharacter().getCharName() in characterNames and not entry.isEnabled():
-                # print("Character in enocunter, shouldn't be")
-                # print(entry.getCharacter().getCharName(), entry.isEnabled())
                 encounterWidget.remove_character(entry.getCharacter())
 
             # character not in encounter, but should be
             elif entry.getCharacter().getCharName() not in characterNames and entry.isEnabled():
-                # print("Character not in encounter, should be")
                 encounterWidget.addPlayerToEncounter(entry.getCharacter())
 
             # character not in encounter, and shouldn't be
@@ -363,15 +321,6 @@ class DMTool(QMainWindow):
 
     def clear_encounter_handle(self):
         self.encounterWidget.clear()
-
-    def clear_bookmark_handle(self):
-        self.bookmark_widget.monster_bookmark.clear()
-        self.bookmark_widget.monster_bookmark.setRowCount(0)
-        self.bookmark_widget.spell_bookmark.clear()
-        self.bookmark_widget.spell_bookmark.setRowCount(0)
-
-    def toggle_bookmark_handle(self):
-        self.bookmark_widget.toggle_hide()
 
     def print(self, s):
         self.middle_frame.setCurrentIndex(GlobalParameters.TEXT_BOX_INDEX)
@@ -398,16 +347,6 @@ class DMTool(QMainWindow):
                 s = s + " -- for {} ({} halved)".format(str(damage_roll), str(halved))
         self.print(s)
 
-    def extract_and_add_spellbook(self, monster):
-        spells = monster.extract_spellbook()
-        if spells is not None:
-            for spell in spells:
-                spell_entry = self.spell_table_widget.find_entry("name", spell)
-                if spell_entry is not None:
-                    self.add_to_bookmark_spell(spell_entry)
-                else:
-                    print("Failed to locate spell for", monster.name, "with spellname {}".format(spell))
-
     def load_meta(self):
         if not os.path.exists("metadata/"):
             os.mkdir("metadata")
@@ -431,8 +370,6 @@ class DMTool(QMainWindow):
         if os.path.exists("metadata/session.txt"):
             with open("metadata/session.txt", "r") as f:
                 meta_dict = eval(f.read())
-                for monster_tuple in meta_dict['bookmark_meta']:
-                    self.addMonsterToBookmark(monster_tuple)
 
                 for player in meta_dict['player_meta']:
                     player_dict = json.loads(player)
@@ -464,13 +401,11 @@ class DMTool(QMainWindow):
                         ))
 
     def closeEvent(self, event):
-        bookmark_meta = self.bookmark_widget.monster_bookmark.jsonlify()
         initiative_meta = self.encounterWidget.jsonlify()
         player_meta = self.playerWidget.jsonlify()
 
         with open("metadata/session.txt", "w") as f:
             json.dump(dict(
-                bookmark_meta=bookmark_meta,
                 initiative_meta=initiative_meta,
                 player_meta=player_meta
             ), f)
