@@ -11,7 +11,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QMessageBox, QSpacerItem
 
-from RainyCore import ItemSW5e, MonsterSW5e, PowerSW5e, BaseMonster
+from RainyCore import ItemSW5e, MonsterSW5e, PowerSW5e, BaseMonster, Item5e, Monster5e, Spell5e
 from RainyCore.signals import sNexus
 from RainyDB import RainyDatabase, System, EntryType
 from dependencies.TreasureHoard import TreasureHoardTab
@@ -267,12 +267,12 @@ class DMTool(QMainWindow):
                 EntryType.Item: ItemSW5e
             }
         elif self.system is System.DnD5e:
-            system_entry_classes = {}
-            # system_entry_classes = {
-            #     EntryType.Monster: Monster5e,
-            #     EntryType.Power: Power5e,
-            #     EntryType.Item: Item5e
-            # }
+            # system_entry_classes = {}
+            system_entry_classes = {
+                EntryType.Monster: Monster5e,
+                EntryType.Power: Spell5e,
+                EntryType.Item: Item5e
+            }
         self.db = RainyDatabase(
             path=database_path,
             system=self.system,
