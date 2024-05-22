@@ -153,7 +153,7 @@ class SearchableTable(QFrame):
             attributes = entry.get_attributes()
             entry_attr = attributes.get(attr, None)
             if entry_attr is None:
-                logging.warning(f"Attempted to filter by non-existent attribute for entry: {attributes['name']}")
+                logging.warning(f"Attempted to filter by non-existent attribute for entry: {entry.get_name()}")
                 continue
             if type(entry_attr) is not list:
                 entry_attr = [entry_attr]

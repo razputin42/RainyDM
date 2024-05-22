@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import pathlib
 import sys
 import traceback
 
@@ -8,7 +9,7 @@ import html2text
 import pyperclip
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTableWidgetItem, QTextEdit, QVBoxLayout, \
+from PyQt5.QtWidgets import QApplication, QAction, QPushButton, QTextEdit, QVBoxLayout, \
     QHBoxLayout, QTabWidget, QFrame, QSizePolicy, QMainWindow, QMessageBox, QSpacerItem
 
 from RainyCore import ItemSW5e, MonsterSW5e, PowerSW5e, BaseMonster, Item5e, Monster5e, Spell5e
@@ -31,7 +32,7 @@ class DMTool(QMainWindow):
 
     def __init__(self, db_path, validate_views=False, skip_excepthook=False):
         super().__init__()
-        self._database_path = db_path
+        self._database_path = pathlib.Path(db_path)
         if not skip_excepthook:
             sys.excepthook = self.excepthook
         self.settings = dict({"query_srd": True})
@@ -401,6 +402,8 @@ class DMTool(QMainWindow):
                         ))
 
     def closeEvent(self, event):
+        if not hasattr(self, "encounterWidget"):
+            return
         initiative_meta = self.encounterWidget.jsonlify()
         player_meta = self.playerWidget.jsonlify()
 
