@@ -151,9 +151,12 @@ class SearchableTable(QFrame):
         result = []
         for entry in self.entries.values():
             attributes = entry.get_attributes()
-            entry_attr = attributes.get(attr, None)
+            if hasattr(entry, attr) and callable(getattr(entry, attr)):
+                entry_attr = getattr(entry, attr)()
+            else:
+                entry_attr = attributes.get(attr, None)
             if entry_attr is None:
-                logging.warning(f"Attempted to filter by non-existent attribute for entry: {entry.get_name()}")
+                logging.warning(f"Attempted to filter by non-existent attribute \"{attr}\" for entry: {entry.get_name()}")
                 continue
             if type(entry_attr) is not list:
                 entry_attr = [entry_attr]
@@ -435,9 +438,8 @@ class MonsterTableWidget(SearchableTable):
         if version is System.DnD5e:
             self.filter.add_dropdown("Type", *self.extract_subtypes(self.unique_attr_key("type")))
             self.filter.add_dropdown("Size", self.unique_attr_key("size"))
-            self.filter.add_dropdown("Source", self.unique_attr_key("source"))
+            self.filter.add_dropdown("Source", self.unique_attr_key("get_source"))
             self.filter.add_range("CR")
-            self.filter.add_dropdown("SRD", self.unique_attr_key("srd"))
         elif version is System.SW5e:
             self.filter.add_dropdown(
                 name="Type",
@@ -532,11 +534,11 @@ class SpellTableWidget(SearchableTable):
 
     def define_filters(self, version):
         if version is System.DnD5e:
-            self.filter.add_dropdown("School", self.unique_attr_key("school"))
-            self.filter.add_dropdown("Level", self.unique_attr_key("level"))
-            self.filter.add_dropdown("Classes", *self.extract_subtypes(self.unique_attr_key('classes')))
-            self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr_key('range')))
-            self.filter.add_dropdown("Source", *self.extract_subtypes(self.unique_attr_key("source")))
+            self.filter.add_dropdown("School", self.unique_attr_key("get_school"))
+            self.filter.add_dropdown("Level", self.unique_attr_key("get_level"))
+            self.filter.add_dropdown("Classes", *self.extract_subtypes(self.unique_attr_key('get_classes')))
+            self.filter.add_dropdown("Range", *self.extract_subtypes(self.unique_attr_key('get_range')))
+            self.filter.add_dropdown("Source", self.unique_attr_key("get_source"), attribute="get_source")
         elif version is System.SW5e:
             pass
 
@@ -581,7 +583,7 @@ class ItemTableWidget(SearchableTable):
         if version is System.DnD5e:
             self.filter.add_dropdown("Type", self.unique_attr_key("type"))
             self.filter.add_dropdown("Rarity", RarityList, alphabetical=False)
-            self.filter.add_dropdown("Magic", self.unique_attr_key("magic"), default="Any")
+            self.filter.add_dropdown("Magic", self.unique_attr_key("is_magic"), default="Any")
             self.filter.add_range("value", capitalize=True)
         elif version is System.SW5e:
             pass

@@ -120,7 +120,7 @@ class Filter:
         if sub == "any":
             self.filter[name] = main + ".*"
         else:
-            self.filter[name] = main + ".*(\ \(|\,\ )(" + sub + ").*"
+            self.filter[name] = main + r".*(\ \(|\,\ )(" + sub + ").*"
         self.filter_content()
 
     def set_filters(self, attribute, combo_box, sub_combo_box=None, suboptions=None):
@@ -146,7 +146,6 @@ class Filter:
                     sub_combo_box.clear()
                     sub_combo_box.setHidden(True)
             self.filter[attribute] = selection + ".*"
-        # print(self.filter[name])
         self.filter_content()
 
     def lock(self, attr, value):
@@ -167,7 +166,10 @@ class Filter:
             if not hasattr(entry, key) or getattr(entry, key) != value:
                 return False
         for key, value in self.filter.items():
-            attribute = entry.get_attributes().get(key, None)
+            if hasattr(entry, key) and callable(getattr(entry, key)):
+                attribute = getattr(entry, key)()
+            else:
+                attribute = entry.get_attributes().get(key, None)
             if attribute is None:
                 logging.warning("Wrong filter key passed to entry in SearchableTable")
                 return False

@@ -443,10 +443,13 @@ class DMTool(QMainWindow):
 
     def validate_views(self):
         for power in self.db.get(EntryType.Power).values():
+            logging.info(f"Drawing view for Power {power.get_name()}")
             self.spell_viewer.draw_view(power)
         for monster in self.db.get(EntryType.Monster).values():
+            logging.info(f"Drawing view for Monster {monster.get_name()}")
             self.monster_viewer.draw_view(monster)
         for item in self.db.get(EntryType.Item).values():
+            logging.info(f"Drawing view for Item {item.get_name()}")
             self.item_viewer.draw_view(item)
 
 if __name__ == '__main__':

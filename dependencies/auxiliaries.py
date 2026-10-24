@@ -29,7 +29,7 @@ class GlobalParameters:
 
 
 def roll_function(dice):
-    p = "[+\-,]"
+    p = r"[+\-,]"
     matches = re.finditer(p, dice)
     idx = [match.start() for match in matches]
     idx.append(0)

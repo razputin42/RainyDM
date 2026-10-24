@@ -56,7 +56,6 @@ class MonsterViewer(Viewer):
 
     def update_button_bar(self, monster):
         button_bar_layout = self.button_bar.layout()
-        logging.debug(f"Updating button bar for monster {monster.get_name()}")
         for i in reversed(range(button_bar_layout.count())):  # first, clear layout
             button_bar_layout.itemAt(i).widget().setParent(None)
         for action in monster.get_actions():  # second, repopulate
@@ -92,15 +91,15 @@ class SpellViewer(Viewer):
             elif self._system is System.DnD5e:
                 template = Template(spell_dict['entire'])
                 html = template.safe_substitute(
-                    name=spell.name,
-                    level=self.ordinal(spell.level),
-                    school=spell.school,
-                    time=spell.time,
-                    range=spell.range,
-                    components=spell.components,
-                    duration=spell.duration,
-                    text=spell.text,
-                    classes=', '.join(spell.classes) if hasattr(spell, "classes") else ""
+                    name=spell.get_name(),
+                    level=self.ordinal(spell.get_level()),
+                    school=spell.get_school(),
+                    time=spell.get_casting_time(),
+                    range=spell.get_range(),
+                    components=spell.get_components(),
+                    duration=spell.get_duration(),
+                    text=spell.get_description(),
+                    classes=', '.join(spell.get_classes())
                 )
         self.setHtml(html)
         self.current_view = spell

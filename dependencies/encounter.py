@@ -1,3 +1,5 @@
+import math
+
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton, \
     QLabel, QLineEdit, QMenu, QInputDialog, QFileDialog
 from PyQt5.QtGui import QFont, QPixmap, QIntValidator
@@ -73,7 +75,7 @@ class DamageInputFrame(QFrame):
         self.srd_valid = srd_valid
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
-        iconSize = [self.ratio * self.height, self.height]
+        iconSize = [math.ceil(self.ratio * self.height), self.height]
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
@@ -104,7 +106,7 @@ class InitiativeFrame(QFrame):
         super().__init__()
         self.setLayout(QHBoxLayout())
         iconLabel = QLabel()
-        iconSize = [self.ratio * self.height, self.height]
+        iconSize = [int(self.ratio * self.height), int(self.height)]
         iconLabel.setFixedSize(*iconSize)
         iconLabel.setScaledContents(True)
         iconLabel.setPixmap(QPixmap(self.iconPath))
